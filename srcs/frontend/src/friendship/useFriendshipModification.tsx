@@ -52,8 +52,18 @@ export const useFriendshipModification = (username?: string) => {
 	});
 
 	// function to call any action
-	const run = (action: actionType, id: string) =>
-		mutation.mutate({ action, id });
+	const run = (action: actionType, id: string, onComplete?: () => void) =>
+	mutation.mutate(
+		{ action, id },
+		{
+			onSuccess: () => {
+				onComplete?.();
+			},
+			onError: (error) => {
+				toast({ title: 'Error', message: error.message, type: 'is-warning' });
+			},
+		}
+	);
 
 	return {
 		run,
