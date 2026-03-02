@@ -85,8 +85,6 @@ void	updatePlayerPosition(Player &player, double deltaTime)
 			if (player.getFrame() == 24)
 				HitFrame = 2;
 		}
-		else if (player.getPrevState() == PLAYER_ATTACKING)
-			anim = "idling";
 	}
 	else if (gSdl.key.w_key || gSdl.key.a_key || gSdl.key.s_key || gSdl.key.d_key)
 		anim = "walking";
@@ -199,7 +197,6 @@ void	game_loop(Game &game, double deltaTime)
 	SDL_SetRenderTarget(gSdl.renderer, gSdl.game);
 	SDL_RenderClear(gSdl.renderer);
 	print_map(player);
-	std::cout << game.getPlayer().getHp() << std::endl;
 	if (player.getRoom().getRoomEvent())
 	{
 		MobRush &mobrush = dynamic_cast<MobRush &>(*player.getRoom().getRoomEvent());
