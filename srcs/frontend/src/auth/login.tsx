@@ -99,13 +99,14 @@ function Login() {
 						</span>
 					</p>
 				</div>
-				{mutation.isError && (
+				<Button type="button" color="primary" isOutlined className="submit-wrapper" onClick={onForgot}>Forgot Password</Button>
+				{loginMutation.isError && (
 					<div style={{ color: 'red' }}>
 						{/* this part only show 'Error:' when nginx isn't running */}
-						Error : {mutation.error instanceof Error ? mutation.error.message : 'Unknown'}
+						Error : {loginMutation.error instanceof Error ? loginMutation.error.message : 'Unknown'}
 					</div>
 				)}
-				<Button type="submit" color="primary" isOutlined size='large'>{mutation.isPending ? 'Loading...' : 'Sign in'}</Button>
+				<Button type="submit" color="primary" isOutlined size='large'>{loginMutation.isPending ? 'Loading...' : 'Sign in'}</Button>
 			</form>
 		</div>
 	)
