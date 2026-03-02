@@ -211,49 +211,49 @@ async function seedGroupChat(users) {
   });
 }
 
-// // GAME PROFILES
-// async function seedGameProfiles(users) {
-//   for (const u of users) {
-//     await prisma.gameProfile.create({
-//       data: {
-//         userId: u.appUserId,
-//         totalGames: 10,
-//         totalWins: 5,
-//         totalLoses: 5,
-//         totalEnemiesKilled: 100,
-//         totalXp: 500,
-//         level: 3,
-//         bestTime: 120,
-//       },
-//     });
-//   }
-// }
+// GAME PROFILES
+async function seedGameProfiles(users) {
+  for (const u of users) {
+    await prisma.gameProfile.create({
+      data: {
+        userId: u.appUserId,
+        totalGames: 10,
+        totalWins: 5,
+        totalLoses: 5,
+        totalEnemiesKilled: 100,
+        totalXp: 500,
+        level: 3,
+        bestTime: 120,
+      },
+    });
+  }
+}
 
-// // GAME SESSIONS + RESULTS
-// async function seedGameSessions(users) {
-//   const maps = ["Forest", "Desert", "Ruins"];
+// GAME SESSIONS + RESULTS
+async function seedGameSessions(users) {
+  const maps = ["Forest", "Desert", "Ruins"];
 
-//   for (const map of maps) {
-//     const session = await prisma.gameSession.create({
-//       data: {
-//         mapName: map,
-//         status: "finished",
-//       },
-//     });
+  for (const map of maps) {
+    const session = await prisma.gameSession.create({
+      data: {
+        mapName: map,
+        status: "finished",
+      },
+    });
 
-//     for (const u of users) {
-//       await prisma.gameResult.create({
-//         data: {
-//           gameId: session.sessionId,
-//           playerId: u.appUserId,
-//           enemiesKilled: 10,
-//           gainedXp: 50,
-//           isWinner: u === users[0], // Nina wins all sessions
-//         },
-//       });
-//     }
-//   }
-// }
+    for (const u of users) {
+      await prisma.gameResult.create({
+        data: {
+          gameId: session.sessionId,
+          playerId: u.appUserId,
+          enemiesKilled: 10,
+          gainedXp: 50,
+          isWinner: u === users[0], // Nina wins all sessions
+        },
+      });
+    }
+  }
+}
 
 // MAIN
 async function main() {

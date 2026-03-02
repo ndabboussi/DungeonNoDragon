@@ -51,9 +51,7 @@ function buildPagination(query: SearchUsersQuery) {
 // OR "undefined" if no filter is needed
 function buildGameProfileFilter(query: SearchUsersQuery) {
 
-	const filter: Prisma.GameProfileWhereInput = {
-		deletedAt: null,
-	};
+	const filter: Prisma.GameProfileWhereInput = {};
 
 	if (query.minLevel !== undefined || query.maxLevel !== undefined) {
 		filter.level = {};
@@ -71,10 +69,7 @@ function buildGameProfileFilter(query: SearchUsersQuery) {
 			filter.totalGames.lte = query.maxGames;
 	}
 
-	if (Object.keys(filter).length === 1)
-		return undefined;
-
-	return filter;
+	return Object.keys(filter).length > 0 ? filter : undefined;
 }
 
 
@@ -192,7 +187,7 @@ export async function searchUsersService(userId: string, query: SearchUsersQuery
 
 	const gameProfileFilter = buildGameProfileFilter(query);
 
-	if (gameProfileFilter) {
+	if (gameProfileFilter && Object.keys(gameProfileFilter).length > 0) {
 		where.gameProfile = { is: gameProfileFilter };
 	}
 
@@ -212,12 +207,67 @@ export async function searchUsersService(userId: string, query: SearchUsersQuery
 		prisma.appUser.count({ where }),
 	]);
 
+	const userIdsOnPage = items.map(user => user.appUserId);
+
+	const friendships = await prisma.friendship.findMany({
+		where: {
+			deletedAt: null,
+			OR: [
+			{
+				senderId: userId,
+				receiverId: { in: userIdsOnPage },
+			},
+			{
+				receiverId: userId,
+				senderId: { in: userIdsOnPage },
+			},
+			],
+			status: { in: ['waiting', 'accepted'] },
+		},
+	});
+
+	const friendshipMap = new Map<string, typeof friendships[number]>();
+
+	for (const friendship of friendships) {
+		const otherUserId =
+			friendship.senderId === userId
+			? friendship.receiverId
+			: friendship.senderId;
+
+		if (otherUserId) {
+			friendshipMap.set(otherUserId, friendship);
+		}
+	}
+
+	const mappedItems = items.map(user => {
+		const relation = friendshipMap.get(user.appUserId);
+
+		let friendshipStatus: 'none' | 'sent' | 'received' | 'friends' = 'none';
+		let friendshipId: string | null = null;
+
+		if (relation) {
+			friendshipId = relation.friendshipId;
+			if (relation.status === 'accepted') {
+			friendshipStatus = 'friends';
+			} else if (relation.status === 'waiting') {
+			friendshipStatus =
+				relation.senderId === userId ? 'sent' : 'received';
+			}
+		}
+
+		return {
+			...user,
+			friendshipStatus,
+			friendshipId,
+		};
+	});
+
 	return {
 		page,
 		pageSize: take,
 		total,
 		totalPages: Math.ceil(total / take),
-		items,
+		items: mappedItems,
 	};
 }
 
