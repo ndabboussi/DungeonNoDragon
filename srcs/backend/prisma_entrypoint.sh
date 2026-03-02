@@ -16,9 +16,9 @@ SECRET_42=$(cat /run/secrets/secret_42)
 export SECRET_42=$SECRET_42
 echo "SECRET_42=\"$SECRET_42\"" >> /app/.env
 
-SMTP_PASS=$(cat /run/secrets/smtp_password)
+SMTP_PASS=$(cat /run/secrets/smtp_secret)
 export SMTP_PASS=$SMTP_PASS
-echo "SMTP_PASSWORD=\"$SMTP_PASS\"" >> /app/.env
+echo "SMTP_SECRET=\"$SMTP_PASS\"" >> /app/.env
 
 
 # wait for Postgres to be ready

@@ -4,9 +4,7 @@ import { AppError } from '../schema/errorSchema.js';
 const mails = new Map<string, { email: string, expiresAt: Date }>();
 
 export const transporter = nodemailer.createTransport({
-	host: process.env.SMTP_HOST,
-	port: Number(process.env.SMTP_PORT),
-	secure: false,
+	service: 'gmail',
 	auth: {
 		user: process.env.SMTP_USER,
 		pass: process.env.SMTP_PASS
@@ -17,7 +15,7 @@ export async function sendResetPasswordEmail(to: string, token: string, resetLin
 	mails.set(token, { email: to, expiresAt: new Date(Date.now() + 15 * 60 * 1000) });
 
 	return await transporter.sendMail({
-		from: '"Support" <support@transcendence.com>',
+		from: `"Support" ${process.env.SMTP_USER}`,
 		to,
 		subject: 'Password reset',
 		html: `

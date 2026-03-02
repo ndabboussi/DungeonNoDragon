@@ -30,7 +30,7 @@ services:
       - cookie_secret
       - google_secret
       - secret_42
-      - smtp_password
+      - smtp_secret
     volumes:
       - ../srcs/frontend:/front
       - ../srcs/backend/uploads:/app/uploads
@@ -142,8 +142,8 @@ secrets:
     file: ./secrets/secret_42.txt
   pgadmin_password:
     file: ./secrets/pgadmin_password.txt
-  smtp_password:
-    file: ./secrets/smtp_password.txt
+  smtp_secret:
+    file: ./secrets/smtp_secret.txt
 
 volumes:
   postgres-v:
