@@ -1888,6 +1888,8 @@ export interface paths {
                         lastName?: string;
                         username?: string;
                         avatarUrl?: string;
+						mail?: string;
+						password?: string;
                         region?: string;
                         availability?: boolean;
                     };
