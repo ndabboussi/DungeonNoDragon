@@ -14,6 +14,7 @@ import type {
 	UpdateInvitationBody
 } from '../../schema/chat/groupInvitationSchema.js';
 import { SocketService } from '../../services/socket/SocketService.js';
+import { prisma } from '../../services/db/prisma.js';
 
 //SEND GROUP CHAT INVITATION
 export async function inviteToGroupController(
@@ -28,6 +29,24 @@ export async function inviteToGroupController(
 	} 
 
 	const invitation = await inviteToGroupChat(chatId, senderId, receiverId);
+
+	const chat = await prisma.chat.findUnique({
+		where: { chatId: chatId },
+		select: { chatName: true }
+	});
+	const sender = await prisma.appUser.findUnique({
+		where: { appUserId: senderId },
+		select: { username: true }
+	});
+
+	SocketService.send(`user:${receiverId}`, "notification", {
+		type: "invite_received",
+		senderId: senderId,
+		senderName: sender?.username ?? "Companion",
+		receiverId: receiverId,
+		chatId: chatId,
+		chatName: chat?.chatName ?? "Chat"
+	});
 
 	return reply.status(201).send({
 		chatInvitationId: invitation.chatInvitationId,

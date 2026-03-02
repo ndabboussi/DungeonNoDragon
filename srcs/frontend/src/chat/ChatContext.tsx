@@ -77,6 +77,21 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 				});
 			}
 
+			if (payload.type === "added_to_group") {
+				toast({
+					title: `${payload.creatorName} added you to ${payload.chatName} group chat`,
+					type: "is-info"
+				});
+			}
+
+			if (payload.type === "invite_received") {
+				toast({
+					title: "Chat invite received!",
+					message: `${payload.senderName} invites you to join ${payload.chatName} group chat`,
+					type: "is-info"
+				});
+			}
+
 			if (payload.type === "game_started") {
 				toast({
 					title: `${payload.chatName}`,
@@ -116,8 +131,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
 		return () => {
 			socket.off("chat_typing");
-			socket.off("game_invite");
-			socket.off("game_started");
+			socket.off("notification");
+			//socket.off("game_started");
 		};
 
 	}, [socket, user]);
