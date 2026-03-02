@@ -254,8 +254,8 @@ void	roomLoopUpdate(Room &room, std::vector<std::weak_ptr<Player>> &allPlayer, u
 			player_update.push_back(player->getExit());
 			player_update += "\"},";
 
-			if (died == true)
-				player->setDied(false);
+			// if (died == true)
+			// 	player->setDied(false);
 		}
 		player_update.pop_back();
 		player_update.push_back(']');
