@@ -31,11 +31,11 @@ void	setPlayerState(Player &player, Game &game, val &pStatus, int flag)
 	bool hurt = (hurtS == "true") ? true : false;
 	player.setHp(hp);
 	player.setKills(kills);
+	player.setHurt(hurt);
+	player.setAnim(anim);
 	
 	if (flag == 1) //if uid == other client uid
 	{
-    player.setHurt(hurt);
-	  player.setAnim(anim);
 		int dir = pStatus["player_dir"].as<int>();
 		player.setDir(dir);
 		player.setTargetPos(x, y);
