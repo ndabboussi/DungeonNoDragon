@@ -167,45 +167,11 @@ export function MessageList({
 				return (
 					<Box className="box" m="2" p="3">
 					<p><strong>{msg.author.username}</strong> 🎮 Game session is going! </p>
-
 					<> 
 						{/* DISPLAY MESSAGES & DATE*/}
 						<small>
 							{msg.postedAt ? new Date(msg.postedAt).toLocaleString() : ""}
 						</small>
-
-						{/* AUTHOR ACTIONS */}
-						{msg.userId === user?.id && msg.status === "posted" && (
-							<button
-								className="button is-danger is-small mt-2"
-								onClick={() => onDelete(msg.messageId)}
-							>
-								Delete
-							</button>
-						)}
-
-				 		{/* MODERATOR ACTIONS */}
-				 		{permissions.canModerate && (
-							<>
-							{msg.status !== "moderated" && (
-								<button
-								className="button is-danger is-small mt-2 ml-2"
-								onClick={() => onModerate(msg.messageId)}
-								>
-								Moderate
-								</button>
-							)}
-
-							{msg.status === "moderated" && (
-								<button
-								className="button is-success is-small mt-2 ml-2"
-								onClick={() => onRestore(msg.messageId)}
-								>
-								Restore
-								</button>
-							)}
-							</>
-						)}
 					</>
 					</Box>
 				);
@@ -231,7 +197,7 @@ export function MessageList({
 				</small>
 
 				{/* AUTHOR ACTIONS */}
-				{msg.userId === user?.id && msg.status === "posted" && (
+				{msg.userId === user?.id && (msg.status === "posted" || msg.status === "edited") && (
 					<>
 					<button
 						className="button is-warning is-small mt-2"

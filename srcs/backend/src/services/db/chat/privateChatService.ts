@@ -20,14 +20,17 @@ export async function findOrCreatePrivateChat(userA: string, userB: string) {
 	}
 
 	// 2. Fetch usernames to construct chatName
-	const [user1, user2] = await prisma.user.findMany({
-		where: { id: { in: [user1Id, user2Id] } },
-		select: { id: true, name: true }
+	const users = await prisma.appUser.findMany({
+		where: { appUserId: { in: [user1Id, user2Id] } },
+		select: { appUserId: true, username: true }
 	});
 
-	const user1Name = user1.id === user1Id ? user1.name : user2.name;
-	const user2Name = user2.id === user2Id ? user2.name : user1.name;
-	const chatName = `${user1Name} - ${user2Name}`;
+	if (users.length !== 2) {
+		throw new Error("Users not found");
+}
+
+	const userMap = new Map(users.map(u => [u.appUserId, u.username]));
+	const chatName = `${userMap.get(user1Id)} - ${userMap.get(user2Id)}`;
 
 	// 3. Create new chat + private_chat rows
 	const result = await prisma.$transaction(async (tx) => {

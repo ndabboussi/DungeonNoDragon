@@ -129,20 +129,7 @@ export async function deleteMessage(chatId: string, messageId: string, userId: s
 			status: 'deleted',
 			deletedAt: new Date()
 		},
-		select: messageSelect//{
-		// 	messageId: true,
-		// 	chatId: true,
-		// 	status: true,
-		// 	deletedAt: true//,
-		// 	// author: {
-		// 	// 	select: {
-		// 	// 	appUserId: true,
-		// 	// 	username: true,
-		// 	// 	avatarUrl: true,
-		// 	// 	availability: true
-		// 	// 	}
-		// 	// }
-		// }
+		select: messageSelect
 	});
 
 	return updated;
@@ -220,22 +207,7 @@ export async function editMessage(
 			editedAt: new Date(),
 			deletedAt: null
 		},
-		select: messageSelect//{
-		// 	messageId: true,
-		// 	chatId: true,
-		// 	userId: true,
-		// 	content: true,
-		// 	status: true,
-		// 	editedAt: true,
-		// 	author: {
-		// 		select: {
-		// 			appUserId: true,
-		// 			username: true,
-		// 			avatarUrl: true,
-		// 			availability: true
-		// 		}
-		// 	}
-		// }
+		select: messageSelect
 	});
 
 	return updated;
@@ -279,20 +251,7 @@ export async function moderateMessage(
 			deletedAt: new Date(),
 			moderatedBy: moderatorId
 		},
-		select: messageSelect//{
-		// 	messageId: true,
-		// 	chatId: true,
-		// 	status: true,
-		// 	deletedAt: true,
-		// 	author: {
-		// 		select: {
-		// 		appUserId: true,
-		// 		username: true,
-		// 		avatarUrl: true,
-		// 		availability: true
-		// 		}
-		// 	}
-		// }
+		select: messageSelect
 	});
 
 	return updated;
@@ -344,19 +303,7 @@ export async function restoreMessage(
 			deletedAt: null,
 			moderatedBy: null
 		},
-		select: messageSelect//{
-		// 	messageId: true,
-		// 	chatId: true,
-		// 	status: true,
-		// 	author: {
-		// 		select: {
-		// 		appUserId: true,
-		// 		username: true,
-		// 		avatarUrl: true,
-		// 		availability: true
-		// 		}
-		// 	}
-		// }
+		select: messageSelect
 	});
 	return updated;
 }
