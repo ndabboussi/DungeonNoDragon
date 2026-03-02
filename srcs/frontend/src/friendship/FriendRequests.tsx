@@ -31,9 +31,9 @@ const FriendRequest = () => {
 	const userData: FriendRequestResponseType = data.data;
 
 	return (
-		<Box bgColor="grey" textColor="black" className="wrapbox">
-			<h1>Ongoing friend requests</h1>
-			<Box m="4" p="6"  className="friendbox" bgColor="grey-light" textColor="black" justifyContent='space-between'>
+		<div className="wrapbox">
+			<h2>Ongoing friend requests</h2>
+			<div className="friendbox">
 			<ul className="user_list">
 				{userData.map(friend => {
 					const friendUser = friend.sender.appUserId !== user?.id ? friend.sender : friend.receiver;
@@ -47,20 +47,19 @@ const FriendRequest = () => {
 							<p className="username">{friendUser.username}</p>
 							<div className="friend_actions">
 								{friendUser.appUserId === friend.sender.appUserId && 
-								<div>
 									<Button 
 										className="interaction_btn" 
 										onClick={() => {handleRequest('accept', friend.friendshipId)}}
 									>
 										Accept request
-									</Button>
+									</Button>}
+								{friendUser.appUserId === friend.sender.appUserId &&
 									<Button 
 										className="interaction_btn" 
 										onClick={() => {handleRequest('reject', friend.friendshipId)}}
 									>
 										Reject request
-									</Button>
-								</div>}
+									</Button>}
 								{friendUser.appUserId !== friend.sender.appUserId && 
 									<Button 
 										className="interaction_btn" 
@@ -78,9 +77,12 @@ const FriendRequest = () => {
 					)
 				})}
 			</ul>
-			</Box>
-			<NavLink to="/friends/list" className="button is-medium">Back to friends list</NavLink>
-		</Box>
+			<div className="bottom-button">
+				<NavLink to="/friends/list" className="button is-medium friendlist-button">Back to friends list</NavLink>
+				<NavLink to="/profile" className="button is-medium myprofile-button">Back to profile</NavLink>
+			</div>
+			</div>
+		</div>
 	)
 }
 
