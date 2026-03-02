@@ -21,7 +21,10 @@ export async function resetPasswordController(
 
 	const hash: string | null = await hashPassword(newPassword);
 
-	await profileService.updateProfile(dbUser.appUserId, { password: hash });
+	if (!hash)
+		return reply.code(500).send({ error: "Password not hashed" });
+
+	await profileService.updateProfile(dbUser.appUserId, { passwordHash: hash });
 
 	return reply.status(204).send();
 }

@@ -31,9 +31,10 @@ export async function sendResetPasswordEmail(to: string, token: string, resetLin
 }
 
 export function verifyResetToken(token: string): string {
-	mails.forEach(({ expiresAt }, token) => {
-		if (expiresAt < new Date())
-			mails.delete(token);
+	mails.forEach(({ expiresAt }, tok) => {
+		if (expiresAt < new Date()) {
+			mails.delete(tok);
+		}
 	});
 
 	const storedToken = mails.get(token);

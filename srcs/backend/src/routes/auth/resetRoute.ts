@@ -4,7 +4,7 @@ import type { FastifyInstance } from "fastify";
 import { AppErrorSchema } from "../../schema/errorSchema.js";
 
 export const ResetSchema = Type.Object({
-	token: Type.String({  minLength: 32, maxLength: 32 }),
+	token: Type.String({  minLength: 64, maxLength: 64 }),
 	newPassword: Type.String({
 		pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$'
 	})

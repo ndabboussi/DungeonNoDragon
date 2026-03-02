@@ -35,6 +35,7 @@ import CallbackGoogle from './auth/callbackGoogle.tsx';
 import Callback42 from './auth/callback42.tsx';
 import { InviteToGroupChat } from './chat/components/InviteToGroupChat.tsx';
 import SearchPage from './search/SearchPage.tsx';
+import ResetPassword from './auth/reset-password.tsx';
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -54,6 +55,7 @@ const AppEntryPoint = () => {
 				<Route path="/register" element={<Register />} />
 				<Route path="/callbackGoogle" element={<CallbackGoogle />} />
 				<Route path="/callback42" element={<Callback42 />} />
+				<Route path="/reset-password" element={<ResetPassword />} />
 
 				<Route path="/home" element={<Home />} />
 				<Route path="/join/:roomId" element={<JoinRoom />} />
