@@ -240,6 +240,7 @@ void	roomLoopUpdate(Room &room, std::vector<std::weak_ptr<Player>> &allPlayer, u
 				continue ;
 			std::shared_ptr<Player> player = p.lock();
 			std::string hurt = (player->updateHurt() == true) ? "true" : "false";
+			bool	died = player->getDied();
 			player_update += "{\"player_uid\":\"" + player->getUid() + '\"';
 			player_update += ",\"player_name\":\"" + player->getName() + '\"';
 			player_update += ",\"player_x\":" + std::to_string(player->getX());
