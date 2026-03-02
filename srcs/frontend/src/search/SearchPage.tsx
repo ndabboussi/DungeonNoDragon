@@ -7,14 +7,26 @@ import skull from '../assets/skull.svg';
 import { useFriendshipModification } from '../friendship/useFriendshipModification';
 import type { actionType } from '../friendship/friendshipQueries';
 
+type gameProfile = {
+    level: number;
+    totalGames: number;
+    totalWins: number;
+    totalEnemiesKilled: number;
+    totalXp: number;
+    bestTime: number;
+    totalLoses: number;
+};
+
 type UserItem = {
-	appUserId: string;
-	username: string;
-	firstName: string;
-	lastName: string;
-	avatarUrl?: string;
-	friendshipStatus: 'none' | 'sent' | 'received' | 'friends';
-	friendshipId?: string;
+  appUserId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl?: string;
+  friendshipStatus: 'none' | 'sent' | 'received' | 'friends';
+  friendshipId?: string;
+  createdAt?: string;
+  gameProfile?: gameProfile;
 };
 
 type SearchResponse = {
@@ -34,6 +46,7 @@ const SearchPage = () => {
 
 	const [results, setResults] = useState<UserItem[]>([]);
 	const [loading, setLoading] = useState(false);
+	const sortBy = searchParams.get('sortBy') || 'level';
 	const page = Number(searchParams.get('page') || 1);
 	const [totalPages, setTotalPages] = useState(1);
 
@@ -68,15 +81,25 @@ const SearchPage = () => {
 	};
 
 	const handleRequest = async (action: actionType, id: string) => {
-	try {
-		// Fire-and-forget mutation with refresh callback
-		friendRequestMutation.run(action, id, () => {
-			fetchUsers();
-		});
-	} catch (err) {
-    console.error('Friend request failed:', err);
-  }
-};
+		try {
+			// Fire-and-forget mutation with refresh callback
+			friendRequestMutation.run(action, id, () => {
+				fetchUsers();
+			});
+		} catch (err) {
+			console.error('Friend request failed:', err);
+		}
+	};
+
+	const getSortValue = (user: UserItem) => {
+		if (sortBy === 'createdAt') {
+			return user.createdAt
+			? new Date(user.createdAt as string).toLocaleDateString()
+			: null;
+		}
+
+		return user.gameProfile?.[sortBy as keyof typeof user.gameProfile];
+	};
 
 	return (
 		<div className='search-box'>
@@ -87,13 +110,26 @@ const SearchPage = () => {
 
 					{!loading && results?.length === 0 && (<p>No player found</p>)}
 
-					{results?.length > 0 && results.map((user) => (
-						<div key={user.appUserId} className="user_item_card">
-							{user.avatarUrl && (
-								<img src={`https://${window.location.host}/uploads/` + user.avatarUrl} alt={user.username} className="user_avatar"/>)}
-							{!user.avatarUrl && (
-								<img src={skull} alt={user.username} className="user_avatar"/>)}
-								<p className="username">{user.username}</p>
+					{results?.length > 0 && results.map((user) => {
+						const sortValue = getSortValue(user);
+						console.log("sortBy:", sortBy);
+						console.log("gameProfile:", user.gameProfile);
+						console.log("value:", user.gameProfile?.[sortBy as keyof typeof user.gameProfile]);
+						console.log("user:", user.username, user.gameProfile);
+						return (
+							<div key={user.appUserId} className="user_item_card">
+								{user.avatarUrl && (
+									<img src={`https://${window.location.host}/uploads/` + user.avatarUrl} alt={user.username} className="user_avatar"/>)}
+								{!user.avatarUrl && (
+									<img src={skull} alt={user.username} className="user_avatar"/>)}
+								<p className="username">
+									{user.username}
+									{sortValue !== undefined && sortValue !== null && (
+									<span className="sort_value">
+										{' '}({sortBy}: {sortValue})
+									</span>
+									)}
+								</p>
 								{user.friendshipStatus === 'none' &&
 									<Button
 										className="interaction_btn"
@@ -138,8 +174,9 @@ const SearchPage = () => {
 									</Button>
 								}
 								<NavLink to={"/profile/" + user.username} className="view_profile_btn">View Profile</NavLink>
-						</div>
-					))}
+							</div>
+						)
+					})}
 
 					{totalPages > 1 && (
 						<div className="pagination">

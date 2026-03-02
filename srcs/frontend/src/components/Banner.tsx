@@ -58,9 +58,7 @@ const Banner = () => {
 							<Navbar.DropdownMenu>
 								<Navbar.Item onClick={handleClick} className="dropdown-content">Logout</Navbar.Item>
 								<Navbar.Divider />
-								<Navbar.Item>
-									<NavLink to="/about" className="dropdown-content">About the game</NavLink>
-								</Navbar.Item>
+								<NavLink to="/about" className="navbar-item dropdown-content">About the game</NavLink>
 							</Navbar.DropdownMenu>
 						</Navbar.Dropdown>
 					</Navbar.End>

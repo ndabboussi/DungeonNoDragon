@@ -51,9 +51,7 @@ function buildPagination(query: SearchUsersQuery) {
 // OR "undefined" if no filter is needed
 function buildGameProfileFilter(query: SearchUsersQuery) {
 
-	const filter: Prisma.GameProfileWhereInput = {
-		deletedAt: null,
-	};
+	const filter: Prisma.GameProfileWhereInput = {};
 
 	if (query.minLevel !== undefined || query.maxLevel !== undefined) {
 		filter.level = {};
@@ -71,10 +69,7 @@ function buildGameProfileFilter(query: SearchUsersQuery) {
 			filter.totalGames.lte = query.maxGames;
 	}
 
-	if (Object.keys(filter).length === 1)
-		return undefined;
-
-	return filter;
+	return Object.keys(filter).length > 0 ? filter : undefined;
 }
 
 
@@ -192,7 +187,7 @@ export async function searchUsersService(userId: string, query: SearchUsersQuery
 
 	const gameProfileFilter = buildGameProfileFilter(query);
 
-	if (gameProfileFilter) {
+	if (gameProfileFilter && Object.keys(gameProfileFilter).length > 0) {
 		where.gameProfile = { is: gameProfileFilter };
 	}
 
