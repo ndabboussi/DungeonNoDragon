@@ -51,6 +51,7 @@ PlayerAssets::~PlayerAssets(void)
 	SDL_DestroyTexture(_playerAttackText);
 	SDL_DestroyTexture(_playerWalkText);
 	SDL_DestroyTexture(_playerIdleText);
+
 	SDL_DestroyTexture(_playerHurtText);
 	SDL_DestroyTexture(_playerDeathText);
 
@@ -58,7 +59,7 @@ PlayerAssets::~PlayerAssets(void)
 	SDL_DestroyTexture(_playerWalkFrontText);
 	SDL_DestroyTexture(_playerIdleFrontText);
 
-	SDL_DestroyTexture(_playerAttackBackText);
+  SDL_DestroyTexture(_playerAttackBackText);
 	SDL_DestroyTexture(_playerWalkBackText);
 	SDL_DestroyTexture(_playerIdleBackText);
 
@@ -86,7 +87,6 @@ void	PlayerAssets::importAssets(std::string path, int tile_size, SDL_Texture *&t
 	}
 }
 
-
 void	PlayerAssets::importPlayersAssets(int tile_size)
 {
 	importAssets("assets/sprite/Soldier-Walk.bmp", tile_size, _playerWalkText, _playerWalk, _walkImgW, _walkImgH);
@@ -102,7 +102,6 @@ void	PlayerAssets::importPlayersAssets(int tile_size)
 	importAssets("assets/sprite/Soldier-Back-Idle.bmp", tile_size, _playerIdleBackText, _playerIdleBack, _idleImgW, _idleImgH);
 
 	importAssets("assets/sprite/Soldier-Hurt.bmp", tile_size, _playerHurtText, _playerHurt, _hurtImgW, _hurtImgH);
-
 	importAssets("assets/sprite/Soldier-Death.bmp", tile_size, _playerDeathText, _playerDeath, _deathImgW, _deathImgH);
 
 	gSdl.setPlayerSize(tile_size);

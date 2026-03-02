@@ -74,7 +74,6 @@ void	updatePlayerPosition(Player &player, double deltaTime)
 		s_key = "true";
 	if (gSdl.key.d_key)
 		d_key = "true";
-
 	//player attack
 	if ((gSdl.key.attacking() || player.checkAtkState()))
 	{
