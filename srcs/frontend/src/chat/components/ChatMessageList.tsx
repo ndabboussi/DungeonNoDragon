@@ -8,6 +8,7 @@ type Message = {
 	userId: string;
 	content: string;
 	status: string;
+	type: string;
 	postedAt: string | null;
 	editedAt?: string | null;
 	deletedAt?: string | null;
@@ -21,6 +22,7 @@ type Message = {
 
 type MessageListProps = {
 	messages: Message[];
+	readState?: Record<string, string>;
 	role: string | null;
 	permissions: Record<string, boolean>;
 	onEdit: (data: { messageId: string; content: string }) => void;
@@ -29,10 +31,53 @@ type MessageListProps = {
 	onRestore: (messageId: string) => void;
 };
 
+function isMessageRead(
+	messageId: string,
+	readState?: Record<string, string>
+) {
+	if (!readState)
+		return false;
+
+	return Object.values(readState).some(
+		lastId => lastId === messageId
+	);
+}
+
+function buildReadersByMessage(
+	messages: Message[],
+	readState?: Record<string, string>
+) {
+	if (!readState)
+		return {};
+
+	const indexMap = new Map(
+		messages.map((m, i) => [m.messageId, i])
+	);
+
+	const result: Record<string, string[]> = {};
+
+	for (const [userId, lastId] of Object.entries(readState)) {
+		const lastIndex = indexMap.get(lastId);
+		if (lastIndex === undefined)
+			continue;
+
+		for (let i = 0; i <= lastIndex; i++) {
+			const msgId = messages[i].messageId;
+
+			if (!result[msgId])
+				result[msgId] = [];
+
+			result[msgId].push(userId);
+		}
+	}
+
+	return result;
+}
 
 export function MessageList({
 	messages,
 	// role,
+	readState,
 	permissions,
 	onEdit,
 	onDelete,
@@ -43,15 +88,21 @@ export function MessageList({
 	const { user } = useAuth();
 	const navigate = useNavigate();
 
-	if (!messages)
+	if (!messages || messages.length === 0)
 		return null;
+
+	const readersByMessage = buildReadersByMessage(messages, readState);
 
 	return (
 	<>
 		{messages?.map(msg => {
 
+			const read = isMessageRead(msg.messageId, readState);
+			const readers = readersByMessage[msg.messageId] || [];
+
 			// GAME INVITE MESSAGE
 			if (msg.content.includes("/join/")) {
+			//if (msg.type === "game_invite") {
 				const match = msg.content.match(/\/join\/([^\/\s]+)/);
 				const roomId = match ? match[1] : null;
 
@@ -109,6 +160,23 @@ export function MessageList({
 				);
 			}
 
+			if (msg.type === "game_started") {
+				// const match = msg.content.match(/\/join\/([^\/\s]+)/);
+				// const roomId = match ? match[1] : null;
+
+				return (
+					<Box className="box" m="2" p="3">
+					<p><strong>{msg.author.username}</strong> 🎮 Game session is going! </p>
+					<> 
+						{/* DISPLAY MESSAGES & DATE*/}
+						<small>
+							{msg.postedAt ? new Date(msg.postedAt).toLocaleString() : ""}
+						</small>
+					</>
+					</Box>
+				);
+			}
+
 			return (
 				<Box key={msg.messageId} className="box" m="2" p="3">
 				
@@ -129,7 +197,7 @@ export function MessageList({
 				</small>
 
 				{/* AUTHOR ACTIONS */}
-				{msg.userId === user?.id && msg.status === "posted" && (
+				{msg.userId === user?.id && (msg.status === "posted" || msg.status === "edited") && (
 					<>
 					<button
 						className="button is-warning is-small mt-2"
@@ -173,6 +241,20 @@ export function MessageList({
 					)}
 					</>
 				)}
+
+				
+				{/* READ RECEIPTS */}
+				{read && (
+					<span style={{ marginLeft: 8, color: "#4fc3f7" }}>
+						✓✓
+					</span>
+				)}
+				{msg.userId === user?.id && readers.length > 0 && (
+					<div style={{ fontSize: "0.75rem", opacity: 0.7 }}>
+						Seen by {readers.length}
+					</div>
+				)}
+
 				</Box>
 			);
 		})}
