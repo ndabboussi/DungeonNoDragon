@@ -51,6 +51,7 @@ export default fp(async (fastify) => {
 			'/auth/forgot-password',
 			'/auth/reset-password',
 			'/documentation/json',
+			'/auth/server',
 			'/'
 		];
 
