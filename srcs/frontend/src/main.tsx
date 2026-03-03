@@ -4,6 +4,20 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import "./styles/tokens.css"
 import './index.css'
 import "./main.css"
+import "./App.css"
+import "./components/Banner.css"
+import "./components/Footer.css"
+import "./components/Sidebar.css"
+import "./about/game-rules.css"
+import "./auth/login.css"
+import "./auth/register.css"
+import "./friendship/friendList.css"
+import "./game/game.css"
+import "./home/home.css"
+import "./profile/profile.css"
+import "./profile/update.css"
+import "./search/SearchBar.css"
+import "./search/SearchPage.css"
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -38,7 +52,7 @@ import Callback42 from './auth/callback42.tsx';
 import { InviteToGroupChat } from './chat/components/InviteToGroupChat.tsx';
 import SearchPage from './search/SearchPage.tsx';
 import GameRules from './about/game-rules.tsx';
-import Sidebar from './Sidebar.tsx';
+import Sidebar from './components/Sidebar.tsx';
 
 const queryClient = new QueryClient({
 	defaultOptions: {
