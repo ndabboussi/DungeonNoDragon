@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSocket } from "../../socket/SocketContext";
+//import toast from "../../Notifications";
 
 //When a socket event arrives, it directly updates the React Query cache
 export function useChatSocket(chatId?: string) {
@@ -8,21 +9,40 @@ export function useChatSocket(chatId?: string) {
 	const socket = useSocket();
 	const queryClient = useQueryClient();
 
+	// useEffect(() => {
+	// 	if (!socket || !chatId) return;
+
+	// 	socket.emit("chat_join", { chatId });
+
+	// 	return () => {
+	// 		socket.emit("chat_leave", { chatId });
+	// 	};
+	// }, [socket, chatId]);
+
 	useEffect(() => {
 	
 		if (!socket || !chatId)
 			return;
 
+		socket.on("chat_read_updated", ({ userId, lastMessageId }) => {
+
+			queryClient.setQueryData(
+				["chat-read-state", chatId],
+				(prev: Record<string, string> = {}) => ({
+					...prev,
+					[userId]: lastMessageId
+				})
+			);
+
+		});
+
+		const invalidateChatInfo = () => {
+			queryClient.invalidateQueries({ queryKey: ["chat-info", chatId] });
+		};
+
 		//SEND
 		const onMessageCreated = () => {
-	
-			//let the backend decide what you’re allowed to see
 			queryClient.invalidateQueries({ queryKey: ["chat-messages", chatId] });
-			// queryClient.setQueryData(["chat-messages", chatId], (cache: any[] | undefined) => {
-			// 	if (!cache)
-			// 		return [message];
-			// 	return [...cache, message];
-			// });
 		};
 
 		//EDIT
@@ -42,7 +62,6 @@ export function useChatSocket(chatId?: string) {
 				// cache.filter(msg => msg.messageId !== message.messageId);
 			});
 		};
-
 
 		//MODERATED
 		const onMessageModerated = (message: any) => {
@@ -70,13 +89,27 @@ export function useChatSocket(chatId?: string) {
 		socket.on("chat_message_moderated", onMessageModerated);
 		socket.on("chat_message_restored", onMessageRestored);
 
+		socket.on("chat_member_joined", invalidateChatInfo);
+		socket.on("chat_member_left", invalidateChatInfo);
+		socket.on("chat_member_kicked", invalidateChatInfo);
+		socket.on("chat_member_role_changed", invalidateChatInfo);
+		socket.on("chat_disbanded", invalidateChatInfo);
+
 
 		return () => {
+			socket.off("chat_read_updated");
+
 			socket.off("chat_message_created", onMessageCreated);
 			socket.off("chat_message_edited", onMessageEdited);
 			socket.off("chat_message_deleted", onMessageDeleted);
 			socket.off("chat_message_moderated", onMessageModerated);
 			socket.off("chat_message_restored", onMessageRestored);
+
+			socket.off("chat_member_joined", invalidateChatInfo);
+			socket.off("chat_member_left", invalidateChatInfo);
+			socket.off("chat_member_kicked", invalidateChatInfo);
+			socket.off("chat_member_role_changed", invalidateChatInfo);
+			socket.off("chat_disbanded", invalidateChatInfo);
 		}
 
 	}, [socket, chatId, queryClient]);

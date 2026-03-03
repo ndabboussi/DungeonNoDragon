@@ -19,19 +19,23 @@ export const chatSelect = {
 	},
 
 	members: {
-	select: {
-		chatMemberId: true,
-		joinedAt: true,
-		leftAt: true,
-		user: {
-			select: {
-				appUserId: true,
-				username: true,
-				avatarUrl: true,
-				availability: true
+		where: {
+			deletedAt: null
+		},
+		select: {
+			chatMemberId: true,
+			joinedAt: true,
+			leftAt: true,
+			deletedAt: true,
+			user: {
+				select: {
+					appUserId: true,
+					username: true,
+					avatarUrl: true,
+					availability: true
+				}
 			}
 		}
-	}
 	},
 
 	roles: {
@@ -78,6 +82,7 @@ export async function getChatByIdForUser(chatId: string, userId: string) {
 		if (otherUserId) {
 			const isBlocked = await prisma.blockedList.findFirst({
 				where: {
+					deletedAt: null,
 					OR: [
 						{ blocker: userId, blocked: otherUserId },
 						{ blocker: otherUserId, blocked: userId }
@@ -100,6 +105,7 @@ export async function listUserChats(userId: string) {
 
 	const blocked = await prisma.blockedList.findMany({
 		where: {
+			deletedAt: null,
 			OR: [
 				{ blocker: userId },
 				{ blocked: userId }

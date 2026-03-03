@@ -339,6 +339,7 @@ CREATE TABLE chat_role (
 );
 
 CREATE TYPE message_status AS ENUM ('posted', 'edited', 'deleted', 'moderated');
+CREATE TYPE message_type AS ENUM ('text', 'game_invite', 'game_started');
 
 CREATE TABLE chat_message (
 	message_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -347,6 +348,7 @@ CREATE TABLE chat_message (
 
 	content TEXT NOT NULL,
 	"status" message_status NOT NULL DEFAULT 'posted',
+	"type" message_type NOT NULL DEFAULT 'text',
 
 	posted_at timestamptz DEFAULT CURRENT_TIMESTAMP,
 	edited_at timestamptz,
@@ -360,6 +362,24 @@ CREATE TABLE chat_message (
 		REFERENCES app_user(app_user_id),
 
 	FOREIGN KEY (moderated_by)
+		REFERENCES app_user(app_user_id)
+);
+
+CREATE TABLE chat_read_state (
+	chat_id UUID,
+	user_id UUID,
+	last_read_message_id UUID,
+	updated_at timestamptz DEFAULT now(),
+
+	PRIMARY KEY(chat_id, user_id),
+
+	FOREIGN KEY (chat_id)
+		REFERENCES chat(chat_id),
+
+	FOREIGN KEY (last_read_message_id)
+		REFERENCES chat_message(message_id),
+
+	FOREIGN KEY (user_id)
 		REFERENCES app_user(app_user_id)
 );
 
