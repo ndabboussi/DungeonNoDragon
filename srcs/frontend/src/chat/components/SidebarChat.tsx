@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import ChatList from "../ChatList";
 import ChatView from "../ChatView";
+import GroupChatCreation from "./GroupChatCreation";
+import GroupChatInvitations from "./GroupChatInvitations";
 
 export function SidebarChat() {
+  const [mode, setMode] = useState<
+  "list" | "chat" | "create-group" | "invitations"
+  >("list");
+
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
 
@@ -88,7 +94,7 @@ export function SidebarChat() {
       )}
 
       {/* CONTENT */}
-      {!collapsed && !activeChatId && (
+      {/* {!collapsed && !activeChatId && (
         <ChatList onSelectChat={(id) => setActiveChatId(id)} />
       )}
 
@@ -96,6 +102,43 @@ export function SidebarChat() {
         <ChatView
           chatId={activeChatId}
           onClose={() => setActiveChatId(null)}
+        />
+      )} */}
+
+      {!collapsed && mode === "list" && (
+        <ChatList
+        onSelectChat={(id) => {
+          setActiveChatId(id);
+          setMode("chat");
+        }}
+        onCreateGroup={() => setMode("create-group")}
+        onShowInvitations={() => setMode("invitations")}
+        />
+      )}
+
+      {!collapsed && mode === "chat" && activeChatId && (
+        <ChatView
+        chatId={activeChatId}
+        onClose={() => {
+          setActiveChatId(null);
+          setMode("list");
+        }}
+        />
+      )}
+
+      {!collapsed && mode === "create-group" && (
+        <GroupChatCreation
+        onClose={() => setMode("list")}
+        onCreated={(chatId) => {
+          setActiveChatId(chatId);
+          setMode("chat");
+        }}
+        />
+      )}
+
+      {!collapsed && mode === "invitations" && (
+        <GroupChatInvitations
+        onClose={() => setMode("list")}
         />
       )}
     </div>
