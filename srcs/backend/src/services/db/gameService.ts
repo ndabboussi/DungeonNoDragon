@@ -10,8 +10,8 @@ export async function createSessionService(session: sessionBody): Promise<GameSe
 	return prisma.gameSession.create({
 		data: {
 			sessionGameId: session.sessionGameId,
-			startedAt: session.startedAt,
-			status: 'running',
+			startedAt: new Date(),
+			status: session.status,
 			results: {
 				create: uniquePlayer.map((playerId) => ({
 				player: {

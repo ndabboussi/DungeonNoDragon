@@ -207,6 +207,16 @@ Player	&Server::getPlayer(std::string &uid)
 	return *this->_players[0];
 }
 
+std::string	Server::getServerToken(void) const
+{
+	return (this->_serverToken);
+}
+
+void		Server::setServerToken(std::string token)
+{
+	this->_serverToken = token;
+}
+
 std::weak_ptr<Player> findClosestPlayer(std::vector<std::weak_ptr<Player>> &allPlayer, Mob &mob)
 {
 	float dis = 2147483647.f;
@@ -424,21 +434,29 @@ void	roomLoopUpdate(Room &room, std::vector<std::weak_ptr<Player>> &allPlayer, u
 void	Server::run(void)
 {
 	uWS::App app;
+	bool	flag = false;
 
 	struct TimerData
 	{
 		Server		*server;
 		uWS::App	*app;
+		bool		*flag;
 	};
 	auto loop = uWS::Loop::get();
 	struct us_timer_t *delayTimer = us_create_timer((struct us_loop_t *) loop, 0, sizeof(TimerData));
 	auto *data = (TimerData *) us_timer_ext(delayTimer);
 	data->server = this;
 	data->app = &app;
+	data->flag = &flag;
 	us_timer_set(delayTimer, [](struct us_timer_t *t)
 	{
 		auto *data = (TimerData *) us_timer_ext(t);
 
+		// if (*data->flag == false)
+		// {
+		// 	sendViaCurl(*data->server, "", "", 0);
+		// 	// *data->flag = true;
+		// }
 		for(auto &session : data->server->_sessions)
 		{
 			if (!session.getPlaceLeft() && session.doesAllPlayersConnected() && !session.isReadyToRun())
@@ -447,18 +465,18 @@ void	Server::run(void)
 			{
 				if (session.isEnoughtReadyTime())
 				{
-					// std::string msg = "{\"sessionGameId\":\"" + session.getSessionId() + "\""
-					// 				+ ",\"status\":\"running\""
-					// 				+ ",\"playerIds\":[";
-					// for (auto &player : session.getPlayers())
-					// {
-					// 	msg += "\"" + player.lock()->getUid() + "\",";
-					// }
-					// if (*msg.rbegin() == ',')
-					// 	msg.pop_back();
-					// msg += "]}";
+					std::string msg = "{\"sessionGameId\":\"" + session.getSessionId() + "\""
+									+ ",\"status\":\"running\""
+									+ ",\"playerIds\":[";
+					for (auto &player : session.getPlayers())
+					{
+						msg += "\"" + player.lock()->getUid() + "\",";
+					}
+					if (*msg.rbegin() == ',')
+						msg.pop_back();
+					msg += "]}";
 
-					// sendToBack("http://localhost:3000/game/create/", msg, "POST");
+					sendViaCurl(*data->server, "http://node-c:3000/game/create", "POST", msg, 0);
 					session.launch();
 				}
 				continue;
