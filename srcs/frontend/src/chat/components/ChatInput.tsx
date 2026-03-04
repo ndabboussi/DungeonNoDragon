@@ -31,6 +31,12 @@ export function ChatInput({ onSend, chatId }: ChatInputProps) {
 					setContent(e.target.value);
 					emitTypingEffect();
 				}}
+				onKeyDown={(e) => {
+					if (e.key === "Enter") {
+						e.preventDefault();
+						send();
+					}
+				}}
 			/>
 			</div>
 

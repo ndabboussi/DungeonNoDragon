@@ -55,6 +55,10 @@ export async function createGroupChatController(
 	});
 
 	for (const m of memberIds) {
+		const userSocket = await req.server.getSocketByUserId(m);
+		if (userSocket) {
+			await userSocket.join(chat.chatId);
+		}
 		SocketService.send(`user:${m}`, "notification", {
 			type: "added_to_group",
 			creatorId: creatorId,

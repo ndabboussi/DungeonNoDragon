@@ -111,9 +111,9 @@ export async function updateGroupInvitationController(
 			receiverName: string;
 		};
 
-		const socket = await req.server.getSocketByUserId(member.userId);
-		if (socket)
-			socket.join(member.chatId);
+		const userSocket = await req.server.getSocketByUserId(member.userId);
+		if (userSocket)
+			userSocket.join(member.chatId);
 
 		SocketService.send(member.chatId, "chat_member_joined", { chatId: member.chatId, member });
 
