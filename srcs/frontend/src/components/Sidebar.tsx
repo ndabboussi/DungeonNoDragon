@@ -8,8 +8,6 @@ const Sidebar = () => {
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const [collapsed, setCollapsed] = useState(false); // new state
 
-	if (!user) return null;
-
 	// Lock body scroll on mobile overlay
 	useEffect(() => {
 		if (mobileOpen) {
@@ -17,7 +15,24 @@ const Sidebar = () => {
 		} else {
 			document.body.style.overflow = "auto";
 		}
+		// Reset on unmount
+		return () => {
+			document.body.style.overflow = "auto";
+		};
 	}, [mobileOpen]);
+
+	useEffect(() => {
+		return () => {
+			// Safety cleanup if component unmounts while resizing
+			document.body.style.userSelect = "auto";
+			document.body.style.cursor = "auto";
+		};
+	}, []);
+
+	// Important to put after the cleaning hooks
+	if (!user) {
+		return null;
+	}
 
 	// RESIZING
 	const [width, setWidth] = useState(350);
