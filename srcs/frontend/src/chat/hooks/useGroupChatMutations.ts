@@ -6,7 +6,7 @@ import toast from '../../Notifications.tsx';
 
 export function useGroupChatMutations(chatId?: string) {
 
-	const { joinChat, leaveChat } = useChat();
+	const { joinChat } = useChat();
 	const { sendMessageMutation } = useMessagesMutations(chatId);
 
 	const queryClient = useQueryClient();
@@ -19,7 +19,8 @@ export function useGroupChatMutations(chatId?: string) {
 			// Refresh chat info so the kicked member disappears
 			joinChat(chatId!);
 			toast({ title: "Member kicked", type: "is-success" });
-				queryClient.invalidateQueries({
+			queryClient.invalidateQueries({ queryKey: ["chat-list"] });//nina
+			queryClient.invalidateQueries({
 				queryKey: ["chat-info", chatId]
 			});
 		},
@@ -35,8 +36,7 @@ export function useGroupChatMutations(chatId?: string) {
 		onSuccess: () => {
 			// Refresh chat info so the kicked member disappears
 			toast({ title: "You succesfully quitted chat", type: "is-success" });
-			leaveChat();
-			window.location.href = "/chat/list";
+			queryClient.invalidateQueries({ queryKey: ["chat-list"] });//nina
 		},
 		onError: (error: Error) => {
 			toast ({ title: "Error", message: error.message ?? "Unknown error", type: "is-danger" });
@@ -50,8 +50,7 @@ export function useGroupChatMutations(chatId?: string) {
 		onSuccess: () => {
 			// Refresh chat info so the kicked member disappears
 			toast({ title: "Chat succesfully disbanded", type: "is-success" });
-			leaveChat();
-			window.location.href = "/chat/list";
+			queryClient.invalidateQueries({ queryKey: ["chat-list"] });//nina
 		},
 		onError: (error: Error) => {
 			toast ({ title: "Error", message: error.message ?? "Unknown error", type: "is-danger" });

@@ -10,6 +10,7 @@ import { ChatMembers } from "./components/ChatMembers";
 import { ChatRoom } from "./components/ChatRoom";
 import { InviteToGroupChat } from "./components/InviteToGroupChat";
 import { useChatInfo } from "./hooks/useChatInfo";
+// import { useSocket } from "../socket/SocketContext";
 
 // const ChatView = () => {
 const ChatView = ({ chatId: propChatId, onClose }: {
@@ -25,6 +26,8 @@ const ChatView = ({ chatId: propChatId, onClose }: {
 	const { isLoading, isError } = useChatMessages(chatId);
 	const { quitChatMutation, disbandMutation, gameInviteMutation } = useGroupChatMutations(chatId);
 
+	// const userSocket = useSocket();
+
 	useChatSocket(chatId);
 
 	//join new chat add each chatId change
@@ -33,6 +36,21 @@ const ChatView = ({ chatId: propChatId, onClose }: {
 			joinChat(chatId);
 	}, [chatId]);
 
+	// useEffect(() => {
+
+	// 	if (!userSocket)
+	// 		return;
+
+	// 	const handleQuit = ({ chatId: quitChatId }: {chatId: string}) => {
+	// 		if (quitChatId === chatId) {
+	// 			onClose?.();
+	// 		}
+	// 	}
+
+	// 	userSocket.on("chat_member_quit", handleQuit);
+
+	// 	return () => userSocket.off("chat_member_quit", handleQuit);
+	// }), [userSocket, chatId, onClose];
 
 	if (isLoading)
 		return <div>Loading chat...</div>;

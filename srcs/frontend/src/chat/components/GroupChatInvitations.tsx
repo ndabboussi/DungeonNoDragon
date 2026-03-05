@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../serverApi";
 import { Box } from "@allxsmith/bestax-bulma";
 import { useAuth } from "../../auth/AuthContext";
@@ -13,6 +13,7 @@ export default function GroupChatInvitations({
 }) {
 
 	const { user } = useAuth();
+	const queryClient = useQueryClient();
 
 	//get all invitations
 	const { data: invitations } = useQuery({
@@ -30,7 +31,8 @@ export default function GroupChatInvitations({
 		},
 		onSuccess: () => {
 			toast({ title: "Chat invitation succesfully updated", type: "is-success" });
-			window.location.reload();//(nina) not goood causes refresh
+			//window.location.reload();//(nina) not goood causes refresh
+			queryClient.invalidateQueries({ queryKey: ["chat-list"] });
 		},
 		onError: (error: Error) => {
 			toast ({ title: "Error", message: error.message ?? "Unknown error", type: "is-danger" });
