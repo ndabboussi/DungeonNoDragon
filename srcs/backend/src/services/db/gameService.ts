@@ -79,6 +79,7 @@ export async function sessionPlayerResultService(playerResult: sessionPlayerResu
 			completionTime: true,
 			enemiesKilled: true,
 			gainedXp: true,
+			updatedAt: true,
 			isWinner: true
 		}
 	});
@@ -98,6 +99,7 @@ export async function sessionPlayerResultService(playerResult: sessionPlayerResu
 			completionTime: playerResult.completionTime,
 			enemiesKilled: playerResult.ennemiesKilled,
 			gainedXp: playerResult.gainedXp,
+			updatedAt: new Date(),
 			isWinner: playerResult.isWinner
 		}
 	});
