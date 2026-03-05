@@ -20,7 +20,7 @@ export type Region = RegisterBodyType["region"];
 
 // Region
 type RegionType = RegisterBodyType['region']
-const regions: RegionType[] = ["EU", "NA", "SAM", "MENA", "OCE", "APAC", "SSA", "Deleted"];
+const regions: RegionType[] = ["EU", "NA", "SAM", "MENA", "OCE", "APAC", "SSA"];
 
 // Regex
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;

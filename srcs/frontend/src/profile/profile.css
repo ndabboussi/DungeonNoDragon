@@ -126,6 +126,7 @@
   color: var(--color-primary) !important;
   border-color: var(--color-primary) !important;
   border-radius: var(--radius-md);
+  margin: clamp(1rem, 2.5vw, 2rem);
 }
 
 .button-group {
