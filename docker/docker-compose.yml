@@ -103,7 +103,7 @@ services:
     image: game-server
     container_name: game-server-c
     init: true
-    stop_signal: SIGQUIT
+    stop_signal: SIGKILL
     restart: on-failure
     env_file:
       - .env
