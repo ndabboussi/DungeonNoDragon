@@ -11,8 +11,10 @@ int	init_sdl(Engine &gSdl)
 	}
 
 	//need a pointer on the window we'll create
-	gSdl.window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-	if (!gSdl.window) {
+	gSdl.window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+
+	if (!gSdl.window)
+	{
 		std::cerr << "Window error: " << SDL_GetError() << std::endl;
 		SDL_Quit();
 		return (0);
@@ -26,6 +28,8 @@ int	init_sdl(Engine &gSdl)
 	gSdl.font = TTF_OpenFont("assets/fonts/Pixeloid_Font/PixeloidMono.ttf", 32);
 	if (!gSdl.font)
 	{
+		SDL_DestroyWindow(gSdl.window);
+		SDL_Quit();
 		SDL_Log("TTF_OpenFont error: %s", TTF_GetError());
 		return false;
 	}
@@ -39,10 +43,8 @@ int	init_sdl(Engine &gSdl)
 		return (0);
 	}
 
-	SDL_RendererInfo    info;
-
+	SDL_RendererInfo info;
     SDL_GetRendererInfo(gSdl.renderer, &info);
-
 	if (info.max_texture_width > 16384)
 	{
 		gSdl.maxTexWidth = info.max_texture_width / 2;

@@ -3,19 +3,19 @@ CXXFLAGS	= -Wall -Werror -Wextra -std=c++20
 LDFLAGS		= $(shell sdl2-config --libs)
 
 EMSCRIPTEN		= emcc
-EM_LIBS			= -s USE_SDL=2 --use-port=sdl2_ttf
+EM_LIBS			= -s USE_SDL=2 -s USE_SDL_TTF=2 
 EM_COMMON_FLAGS	= -Wall -Werror -Wextra -std=c++20 -I$(HEADERS) -O3 $(EM_LIBS)
-EM_LDFLAGS		= $(EM_LIBS) \
-				-lembind \
-				-s WASM=1 \
-				-s MODULARIZE=1 \
-				-s ALLOW_MEMORY_GROWTH=1 \
-				-s EXPORTED_FUNCTIONS='["_main"]' \
-				-s EXPORTED_RUNTIME_METHODS='["callMain"]' \
-				-s EXIT_RUNTIME=1 \
-				-s EXPORT_NAME="createModule" \
-				-s EXPORT_ES6=1 \
-				-s ENVIRONMENT='web'
+EM_LDFLAGS = \
+			-lembind \
+			-s WASM=1 \
+			-s MODULARIZE=1 \
+			-s ALLOW_MEMORY_GROWTH=1 \
+			-s EXPORTED_FUNCTIONS='["_main"]' \
+			-s EXPORTED_RUNTIME_METHODS='["callMain"]' \
+			-s EXIT_RUNTIME=1 \
+			-s EXPORT_NAME="createModule" \
+			-s EXPORT_ES6=1 \
+			-s ENVIRONMENT='web'
 
 
 
