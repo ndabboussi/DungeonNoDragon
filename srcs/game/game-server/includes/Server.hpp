@@ -10,6 +10,9 @@ class Server
 		std::vector<Session>					_sessions;
 		std::list<Party>						_matchMakingQueue;
 		std::vector<std::shared_ptr<Player>>	_players;
+		std::string								_serverToken;
+		std::string								_serverId;
+		std::string								_serverSecret;
 
 	private:
 		void							parseJson(std::map<std::string, std::string> &res, std::string msg);
@@ -25,8 +28,15 @@ class Server
 
 
 	public:
-		Server(void);
+		Server(std::string serverId, std::string serverSecret);
 		~Server();
+
+		std::string getServerToken(void) const;
+		void		setServerToken(std::string token);
+
+		std::string	getServerId(void) const;
+
+		std::string	getServerSecret(void) const;
 	
 	public:
 		void	run();

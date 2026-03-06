@@ -10,8 +10,8 @@ export async function createSessionService(session: sessionBody): Promise<GameSe
 	return prisma.gameSession.create({
 		data: {
 			sessionGameId: session.sessionGameId,
-			startedAt: session.startedAt,
-			status: 'running',
+			startedAt: new Date(),
+			status: session.status,
 			results: {
 				create: uniquePlayer.map((playerId) => ({
 				player: {
@@ -44,6 +44,7 @@ export async function sessionEndService(session: sessionEndBody): Promise<GameSe
 		where: { sessionGameId },
 		data: {
 			endedAt: new Date(),
+			updatedAt: new Date(),
 			status: session.status
 		}
 	});
@@ -79,6 +80,7 @@ export async function sessionPlayerResultService(playerResult: sessionPlayerResu
 			completionTime: true,
 			enemiesKilled: true,
 			gainedXp: true,
+			updatedAt: true,
 			isWinner: true
 		}
 	});
@@ -98,6 +100,7 @@ export async function sessionPlayerResultService(playerResult: sessionPlayerResu
 			completionTime: playerResult.completionTime,
 			enemiesKilled: playerResult.ennemiesKilled,
 			gainedXp: playerResult.gainedXp,
+			updatedAt: new Date(),
 			isWinner: playerResult.isWinner
 		}
 	});

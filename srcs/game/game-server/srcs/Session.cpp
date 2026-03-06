@@ -342,7 +342,7 @@ void	Session::sendEndResults(uWS::App &app, std::shared_ptr<Player> &player, boo
 		<< "Kills: " << player->getKills() << "Place :" << player->getFinalRanking() << std::endl;
 }
 
-void	Session::checkFinishedPlayers(uWS::App &app)
+void	Session::checkFinishedPlayers(uWS::App &app, Server &server)
 {
 	int count = 0;
 
@@ -354,15 +354,7 @@ void	Session::checkFinishedPlayers(uWS::App &app)
 		if (player->getFinished())
 		{
 			this->sendEndResults(app, player, 0);
-
-			// std::string msg = "{\"sessionGameId\":\"" + this->_sessionId + "\""
-			// 				+ ",\"playerId\":\"" + player->getUid() + "\""
-			// 				+ ",\"completionTime\":" + std::to_string(this->getActualTime())
-			// 				+ ",\"ennemiesKilled\":" + std::to_string(player->getKills())
-			// 				+ ",\"isWinner\":" + std::to_string(player->HasWin())
-			// 				+ ",\"gainedXp\":" + std::to_string(10)
-			// 				+ "}";
-			// sendToBack("http://localhost:3000/game/result/" + player->getUid(), msg, "PATCH");
+			sendPlayerResultCurl(server, *this, *player.get());
 		}
 		if (player->checkInvinsibleFrame() && player->getTimeInvincible() > 1.0f)
 			player->endInvinsibleFrame();

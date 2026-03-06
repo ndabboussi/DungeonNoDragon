@@ -6,13 +6,12 @@ import { createSessionService, sessionEndService, sessionPlayerResultService } f
 export async function sessionCreationController(
 	request: FastifyRequest<{ Body: sessionBody }>,
 	reply: FastifyReply) {
-		const { sessionGameId, startedAt, status, playerIds } = request.body;
+		const { sessionGameId, status, playerIds } = request.body;
 
 		//potentially check for sessionId duplicate
 
 		const session: sessionBody = {
 			sessionGameId: sessionGameId,
-			startedAt: startedAt,
 			status: status,
 			playerIds: playerIds
 		};

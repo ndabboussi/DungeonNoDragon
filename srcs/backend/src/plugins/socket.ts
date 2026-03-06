@@ -60,6 +60,8 @@ export default fp(async (fastify) => {
 
 			console.log(`Client \`${clientId}\` is connected`);
 
+			await UserService.setAvailabality(userPayload.id, true);
+
 			//Fetch all chats user is a member of
 			const chats = await prisma.chatMember.findMany({
 				where: {
@@ -78,26 +80,6 @@ export default fp(async (fastify) => {
 				await socket.join(c.chatId);
 			}
 			console.log(`\`${clientId}\` auto-joined chats:`, chats.length);
-
-			// socket.on("chat_join", async ({ chatId }) => {
-			// 	const isMember = await prisma.chatMember.findFirst({
-			// 		where: {
-			// 			chatId,
-			// 			userId: userPayload.id
-			// 		}
-			// 	});
-
-			// 	console.log("JOIN CHAT ROOM", chatId, "user:", userPayload.id);
-
-			// 	if (!isMember)
-			// 		return;
-
-			// 	await SocketService.addInRoom(chatId, socket);
-			// });
-
-			// socket.on("chat_leave", async ({ chatId }) => {
-			// 	socket.leave(chatId);
-			// });
 
 			if (disconnectionTimers.has(userPayload.id)) {
 				clearTimeout(disconnectionTimers.get(userPayload.id));

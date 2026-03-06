@@ -3,16 +3,22 @@ import '../App.css'
 import type { GetResponse } from '../types/GetType'
 import api from '../serverApi';
 import { Box } from '@allxsmith/bestax-bulma';
-import { Link, useNavigate } from 'react-router';
-// import { useAuth } from '../auth/AuthContext';
+import { useNavigate } from 'react-router';
+import { useChatListSocket } from './hooks/useChatListSocket';
 
 type ChatListResponseType = GetResponse<"/chat/list", "get">;
 
-// const { user } = useAuth();
-
-const ChatList = ({ onSelectChat }: { onSelectChat?: (id: string) => void }) => {
+const ChatList = ({
+	onSelectChat, 
+	onCreateGroup,
+	onShowInvitations
+}: {
+	onSelectChat?: (id: string) => void;
+	onCreateGroup?: () => void; onShowInvitations?: () => void;
+}) => {
 	
 	const navigate = useNavigate();
+	useChatListSocket();
 
 	const { data, isLoading, isError, error } = useQuery({
 		queryKey: ['chat-list'],
@@ -28,22 +34,22 @@ const ChatList = ({ onSelectChat }: { onSelectChat?: (id: string) => void }) => 
 		return <div>Error: {error?.message}</div>;
 
 	return (
-		<Box m="4" p="6" bgColor="white">
+		<div className='sidebar-content'>
 			<h1 className="title">Your chats</h1>
 
-			{/* CREATE GROUP CHAT BUTTON */}
-			<Link
-				to="/chat/group/new"
+			<button
 				className="button is-primary is-small mb-4"
-			>
-			Create Group Chat
-			</Link>
+				onClick={onCreateGroup}
+				>
+				Create Group Chat
+			</button>
 
-			<Link
-				to="/group/invitations" className="button is-small is-warning"
-			>
-			Group Chat Invitations
-			</Link>
+			<button
+				className="button is-small is-warning mb-4"
+				onClick={onShowInvitations}
+				>
+				Group Chat Invitations
+			</button>
 
 
 			{/* LIST CHATS */}
@@ -58,14 +64,7 @@ const ChatList = ({ onSelectChat }: { onSelectChat?: (id: string) => void }) => 
 				<p>Type: {chat.chatType}</p>
 				<p>Members: {chat.members.length}</p>
 
-				{/* <Link
-					to={`/chat/${chat.chatId}/info`}
-					className="button is-dark is-small mt-2"
-				>
-				Open chat
-				</Link> */}
-
-				<button
+			<button
 				className="button is-dark is-small mt-2"
 				onClick={() => {
 					if (onSelectChat)
@@ -73,23 +72,13 @@ const ChatList = ({ onSelectChat }: { onSelectChat?: (id: string) => void }) => 
 					else
 						navigate(`/chat/${chat.chatId}/info`);
 				}}
-				>
+			>
 				Open chat
-				</button>
-
-{/* 
-				{chat.chatType === "group" && user?.role !== "owner" && (
-					<button
-						className="button is-warning is-light is-small ml-2"
-						// onClick={() => quitMutation.mutate(chat.chatId)}
-					>
-						Quit
-					</button>
-				)} */}
+			</button>
 
 			</Box>
 			))}
-		</Box>
+		</div>
 		);
 };
 
