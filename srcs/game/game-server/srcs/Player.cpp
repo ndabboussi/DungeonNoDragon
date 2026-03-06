@@ -8,7 +8,7 @@ Player::Player(std::string uid, int partySize, std::string partyId, std::string 
 					_isAttacking(false), _atkFrame(0), _timeAttack(std::chrono::steady_clock::now()), _kills(0)
 {
 	_wallHitBox =
-	{_x - 0.3f, _y + 0.1f, 0.6f, 0.2f};
+	{_x - 0.1f, _y + 0.1f, 0.2f, 0.2f};
 	return ;
 }
 
@@ -358,7 +358,7 @@ void	Player::setDef(int def)
 void	Player::setWallHitBox(void)
 {
 	_wallHitBox =
-	{_x - 0.3f, _y + 0.1f, 0.6f, 0.2f};
+	{_x - 0.1f, _y + 0.1f, 0.2f, 0.2f};
 	return ;
 }
 
@@ -501,25 +501,29 @@ void	Player::move(std::map<std::string, std::string> &req)
 	if (req["w_key"] == "true")
 	{
 		y -= 6.0f * deltaTime;
-		if (!(y >= 0 && !checkWallHitBox(plan, this->_wallHitBox, 0, *this, deltaTime)))
+		FRect testHitbox = {x - 0.1f, y + 0.1f, 0.2f, 0.2f};
+		if (!(y >= 0 && !checkWallHitBox(plan, testHitbox, 0, *this, deltaTime)))
 			y += 6.0f * deltaTime;
 	}
 	if (req["a_key"] == "true")
 	{
 		x -= 6.0f * deltaTime;
-		if (!(x >= 0 && !checkWallHitBox(plan, this->_wallHitBox, 1, *this, deltaTime)))
+		FRect testHitbox = {x - 0.1f, y + 0.1f, 0.2f, 0.2f};
+		if (!(x >= 0 && !checkWallHitBox(plan, testHitbox, 1, *this, deltaTime)))
 			x += 6.0f * deltaTime;
 	}
 	if (req["s_key"] == "true")
 	{
 		y += 6.0f * deltaTime;
-		if (!(y < room.getHeight() && !checkWallHitBox(plan, this->_wallHitBox, 2, *this, deltaTime)))
+		FRect testHitbox = {x - 0.1f, y + 0.1f, 0.2f, 0.2f};
+		if (!(y < room.getHeight() && !checkWallHitBox(plan, testHitbox, 2, *this, deltaTime)))
 			y -= 6.0f * deltaTime;
 	}
 	if (req["d_key"] == "true")
 	{
 		x += 6.0f * deltaTime;
-		if (!(x < room.getWidth() && !checkWallHitBox(plan, this->_wallHitBox, 3, *this, deltaTime)))
+		FRect testHitbox = {x - 0.1f, y + 0.1f, 0.2f, 0.2f};
+		if (!(x < room.getWidth() && !checkWallHitBox(plan, testHitbox, 3, *this, deltaTime)))
 			x -= 6.0f * deltaTime;
 	}
 	this->setPos(x, y);

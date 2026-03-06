@@ -1,5 +1,57 @@
 #include "Game.hpp"
 
+static int checkTileWall(int x, int y, Player &player, char c, char s)
+{
+	auto plan = player.getRoom().getRoomPlan();
+	int h = plan.size();
+	if (y < 0 || y >= h)
+		return (1);
+	int w = plan[y].size();
+	if (x < 0 || x >= w)
+		return (1);
+	if (plan[y][x] == c)
+		return (1);
+	if (s && plan[y][x] == s)
+		return (1);
+	return (0);
+}
+
+static uint8_t	checkWall(int x, int y, Player &player, char c, char s)
+{
+	uint8_t res = 0;
+	
+	int minY = y - 1, maxY = y + 1;
+	int minX = x - 1, maxX = x + 1;
+
+	for (int i = minY; i <= maxY; i++)
+	{
+		for (int j = minX; j <= maxX; j++)
+		{
+			if (checkTileWall(j, i, player, c, s))
+			{
+				if (i < y && j == x) //North
+					res |= 1 << 1;
+				else if (i == y && j < x) //West
+					res |= 1 << 3;
+				else if (i == y && j > x) //East
+					res |= 1 << 4;
+				else if (i > y && j == x) //South
+					res |= 1 << 6;
+
+				else if (i < y && j < x && i == minY && j == minX) //North-West
+					res |= 1 << 0;
+				else if (i < y && j > x && i == minY && j == maxX) //North-East
+					res |= 1 << 2;
+				else if (i > y && j < x && i == maxY && j == minX) //South-West
+					res |= 1 << 5;
+				else if (i > y  && j > x && i == maxY && j == maxX) //South-East
+					res |= 1 << 7;
+			}
+		}
+	}
+	return res;
+}
+
 int	check_tile(int x, int y, Player &player)
 {
 	int h = player.getRoom().getRoomPlan().size();
@@ -82,58 +134,6 @@ void	manage_wall(int x, int y, Player &player)
 		manage_border(x, y, player);
 		return ;
 	}
-}
-
-static int checkTileWall(int x, int y, Player &player, char c, char s)
-{
-	auto plan = player.getRoom().getRoomPlan();
-	int h = plan.size();
-	if (y < 0 || y >= h)
-		return (1);
-	int w = plan[y].size();
-	if (x < 0 || x >= w)
-		return (1);
-	if (plan[y][x] == c)
-		return (1);
-	if (s && plan[y][x] == s)
-		return (1);
-	return (0);
-}
-
-static uint8_t	checkWall(int x, int y, Player &player, char c, char s)
-{
-	uint8_t res = 0;
-	
-	int minY = y - 1, maxY = y + 1;
-	int minX = x - 1, maxX = x + 1;
-
-	for (int i = minY; i <= maxY; i++)
-	{
-		for (int j = minX; j <= maxX; j++)
-		{
-			if (checkTileWall(j, i, player, c, s))
-			{
-				if (i < y && j == x) //North
-					res |= 1 << 1;
-				else if (i == y && j < x) //West
-					res |= 1 << 3;
-				else if (i == y && j > x) //East
-					res |= 1 << 4;
-				else if (i > y && j == x) //South
-					res |= 1 << 6;
-
-				else if (i < y && j < x && i == minY && j == minX) //North-West
-					res |= 1 << 0;
-				else if (i < y && j > x && i == minY && j == maxX) //North-East
-					res |= 1 << 2;
-				else if (i > y && j < x && i == maxY && j == minX) //South-West
-					res |= 1 << 5;
-				else if (i > y  && j > x && i == maxY && j == maxX) //South-East
-					res |= 1 << 7;
-			}
-		}
-	}
-	return res;
 }
 
 void	manage_stairs(int x, int y, Player &player)
@@ -279,7 +279,16 @@ void	manage_water(int x, int y, Player &player)
 		tile = 74;
 	//égout si mur au-dessus
 	if (y - 1 >= 0 && plan[y - 1][x] == '1')
-		tile = 63;
+	{
+		if (isBitHere(mask, 3) && isBitHere(mask, 4))
+			tile = 1;
+		else if (!isBitHere(mask, 3) && isBitHere(mask, 4))
+			tile = 0;
+		else if (isBitHere(mask, 3) && !isBitHere(mask, 4))
+			tile = 2;
+		else
+			tile = 63;
+	}
 
 	Assets::rendMapFlip(x * tile_s, y * tile_s, tile, 2, 2, flip);
 }

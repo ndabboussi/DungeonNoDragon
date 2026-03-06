@@ -9,7 +9,7 @@ Player::Player(std::string uid, std::string name, SDL_Color color) : _uid(uid), 
 		SDL_Log("RenderText error: %s", TTF_GetError());
 	this->_nameTexture = SDL_CreateTextureFromSurface(gSdl.renderer, surf);
 	SDL_FreeSurface(surf);
-	_wallHitBox = {_x - 0.3f, _y + 0.1f, 0.6f, 0.2f};
+	_wallHitBox = {_x - 0.1f, _y + 0.1f, 0.2f, 0.2f};
 	return ;
 }
 
@@ -462,7 +462,7 @@ static bool	checkWallHitBox(std::vector<std::string> const &plan, SDL_FRect cons
 
 void	Player::setWallHitBox(void)
 {
-	_wallHitBox = {_x - 0.3f, _y + 0.1f, 0.6f, 0.2f};
+	_wallHitBox = {_x - 0.1f, _y + 0.1f, 0.2f, 0.2f};
 	return ;
 }
 
@@ -478,25 +478,29 @@ void	Player::movePrediction(double deltaTime)
 	if (gSdl.key.w_key)
 	{
 		y -= 6.0f * deltaTime;
-		if (!(y >= 0 && !checkWallHitBox(plan, this->_wallHitBox, 0, *this, deltaTime)))
+		SDL_FRect testHitbox = {x - 0.1f, y + 0.1f, 0.2f, 0.2f};
+		if (!(y >= 0 && !checkWallHitBox(plan, testHitbox, 0, *this, deltaTime)))
 			y += 6.0f * deltaTime;
 	}
 	if (gSdl.key.a_key)
 	{
 		x -= 6.0f * deltaTime;
-		if (!(x >= 0 && !checkWallHitBox(plan, this->_wallHitBox, 1, *this, deltaTime)))
+		SDL_FRect testHitbox = {x - 0.1f, y + 0.1f, 0.2f, 0.2f};
+		if (!(x >= 0 && !checkWallHitBox(plan, testHitbox, 1, *this, deltaTime)))
 			x += 6.0f * deltaTime;
 	}
 	if (gSdl.key.s_key)
 	{
 		y += 6.0f * deltaTime;
-		if (!(y < room.getHeight() && !checkWallHitBox(plan, this->_wallHitBox, 2, *this, deltaTime)))
+		SDL_FRect testHitbox = {x - 0.1f, y + 0.1f, 0.2f, 0.2f};
+		if (!(y < room.getHeight() && !checkWallHitBox(plan, testHitbox, 2, *this, deltaTime)))
 			y -= 6.0f * deltaTime;
 	}
 	if (gSdl.key.d_key)
 	{
 		x += 6.0f * deltaTime;
-		if (!(x < room.getWidth() && !checkWallHitBox(plan, this->_wallHitBox, 3, *this, deltaTime)))
+		SDL_FRect testHitbox = {x - 0.1f, y + 0.1f, 0.2f, 0.2f};
+		if (!(x < room.getWidth() && !checkWallHitBox(plan, testHitbox, 3, *this, deltaTime)))
 			x -= 6.0f * deltaTime;
 	}
 	this->setPos(x, y);
