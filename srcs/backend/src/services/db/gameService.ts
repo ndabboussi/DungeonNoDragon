@@ -44,6 +44,7 @@ export async function sessionEndService(session: sessionEndBody): Promise<GameSe
 		where: { sessionGameId },
 		data: {
 			endedAt: new Date(),
+			updatedAt: new Date(),
 			status: session.status
 		}
 	});

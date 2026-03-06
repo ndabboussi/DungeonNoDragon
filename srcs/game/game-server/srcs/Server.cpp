@@ -466,6 +466,7 @@ void	Server::run(void)
 				{
 					if (session.isPlayerInSession((*it)->getUid()))
 					{
+						sendPlayerResultCurl(*data->server, session, *(*it));
 						session.removePlayer((*it)->getUid());
 						break;
 					}
@@ -479,7 +480,11 @@ void	Server::run(void)
 		for (auto it = data->server->_sessions.begin(); it != data->server->_sessions.end();) // loop to end sessions which has no (active) players in it
 		{
 			if (it->hasEnded())
+			{
+				std::string msg = R"({"sessionGameId":")" + it->getSessionId() + R"(", "status":"finished"})";
+				sendViaCurl(*data->server, "http://node-c:3000/game/end", "PATCH", msg, 0);
 				it = data->server->endSession(it->getSessionId(), *data->app);
+			}
 			if (it != data->server->_sessions.end())
 				it++;
 		}

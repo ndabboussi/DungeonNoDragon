@@ -354,22 +354,7 @@ void	Session::checkFinishedPlayers(uWS::App &app, Server &server)
 		if (player->getFinished())
 		{
 			this->sendEndResults(app, player, 0);
-
-			int	xp = player->getKills();
-
-			if (player->HasWin())
-				xp += 10;
-			std::string msg = "{\"sessionGameId\":\"" + this->_sessionId + "\""
-							+ ",\"playerId\":\"" + player->getUid() + "\""
-							+ ",\"completionTime\":" + std::to_string(static_cast<int>(this->getActualTime()))
-							+ ",\"ennemiesKilled\":" + std::to_string(player->getKills())
-							+ ",\"isWinner\":" + std::to_string(player->HasWin())
-							+ ",\"gainedXp\":" + std::to_string(xp)
-							+ "}";
-			
-			std::string url = "http://node-c:3000/game/result/" + player->getUid();
-
-			sendViaCurl(server, url, "PATCH", msg, 0);
+			sendPlayerResultCurl(server, *this, *player.get());
 		}
 		if (player->checkInvinsibleFrame() && player->getTimeInvincible() > 1.0f)
 			player->endInvinsibleFrame();

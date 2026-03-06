@@ -69,5 +69,6 @@ void	sendPlayerState(Player &player, Session &session, std::string uid_leave);
 void	sendLeaveUpdate(Player &player, uWS::App &app, std::string &topic);
 
 void	sendViaCurl(Server &server, std::string url, std::string method, std::string body, int flag);
+void	sendPlayerResultCurl(Server &server, Session const &session, Player &player);
 
 # endif

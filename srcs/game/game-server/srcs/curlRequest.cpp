@@ -198,3 +198,29 @@ void	sendViaCurl(Server &server, std::string url, std::string method, std::strin
 
 	return ;
 }
+
+void	sendPlayerResultCurl(Server &server, Session const &session, Player &player)
+{
+	int xp = player.getKills();
+	int completionTime = static_cast<int>(session.getActualTime());
+	if (player.HasWin())
+		xp += 10;
+
+	if (!player.getFinished())
+	{
+		completionTime = 1200;
+		xp = 0;
+	}
+
+	std::string msg = "{\"sessionGameId\":\"" + session.getSessionId() + "\""
+				+ ",\"playerId\":\"" + player.getUid() + "\""
+				+ ",\"completionTime\":" + std::to_string(completionTime)
+				+ ",\"ennemiesKilled\":" + std::to_string(player.getKills())
+				+ ",\"isWinner\":" + std::to_string(player.HasWin())
+				+ ",\"gainedXp\":" + std::to_string(xp)
+				+ "}";
+
+	std::string url = "http://node-c:3000/game/result/" + player.getUid();
+
+	sendViaCurl(server, url, "PATCH", msg, 0);
+}
