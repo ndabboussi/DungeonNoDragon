@@ -9,6 +9,8 @@ static int checkTileWall(int x, int y, Player &player, char c, char s)
 	int w = plan[y].size();
 	if (x < 0 || x >= w)
 		return (1);
+	if (plan[y][x] == ' ')
+		return (1);
 	if (plan[y][x] == c)
 		return (1);
 	if (s && plan[y][x] == s)
@@ -52,88 +54,79 @@ static uint8_t	checkWall(int x, int y, Player &player, char c, char s)
 	return res;
 }
 
-int	check_tile(int x, int y, Player &player)
+int		isBitHere(uint8_t mask, int bit)
 {
-	int h = player.getRoom().getRoomPlan().size();
-	if (y < 0 || y >= h)
-		return (0);
-	int w = player.getRoom().getRoomPlan()[y].size();
-	if (x < 0 || x >= w)
-		return (0);
-	if (player.getRoom().getRoomPlan()[y][x] == '0' || player.getRoom().getRoomPlan()[y][x] == '3')
-		return (1);
-	return (0);
-}
-
-int	check_valid_tile(int x, int y, Player &player)
-{
-	int h = player.getRoom().getRoomPlan().size();
-	if (y < 0 || y >= h)
-		return (0);
-	int w = player.getRoom().getRoomPlan()[y].size();
-	if (x < 0 || x >= w)
-		return (0);
-	if (player.getRoom().getRoomPlan()[y][x] == ' ')
-		return (0);
-	return (1);
-}
-
-//check if the actual tile is at the border of the map
-int	check_border(int x, int y, Player &player)
-{
-
-	if (!check_valid_tile(x - 1, y - 1, player) || !check_valid_tile(x, y - 1, player)
-		|| !check_valid_tile(x + 1, y - 1, player) || !check_valid_tile(x - 1, y, player)
-		|| !check_valid_tile(x + 1, y, player) || !check_valid_tile(x - 1, y + 1, player)
-		|| !check_valid_tile(x, y + 1, player) || !check_valid_tile(x + 1, y + 1, player))
-		return (1);
-	return (0);
+	return (mask & (1 << bit));
 }
 
 void	manage_border(int x, int y, Player &player)
 {
-	int	tile_s = gSdl.getMapTileSize() * 2;
-	// check for top left wall corner
-	if (check_tile(x + 1, y + 1, player) && !check_tile(x, y + 1, player) && !check_tile(x + 1, y, player))
-		Assets::rendMap(x * tile_s, y * tile_s, Assets::WALL_UP_LEFT_CORNER, 2, 0);
+	auto plan = player.getRoomRef().getRoomPlan();
+	int tile_s = gSdl.getMapTileSize() * 2;
+	uint8_t mask = checkWall(x, y, player, '1', 'E');
+	int tile = Assets::WALL;
+	int flip = 0;
 
-	// check for top right wall corner
-	else if (check_tile(x - 1, y + 1, player) && !check_tile(x, y + 1, player) && !check_tile(x - 1, y, player))
-		Assets::rendMap(x * tile_s, y * tile_s, Assets::WALL_UP_RIGHT_CORNER, 2, 0);
+	// extern corners
+	if (!isBitHere(mask, 1) && !isBitHere(mask, 3) && isBitHere(mask, 4) && isBitHere(mask, 6))
+		tile = 4;
+	else if (!isBitHere(mask, 1) && isBitHere(mask, 3) && !isBitHere(mask, 4) && isBitHere(mask, 6))
+		tile = 6;
+	else if (isBitHere(mask, 1) && isBitHere(mask, 3) && !isBitHere(mask, 4) && !isBitHere(mask, 6))
+		tile = 42;
+	else if (isBitHere(mask, 1) && !isBitHere(mask, 3) && isBitHere(mask, 4) && !isBitHere(mask, 6))
+		tile = 40;
 
-	//check for down left wall corner 
-	else if (check_tile(x + 1, y - 1, player) && !check_tile(x, y - 1, player) && !check_tile(x + 1, y, player))
-		Assets::rendMap(x * tile_s, y * tile_s, Assets::WALL_DOWN_LEFT_CORNER, 2, 0);
+	// intern corners
+	else if (isBitHere(mask, 0) && isBitHere(mask, 1) && isBitHere(mask, 2) && isBitHere(mask, 3)
+			&& isBitHere(mask, 4) && isBitHere(mask, 5) && isBitHere(mask, 6) && !isBitHere(mask, 7))
+		tile = Assets::WALL_UP_LEFT_CORNER;
+	else if (isBitHere(mask, 0) && isBitHere(mask, 1) && isBitHere(mask, 2) && isBitHere(mask, 3)
+			&& isBitHere(mask, 4) && !isBitHere(mask, 5) && isBitHere(mask, 6) && isBitHere(mask, 7))
+		tile = Assets::WALL_UP_RIGHT_CORNER;
+	else if (!isBitHere(mask, 0) && isBitHere(mask, 1) && isBitHere(mask, 2) && isBitHere(mask, 3)
+			&& isBitHere(mask, 4) && isBitHere(mask, 5) && isBitHere(mask, 6) && isBitHere(mask, 7))
+		tile = Assets::WALL_DOWN_RIGHT_CORNER;
+	else if (isBitHere(mask, 0) && isBitHere(mask, 1) && !isBitHere(mask, 2) && isBitHere(mask, 3)
+			&& isBitHere(mask, 4) && isBitHere(mask, 5) && isBitHere(mask, 6) && isBitHere(mask, 7))
+		tile = Assets::WALL_DOWN_LEFT_CORNER;
 
-	//check for down right wall corner
-	else if (check_tile(x - 1, y - 1, player) && !check_tile(x, y - 1, player) && !check_tile(x - 1, y, player))
-		Assets::rendMap(x * tile_s, y * tile_s, Assets::WALL_DOWN_RIGHT_CORNER, 2, 0);
+	//Wall_up
+	else if (!isBitHere(mask, 1)
+			&& isBitHere(mask, 3) && isBitHere(mask, 4)
+			&& isBitHere(mask, 5) && isBitHere(mask, 6) && isBitHere(mask, 7))
+		tile = Assets::WALL_DOWN;
 
-	// check if the wall is on the left
-	else if (check_tile(x + 1, y, player))
-		Assets::rendMap(x * tile_s, y * tile_s, Assets::WALL_LEFT, 2, 0);
+	// wall_left
+	else if (isBitHere(mask, 0) && isBitHere(mask, 3) && isBitHere(mask, 5)
+			&& isBitHere(mask, 1) && isBitHere(mask, 6)
+			&& !isBitHere(mask, 4))
+		tile = Assets::WALL_LEFT;
 
-	//check if the wall is on the right
-	else if (check_tile(x - 1, y, player))
-		Assets::rendMap(x * tile_s, y * tile_s, Assets::WALL_RIGHT, 2, 0);
+	// wall_right
+	else if (isBitHere(mask, 2) && isBitHere(mask, 4) && isBitHere(mask, 7)
+		&& isBitHere(mask, 1) && isBitHere(mask, 6)
+		&& !isBitHere(mask, 3))
+		tile = Assets::WALL_RIGHT;
 
-	//check if the wall is on the top
-	else if (check_tile(x, y + 1, player))
-		Assets::rendMap(x * tile_s, y * tile_s, Assets::WALL, 2, 0);
 
-	//check if the wall is on the bottom
-	else if (check_tile(x, y - 1, player))
-		Assets::rendMap(x * tile_s, y * tile_s, Assets::WALL_DOWN, 2, 0);
+	// dead-Ends
+	else if (!isBitHere(mask, 1) && isBitHere(mask, 3) && !isBitHere(mask, 4) && !isBitHere(mask, 6))
+		tile = 58;
+	else if (!isBitHere(mask, 1) && !isBitHere(mask, 3) && isBitHere(mask, 4) && !isBitHere(mask, 6))
+		tile = 60;
+	else if (isBitHere(mask, 1) && !isBitHere(mask, 3) && !isBitHere(mask, 4) && !isBitHere(mask, 6))
+		tile = 3;
+	else if (!isBitHere(mask, 1) && !isBitHere(mask, 3) && !isBitHere(mask, 4) && isBitHere(mask, 6))
+		tile = 39;
+
+	Assets::rendMapFlip(x * tile_s, y * tile_s, tile, 2, 0, flip);
 }
 
 //manage the wall print
 void	manage_wall(int x, int y, Player &player)
 {
-	if (check_border(x, y, player))
-	{
-		manage_border(x, y, player);
-		return ;
-	}
+	manage_border(x, y, player);
 }
 
 void	manage_stairs(int x, int y, Player &player)
@@ -220,18 +213,13 @@ void	manage_floor(int x, int y, Player &player)
 		initAutoTile(autoTile);
 	}
 	mask = checkWall(x, y, player, '1', '3');
-	std::cout << "x = " << x << ", y = " << y << ", mask = " << (int)mask << std::endl;
+	//std::cout << "x = " << x << ", y = " << y << ", mask = " << (int)mask << std::endl;
 	int tile = autoTile[mask].first;
 	if (tile == 36 && plan[y - 1][x] != 'E')
 		tile = 38;
 	else if (tile == 54 && plan[y][x - 1] != 'E')
 		tile = 38;
 	Assets::rendMapFlip(x * tile_s, y * tile_s, tile, 2, 0, autoTile[mask].second);
-}
-
-int		isBitHere(uint8_t mask, int bit)
-{
-	return (mask & (1 << bit));
 }
 
 void	manage_water(int x, int y, Player &player)
@@ -282,12 +270,13 @@ void	manage_water(int x, int y, Player &player)
 	{
 		if (isBitHere(mask, 3) && isBitHere(mask, 4))
 			tile = 1;
-		else if (!isBitHere(mask, 3) && isBitHere(mask, 4))
-			tile = 0;
 		else if (isBitHere(mask, 3) && !isBitHere(mask, 4))
 			tile = 2;
+		else if (!isBitHere(mask, 3) && isBitHere(mask, 4))
+			tile = 0;
 		else
 			tile = 63;
+		flip = 0;
 	}
 
 	Assets::rendMapFlip(x * tile_s, y * tile_s, tile, 2, 2, flip);
