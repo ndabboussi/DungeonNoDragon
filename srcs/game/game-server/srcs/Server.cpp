@@ -1,5 +1,5 @@
 #include "Server.hpp"
-Server::Server(void)
+Server::Server(std::string serverId, std::string serverSecret) : _serverId(serverId), _serverSecret(serverSecret)
 {}
 
 Server::~Server(void)
@@ -207,6 +207,26 @@ Player	&Server::getPlayer(std::string &uid)
 	return *this->_players[0];
 }
 
+std::string	Server::getServerToken(void) const
+{
+	return (this->_serverToken);
+}
+
+std::string Server::getServerId(void) const
+{
+	return (this->_serverId);
+}
+
+std::string Server::getServerSecret(void) const
+{
+	return (this->_serverSecret);
+}
+
+void		Server::setServerToken(std::string token)
+{
+	this->_serverToken = token;
+}
+
 std::weak_ptr<Player> findClosestPlayer(std::vector<std::weak_ptr<Player>> &allPlayer, Mob &mob)
 {
 	float dis = 2147483647.f;
@@ -364,77 +384,23 @@ void	roomLoopUpdate(Room &room, std::vector<std::weak_ptr<Player>> &allPlayer, u
 	app->publish(room.getRoomId(), msg, uWS::OpCode::TEXT);
 }
 
-// void sendToBack(std::string url, std::string &msg, std::string method)
-// {
-//     CURL *curl = curl_easy_init();
-//     if(curl)
-// 	{
-// 		std::cout << "curl_easy_init() worked properly" << std::endl;
-// 		if (method == "POST")
-// 		{
-// 			if (curl_easy_setopt(curl, CURLOPT_URL, url.c_str()) != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_URL FAIL" << std::endl;
-// 			}
-
-// 			if (curl_easy_setopt(curl, CURLOPT_POST, 1L) != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_POST" << std::endl;
-// 			}
-
-// 			if (curl_easy_setopt(curl, CURLOPT_POSTFIELDS, msg.c_str()) != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_POSTFIELDS" << std::endl;
-// 			}
-
-// 			std::cout << url << " POST: " << msg << std::endl;
-// 		}
-// 		else if (method == "PATCH")
-// 		{
-// 			if (curl_easy_setopt(curl, CURLOPT_URL, url.c_str()) != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_URL" << std::endl;
-// 			}
-
-// 			if (curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH") != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_CUSTOMREQUEST" << std::endl;
-// 			}
-
-// 			if (curl_easy_setopt(curl, CURLOPT_POSTFIELDS, msg.c_str()) != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_POSTFIELDS" << std::endl;
-// 			}
-// 			std::cout << url << " PATCH: " << msg << std::endl;
-// 		}
-
-// 		if (curl_easy_perform(curl) != CURLE_OK)
-// 		{
-// 			std::cout << "CURL_EASY_PERFORM" << std::endl;
-// 		}
-// 		curl_easy_cleanup(curl);
-// 		{
-// 			std::cout << "CURL_EASY_CLEANUP" << std::endl;
-// 		}
-//     }
-// 	else
-// 		std::cout << "fail" << std::endl;
-// }
-
 void	Server::run(void)
 {
 	uWS::App app;
+	bool	flag = false;
 
 	struct TimerData
 	{
 		Server		*server;
 		uWS::App	*app;
+		bool		*flag;
 	};
 	auto loop = uWS::Loop::get();
 	struct us_timer_t *delayTimer = us_create_timer((struct us_loop_t *) loop, 0, sizeof(TimerData));
 	auto *data = (TimerData *) us_timer_ext(delayTimer);
 	data->server = this;
 	data->app = &app;
+	data->flag = &flag;
 	us_timer_set(delayTimer, [](struct us_timer_t *t)
 	{
 		auto *data = (TimerData *) us_timer_ext(t);
@@ -447,23 +413,23 @@ void	Server::run(void)
 			{
 				if (session.isEnoughtReadyTime())
 				{
-					// std::string msg = "{\"sessionGameId\":\"" + session.getSessionId() + "\""
-					// 				+ ",\"status\":\"running\""
-					// 				+ ",\"playerIds\":[";
-					// for (auto &player : session.getPlayers())
-					// {
-					// 	msg += "\"" + player.lock()->getUid() + "\",";
-					// }
-					// if (*msg.rbegin() == ',')
-					// 	msg.pop_back();
-					// msg += "]}";
+					std::string msg = "{\"sessionGameId\":\"" + session.getSessionId() + "\""
+									+ ",\"status\":\"running\""
+									+ ",\"playerIds\":[";
+					for (auto &player : session.getPlayers())
+					{
+						msg += "\"" + player.lock()->getUid() + "\",";
+					}
+					if (*msg.rbegin() == ',')
+						msg.pop_back();
+					msg += "]}";
 
-					// sendToBack("http://localhost:3000/game/create/", msg, "POST");
+					sendViaCurl(*data->server, "http://node-c:3000/game/create", "POST", msg, 0);
 					session.launch();
 				}
 				continue;
 			}
-			session.checkFinishedPlayers(*data->app);
+			session.checkFinishedPlayers(*data->app, *data->server);
 			if (session.hasEnded())
 			{
 				std::cout << "ended" << std::endl;
@@ -500,6 +466,7 @@ void	Server::run(void)
 				{
 					if (session.isPlayerInSession((*it)->getUid()))
 					{
+						sendPlayerResultCurl(*data->server, session, *(*it));
 						session.removePlayer((*it)->getUid());
 						break;
 					}
@@ -513,7 +480,11 @@ void	Server::run(void)
 		for (auto it = data->server->_sessions.begin(); it != data->server->_sessions.end();) // loop to end sessions which has no (active) players in it
 		{
 			if (it->hasEnded())
+			{
+				std::string msg = R"({"sessionGameId":")" + it->getSessionId() + R"(", "status":"finished"})";
+				sendViaCurl(*data->server, "http://node-c:3000/game/end", "PATCH", msg, 0);
 				it = data->server->endSession(it->getSessionId(), *data->app);
+			}
 			if (it != data->server->_sessions.end())
 				it++;
 		}
