@@ -50,7 +50,7 @@
 /* Collapse button */
 .chat-sidebar-desktop .collapse-btn {
   position: absolute;
-  top: 20px;
+  top: 5px;
   left: 0px;
   transform: translateX(-100%);
   z-index: 9999;
@@ -69,17 +69,18 @@
 
 /* Floating button */
 .floating-chat-btn {
+	/*TODO*/
 	position: absolute;
-	top: 20px;
-	right: 20px;
-	border-radius: 50%;
-	width: 54px;
-	height: 54px;
+	top: 0px;
+	right: 10px;
+	border-radius: 50% !important;
+	width: 54px !important;
+	height: 54px !important;
 	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 	z-index: 30;
-	background-color: var(--color-primary);; /* Modern accent color for floating button */
-	color: black;
-	border-color: var(--color-primary);;
+	background-color: var(--color-primary) !important; /* Modern accent color for floating button */
+	color: black !important;
+	border-color: var(--color-primary) !important;
 }
 
 .chat-list-item,

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Pirata+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 /* MoRk DuNgEoN font for title */
 @font-face {
@@ -39,8 +40,8 @@
 	--font-section-title: 'Pirata One', serif;
 	--font-label: 'Pirata One', serif;
 	--font-button-large: 'Pirata One', serif;
-	--font-button-small: 'Inter', serif;
-	--font-body: 'Inter', serif;
+	--font-button-small: 'Almendra', serif;
+	--font-body: 'Almendra', serif;
 	--font-footer: 'Cinzel', 'Garamond', serif;
 
 	/* Feedback */
