@@ -37,7 +37,7 @@
 }
 
 /* ============================= */
-/* 🌫 Animated Fog (Teal)         */
+/*  Animated Fog (Teal)          */
 /* ============================= */
 
 .page-container::before,
@@ -93,7 +93,7 @@
 }
 
 /* ============================= */
-/* ✨ Subtle Arcane Light Pulses  */
+/*  Subtle Arcane Light Pulses   */
 /* ============================= */
 
 .page-container::before,
@@ -136,5 +136,6 @@
 @media (max-width: 480px) {
 	.main-layout {
 		flex-direction: column-reverse;
+		justify-content: flex-end !important;
 	}
 }

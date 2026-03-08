@@ -68,7 +68,8 @@
   margin: 0;
   color: black;
   font-family: var(--font-body);
-  font-size: clamp(1rem, 2vw, 2rem);
+  font-size: clamp(1.2rem, 2vw, 2rem);
+  font-weight: bold;
   line-height: 1;
 }
 
@@ -78,9 +79,9 @@
   text-align: left;
   color: black;
   font-family: var(--font-body);
-  font-size: clamp(0.95rem, 1.2vw, 1.5rem);
+  font-size: clamp(1,1rem, 2vw, 1.5rem);
   width: 100%;
-  max-width: 900px;
+  max-width: 600px;
   margin: 24px auto;
   padding: 24px;
   gap: 16px;
@@ -100,7 +101,7 @@
   text-align: left;
   color: black;
   font-family: var(--font-body);
-  font-size: clamp(0.95rem, 1.2vw, 1.5rem);
+  font-size: clamp(1.1rem, 1.2vw, 1.5rem);
   width: 100%;
   max-width: 500px;
   margin: 24px auto;
@@ -126,7 +127,7 @@
 
 .button.navlink-button {
   font-family: var(--font-button-large) !important;
-  font-size: clamp(1rem, 2.5vw, 2rem);
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
   color: white !important;
   border-color: var(--color-primary) !important;
   border-radius: var(--radius-md);
@@ -180,13 +181,13 @@
 
 @media (max-width: 1024px) {
   .box-head {
-    max-width: 700px;
+    max-width: 500px;
     gap: 24px;
   }
 
   .info {
-    max-width: 700px;
-    column-gap: 32px;
+    max-width: 600px;
+    column-gap: 1px;
   }
 }
 
@@ -200,6 +201,7 @@
     text-align: center;
     gap: 16px;
     padding: 20px;
+    max-width: 400px;
   }
 
   .head-text {
@@ -227,6 +229,10 @@
 /* ===================== */
 
 @media (max-width: 480px) {
+
+  .box-head {
+    max-width: 300px;
+  }
 
   .image-box figure img {
     width: 100px;
