@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import '../App.css'
 import type { GetResponse } from '../types/GetType'
 import api from '../serverApi';
-import { Box } from '@allxsmith/bestax-bulma';
+import { Button} from '@allxsmith/bestax-bulma';
 import { useNavigate } from 'react-router';
 import { useChatListSocket } from './hooks/useChatListSocket';
 import { useAuth } from '../auth/AuthContext';
@@ -51,28 +51,29 @@ const ChatList = ({
 		<div className='sidebar-content'>
 			<h1 className="title">Your chats</h1>
 
-			<button
-				className="button is-primary is-small mb-4"
+			<Button
+				className='group-chat-btn'
+				size='small'
 				onClick={onCreateGroup}
 				>
 				Create Group Chat
-			</button>
+			</Button>
 
-			<button
-				className="button is-small is-warning mb-4"
+			<Button
+				className='group-invit-btn'
+				size='small'
 				onClick={onShowInvitations}
 				>
 				Group Chat Invitations
-			</button>
+			</Button>
 
 
 			{/* LIST CHATS */}
 			{data.length === 0 && <p>You have no chats yet.</p>}
 
 			{data.map(chat => (
-				<Box key={chat.chatId} className="box" m="2" p="4">
-
-					<h2 className="subtitle">
+			<div key={chat.chatId} className="chat-box">
+				<h2 className="subtitle">
 						<a
 							className="has-text-dark"
 							style={{ cursor: "pointer" }}
@@ -93,8 +94,7 @@ const ChatList = ({
 							<>{chat.members.length} members</>
 						)}
 					</p>
-
-				</Box>
+				</div>
 			))}
 		</div>
 		);

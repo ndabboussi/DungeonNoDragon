@@ -10,6 +10,8 @@ import { ChatRoom } from "./components/ChatRoom";
 import { InviteToGroupChat } from "./components/InviteToGroupChat";
 import { useChatInfo } from "./hooks/useChatInfo";
 import { useAuth } from "../auth/AuthContext";
+import { Button } from "@allxsmith/bestax-bulma";
+// import { useSocket } from "../socket/SocketContext";
 
 function chatNameToDisplay(chat: any, userId?: string) {
 	if (chat.chatType === "private") {
@@ -52,18 +54,16 @@ const ChatView = ({ chatId: propChatId, onClose }: {
 	if (isError)
 		return <div>Error loading chat</div>;
 
-	//console.log("chatInfo:", chat);
-
 	return (
 		<div className='sidebar-content'>
 
 			{onClose && (
-				<button
-					className="button is-light is-small mb-3"
+				<Button
+					className="back2chat-btn"
 					onClick={onClose}
 				>
 				Back to chats
-				</button>
+				</Button>
 			)}
 
 			<h1 className="title">
@@ -74,28 +74,28 @@ const ChatView = ({ chatId: propChatId, onClose }: {
 
 			{/* GAME INVITE */}
 			{permissions.canWrite && (
-				<button
+				<Button
 					className="button is-info is-small mb-3"
 					onClick={() => gameInviteMutation.mutate()}
 				>
 				Invite to play game 🎮
-				</button>
+				</Button>
 			)}
 
 			{/* QUIT CHAT */}
 			{chat.chatType === "group" && role !== "owner" && (
-				<button
-					className="button is-warning is-small mb-3"
+				<Button
+					className="quit-chat-button"
 					onClick={() => quitChatMutation.mutate()}
 				>
 					Quit Group Chat
-				</button>
+				</Button>
 			)}
 
 			{/* DISBAND CHAT */}
 			{chat.chatType === "group" && role === "owner" && (
 				<button
-					className="button is-danger is-small mb-3"
+					className="quit-chat-button"
 					onClick={() => disbandMutation.mutate()}
 				>
 					Disband Group Chat
@@ -106,19 +106,19 @@ const ChatView = ({ chatId: propChatId, onClose }: {
 			{chat.chatType === "group" &&
 				<InviteToGroupChat
 					chatId={chat.chatId}
-					existingMembers={chat.members} 
+					existingMembers={chat.members}
 				/>
 			}
 
 			<ChatRoom chatId={chatId!} />
 
 			{onClose && (
-				<button
-					className="button is-light is-small mb-3"
+				<Button
+					className="back2chat-btn"
 					onClick={onClose}
 				>
 				Back to chats
-				</button>
+				</Button>
 			)}
 
 		</div>

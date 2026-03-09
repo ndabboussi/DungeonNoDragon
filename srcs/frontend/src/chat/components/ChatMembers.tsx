@@ -4,6 +4,7 @@ import { useChat } from "../ChatContext";
 import { useChatRoleMutation } from "../hooks/useChatRoleMutations";
 import { useGroupChatMutations } from "../hooks/useGroupChatMutations";
 import { useChatInfo } from "../hooks/useChatInfo";
+import { Button } from "@allxsmith/bestax-bulma";
 import toast from "../../Notifications";
 
 export function ChatMembers({chatId}) {
@@ -23,32 +24,23 @@ export function ChatMembers({chatId}) {
 	}
 
 	return (
-		<div className="mb-4">
+		<div className="mb-4 members-container">
 		{/* HEADER */}
-			<div onClick={() => setOpen(!open)}
-				style={{
-					cursor: "pointer",
-					fontWeight: "bold",
-					display: "flex",
-					alignItems: "center",
-					userSelect: "none",
-					marginBottom: "6px"
-				}}
-			>
+			<div className="members-dropdown" onClick={() => setOpen(!open)}>
 				<span style={{ marginRight: "6px" }}>
 					{open ? "▼" : "▶"}
 				</span>
 					Members ({chat.members.length})
 			</div>
 
-			{open && (<ul>
+			{open && (<ul className="members-list">
 				{chat.members.map((m: any) => (
 				<li key={m.chatMemberId} className="mb-1">
 					{m.user.username} - <em>{m.role}</em>
 
 					{permissions.canChangeRoles && m.user.appUserId !== user?.id && (
 					<select
-						className="ml-2"
+						className="ml-2 role-options"
 						value={m.role}
 						onChange={(e) =>
 							roleMutation.mutate({
@@ -67,12 +59,12 @@ export function ChatMembers({chatId}) {
 
 					{/* KICK MEMBER */}
 					{permissions.canKick && m.user.appUserId !== user?.id && (
-						<button
-							className="button is-danger is-light is-small ml-2"
+						<Button
+							className="chat-kick-button"
 							onClick={() => kickMutation.mutate(m.user.appUserId)}
 						>
 							Kick
-						</button>
+						</Button>
 					)}
 				</li>
 				))}

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Pirata+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 /* MoRk DuNgEoN font for title */
 @font-face {
@@ -11,27 +12,40 @@
 :root {
 	/* Brand */
 	--color-primary: #00d1b2;
-	--color-primary-dark: #027c6a;
-	--color-primary-light: #a9fcef;;
-
-	/* Banner */
-	--banner-color-bg: #3D3C3C;
+	--color-primary-light: #a9fcef;
+	--color-primary-dark0: #027c6a;
+	--color-primary-dark1: #026354;
+	--color-primary-dark2: #013f36;
 
 	/* Footer */
 	--footer-color-bg: #282828;
 	--footer-color-text: #00d1b2;
-	--footer-color-link: #000;
+	--footer-color-link: white;
 	--footer-color-shadow: #e0cc91;
 	--footer-color-shadow: #e0cc91;
 
 	/* Neutral */
-	--color-bg: #605f5f;
-	--color-surface: #1e293b;
+	--color-bg: #1cbca4;
+	--color-bg-light: #def9f5;
+	--color-hover: #078c78;
 	--color-border: #334155;
 
 	/* Text */
-	--color-text: #f1f5f9;
-	--color-text-muted: #94a3b8;
+	--color-text: black;
+
+	/* Button */
+	--color-delete-bg: #fc025e;
+	--color-delete-txt: #4f021e;
+	--color-delete-bg-light: #fc377f;
+	--color-delete-txt-light: #680328;
+	--color-delete-txt-light2: #fcd1e1;
+	--color-invite-bg: #008afc;
+	--color-invite-txt: #0a0554;
+	--color-invite-bd: #1204db;
+	--color-invite-dark: #0255fc;
+	--color-invite-light: #d9e4fc;
+	--color-game-bg: #00c7b1;
+	--color-game-border: #318e83;
 
 	/* Fonts */
 /*	--font-game-title: 'MoRk DuNgEoN', serif;*/
@@ -39,8 +53,8 @@
 	--font-section-title: 'Pirata One', serif;
 	--font-label: 'Pirata One', serif;
 	--font-button-large: 'Pirata One', serif;
-	--font-button-small: 'Inter', serif;
-	--font-body: 'Inter', serif;
+	--font-button-small: 'Almendra', serif;
+	--font-body: 'Almendra', serif;
 	--font-footer: 'Cinzel', 'Garamond', serif;
 
 	/* Feedback */
@@ -51,7 +65,8 @@
 	/* Typography scale */
 	--fs-xs: 0.75rem;
 	--fs-sm: 0.875rem;
-	--fs-md: 1rem;
+	--fs-md1: 1rem;
+	--fs-md2: 1.2rem;
 	--fs-lg: 1.5rem;
 	--fs-xl: 2rem;
 	--fs-2xl: 3rem;

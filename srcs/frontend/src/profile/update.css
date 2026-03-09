@@ -9,7 +9,7 @@
 	align-items: center; /* horizontal centering */
 	gap: clamp(1rem, 4vw, 2rem);
 	padding: clamp(1rem, 2vw, 2rem); /* add some spacing between elements and borders */
-	margin: 2rem auto; /* spacing on top/bottom for mobile */
+	margin: auto;
 	box-sizing: border-box; /* Include padding in width */
 	overflow: hidden; /* Prevent children from stick out of the container */
 }
@@ -17,7 +17,7 @@
 .update-container label {
 	font-weight: 700;
 	font-family: var(--font-label);
-	font-size: clamp(1.2rem, 2vw, 2rem);
+	font-size: clamp(1.5rem, 2vw, 2rem);
 	margin-bottom: 6px;
 	display: inline-block;
 	color: black;
@@ -30,33 +30,42 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 1rem; /* consistent spacing between inputs */
+	gap: var(--space-md); /* consistent spacing between inputs */
 }
 
-.update-container input {
-	background-color: #3f3f3f;
-	color: #eee;
+.update-container input, select {
+	background-color: var(--color-primary-dark2) !important;
+	color: var(--color-primary-light) !important;
+	border: 2px solid var(--color-primary-dark0) !important;
+}
+
+.update-container .input::placeholder {
+	color: var(--color-primary-light);
 }
 
 .update-container .button {
 	font-family: var(--font-button-large) !important;
 	font-size: clamp(1rem, 1.5vw, 1.5rem);
-	color: var(--color-primary) !important;
-	border-color: var(--color-primary) !important;
+	color:var(--color-primary-dark2) !important;
+	background-color: var(--color-primary-light);
+	border: 2px solid var(--color-primary-dark0) !important;
 	border-radius: var(--radius-md);
 }
 
+/* update avatar button */
 .update-container .material-button-root {
-	color: var(--color-primary) !important;
-	border-color: var(--color-primary) !important;
+	color:var(--color-primary-light) !important;
+	background-color: var(--color-primary-dark2) !important;
+	border: 3px solid var(--color-primary-dark0) !important;
 	font-family: var(--font-button-large);
 	font-size: clamp(1rem, 1.5vw, 1.5rem);
 }
 
 .update-container input:focus, select:focus {
 	outline: none;
-	border-color: #00f0f0;
-	background-color: #333;
+	border: 2px solid var(--color-primary-dark2) !important;
+	background-color: var(--color-primary-light) !important;
+	color: var(--color-primary-dark1) !important;
 }
 
 .update-box {
@@ -85,4 +94,10 @@
 	color: var(--color-primary) !important;
 	border-color: var(--color-primary) !important;
 	border-radius: var(--radius-md);
+}
+
+@media (max-width: 480px) {
+	.update-container {
+		margin-top: 10px;
+	}
 }

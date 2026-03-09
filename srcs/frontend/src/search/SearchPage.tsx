@@ -111,10 +111,6 @@ const SearchPage = () => {
 
 					{results?.length > 0 && results.map((user) => {
 						const sortValue = getSortValue(user);
-						console.log("sortBy:", sortBy);
-						console.log("gameProfile:", user.gameProfile);
-						console.log("value:", sortValue);
-						console.log("user:", user.username, user.gameProfile);
 						return (
 							<div key={user.appUserId} className="user_item_card">
 								{user.avatarUrl && (
@@ -172,7 +168,7 @@ const SearchPage = () => {
 										Remove friend
 									</Button>
 								}
-								<NavLink to={"/profile/" + user.username} className="view_profile_btn">View Profile</NavLink>
+								<NavLink to={"/profile/" + user.username} className="button view_profile_btn">View Profile</NavLink>
 							</div>
 						)
 					})}
