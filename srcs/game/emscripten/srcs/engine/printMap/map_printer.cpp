@@ -40,8 +40,6 @@ void	printPortal(int x, int y, Player &player)
 void	manageFloorPrint(int x, int y, char c, Player &player, int iteration)
 {
 	int	tile_s = gSdl.getMapTileSize() * 2;
-	if (c == 'F')
-		printPortal(x, y, player);
 	if (player.getFloor())
 	{
 		if (c == '1'  || c == ' ')
@@ -50,6 +48,8 @@ void	manageFloorPrint(int x, int y, char c, Player &player, int iteration)
 			Assets::rendMap(x * tile_s, y * tile_s, 865, 1, 1);
 		else if (c == '0' || c == 'P' || c == 'E')
 			manageSoil(x, y, player);
+		if (c == 'F')
+			printPortal(x, y, player);
 	}
 	else if (player.getFloor() == 0)
 	{
