@@ -34,10 +34,12 @@ const Game = () => {
 			if (moduleRef.current)
 			{
 				moduleRef.current.finishGame();
-				if ((moduleRef.current as any).ctx)
+				const ctx = (moduleRef.current as any).ctx;
+				if (ctx)
 				{
-					const ext = (moduleRef.current as any).ctx.getExtension('WEBGL_lose_context');
-					if (ext) ext.loseContext();
+					const ext = ctx.getExtension('WEBGL_lose_context');
+					if (ext)
+						ext.loseContext();
 				}
 			}
 			if (socketRef.current)
@@ -108,12 +110,13 @@ const Game = () => {
 						gameSocket.close();
 						if (!mod)
 							return;
-						console.log(mod);
 						mod.finishGame();
-						if ((mod as any).ctx)
+						const ctx = (mod as any).ctx;
+						if (ctx)
 						{
-							const ext = (mod as any).ctx.getExtension('WEBGL_lose_context');
-							if (ext) ext.loseContext();
+							const ext = ctx.getExtension('WEBGL_lose_context');
+							if (ext)
+								ext.loseContext();
 						}
 						delete (window as any).onCppMessage;
 						delete (window as any).sendResults;
