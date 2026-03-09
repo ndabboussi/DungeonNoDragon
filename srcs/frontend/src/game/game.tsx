@@ -19,12 +19,39 @@ const Game = () => {
 
 
 	const [gameSocket, setGameSocket] = useState<WebSocket | null>(null);
+	const socketRef = useRef<WebSocket | null>(null);
 	const [Module, setModule] = useState<GameModule | null>(null);
+	const moduleRef = useRef<GameModule | null>(null);
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
 	const mutation = useMutation({
 		mutationFn: () => api.post("/room/launch", room),
 	});
+
+	function cleanupWasm()
+	{
+		try {
+			if (moduleRef.current)
+			{
+				moduleRef.current.finishGame();
+				if ((moduleRef.current as any).ctx)
+				{
+					const ext = (moduleRef.current as any).ctx.getExtension('WEBGL_lose_context');
+					if (ext) ext.loseContext();
+				}
+			}
+			if (socketRef.current)
+			{
+				socketRef.current.onmessage = null;
+				socketRef.current.onerror = null;
+				socketRef.current.onclose = null;
+				socketRef.current.close();
+			}
+		} catch (e) {
+			console.error("cleanup error", e);
+		}
+	}
+
 
 	useEffect(() => {
 		if (user?.id === room?.hostId) {
@@ -32,38 +59,23 @@ const Game = () => {
 		}
 		else if (!start) {
 			toast({ title: `An error occurred`, message: 'No active game has been found', type: "is-warning" })
+			cleanupWasm();
 			navigate("/home");
 			return ;
 		}
 
 		const socketUrl = `wss://${window.location.port == "5173" ? 'localhost:8443' : window.location.host}/ws/`;
 		const socket = new WebSocket(socketUrl);
+		socketRef.current = socket;
 		setGameSocket(socket);
 
 		if (!socket) return ;
 
 		return () => {
-			if (start) return;
-
+			if (start)
+				return;
+			cleanupWasm();
 			cancelStart();
-			if (socket)
-			{
-				socket.onmessage = null;
-				socket.onerror = null;
-				socket.onclose = null;
-				socket.close();
-			}
-			if (!Module) return;
-
-			Module.finishGame();
-			delete (window as any).onCppMessage;
-			delete (window as any).sendResults;
-
-			if ((Module as any).ctx)
-			{
-				const ext = (Module as any).ctx.getExtension('WEBGL_lose_context');
-				if (ext) ext.loseContext();
-			}
 		};
 	}, []);
 
@@ -88,7 +100,6 @@ const Game = () => {
 					sendResults: (obj: Object) =>
 					{
 						setJsonEnd(obj);
-						console.log(JSON.stringify(obj))
 						setShowButton(true);
 						setBoxSize({ width: "900px", height: "300px" });
 						gameSocket.onmessage = null;
@@ -111,7 +122,7 @@ const Game = () => {
 
 				(window as any).onCppMessage = (mod as any).onCppMessage;
 				(window as any).sendResults = (mod as any).sendResults;
-
+				moduleRef.current = mod;
 				setModule(mod);
 				// Add username and session size
 			} catch (e) {
@@ -157,29 +168,45 @@ const Game = () => {
 		};
 	}, [Module]);
 
+	useEffect(() =>
+	{
+		const canvas = canvasRef.current;
+		if (!canvas)
+			return;
+
+		const handleContextLost = (e: Event) =>
+		{
+			e.preventDefault();
+		};
+
+		canvas.addEventListener("webglcontextlost", handleContextLost, false);
+		return () => canvas.removeEventListener("webglcontextlost", handleContextLost);
+	}, []);
 
 	useEffect(() =>
 	{
-		const emergencyCleanup = () =>
-		{
-			try
-			{
-				Module?.finishGame();
-				if ((Module as any).ctx)
-				{
-					const ext = (Module as any).ctx.getExtension('WEBGL_lose_context');
-					if (ext) ext.loseContext();
-				}
-			}
-			catch {}
-		};
-
-		window.addEventListener("beforeunload", emergencyCleanup);
-		return () => window.removeEventListener("beforeunload", emergencyCleanup);
+		window.addEventListener("beforeunload", cleanupWasm);
+		return () => window.removeEventListener("beforeunload", cleanupWasm);
 	}, [Module]);
 
+	useEffect(() =>
+	{
+		const handleVisibility = () =>
+		{
+			if (!moduleRef.current)
+				return;
+			if (document.hidden)
+				moduleRef.current.pauseGame?.();
+			else
+				moduleRef.current.resumeGame?.();
+		};
 
-	useEffect(() => {
+		document.addEventListener("visibilitychange", handleVisibility);
+		return () => document.removeEventListener("visibilitychange", handleVisibility);
+	}, []);
+
+	useEffect(() =>
+	{
 
 		if (!gameSocket || !Module || !user || !room) return;
 		gameSocket.onmessage = async (event) => {
@@ -208,14 +235,18 @@ const Game = () => {
 		return <div>Verifying room</div>;
 	}
 
-	if (mutation.isError) {
+	if (mutation.isError)
+		{
 		toast({ title: `An error occured`, message: "Cannot join the game !", type: "is-danger" })
+		cleanupWasm();
 		navigate("/home");
 		return;
 	}
 
 
-	function handleHomeClick() {
+	function handleHomeClick()
+	{
+		cleanupWasm();
 		navigate("/home");
 	}
 

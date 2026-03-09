@@ -120,6 +120,11 @@ void	manage_border(int x, int y, Player &player)
 	else if (!isBitHere(mask, 1) && !isBitHere(mask, 3) && !isBitHere(mask, 4) && isBitHere(mask, 6))
 		tile = 39;
 
+	if (tile == Assets::WALL)
+	{
+		if (!(rand() % 3))
+			tile = (rand() % 2) ? 83 : 84;
+	}
 	Assets::rendMapFlip(x * tile_s, y * tile_s, tile, 2, 0, flip);
 }
 
@@ -213,13 +218,18 @@ void	manage_floor(int x, int y, Player &player)
 		initAutoTile(autoTile);
 	}
 	mask = checkWall(x, y, player, '1', '3');
-	//std::cout << "x = " << x << ", y = " << y << ", mask = " << (int)mask << std::endl;
 	int tile = autoTile[mask].first;
 	if (tile == 36 && plan[y - 1][x] != 'E')
 		tile = 38;
 	else if (tile == 54 && plan[y][x - 1] != 'E')
 		tile = 38;
 	Assets::rendMapFlip(x * tile_s, y * tile_s, tile, 2, 0, autoTile[mask].second);
+	if (tile == 19 && !(rand() % 20))
+	{
+		int set[] = {100, 101, 118, 119};
+		tile = set[rand() % 4];
+		Assets::rendMapFlip(x * tile_s, y * tile_s, tile, 2, 0, 0);
+	}
 }
 
 void	manage_water(int x, int y, Player &player)
