@@ -4,11 +4,12 @@ import { useChat } from "../ChatContext";
 import { useChatRoleMutation } from "../hooks/useChatRoleMutations";
 import { useGroupChatMutations } from "../hooks/useGroupChatMutations";
 import { useChatInfo } from "../hooks/useChatInfo";
+import toast from "../../Notifications";
 
 export function ChatMembers({chatId}) {
 
 	const { data: chat } = useChatInfo(chatId);
-	const { /*chat,*/ permissions } = useChat();
+	const { permissions } = useChat();
 	const { user } = useAuth();
 
 	const roleMutation = useChatRoleMutation(chatId);
@@ -16,8 +17,10 @@ export function ChatMembers({chatId}) {
 
 	 const [open, setOpen] = useState(false); 
 
-	if (!chat)
+	if (!chat) {
+		toast({ title: "Error", message: "Chat not found, please refresh page.", type: "is-danger"})
 		return null; //<div>Loading chat...</div>;
+	}
 
 	return (
 		<div className="mb-4">

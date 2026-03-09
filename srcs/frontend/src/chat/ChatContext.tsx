@@ -35,12 +35,13 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 	const role = chat?.members.find(mbr => mbr.user.appUserId === user?.id)?.role ?? null;
 
 	const permissions = {
-		canModerate: ["owner", "admin", "moderator"].includes(role ?? ""),
 		canInvite: ["owner", "admin", "moderator", "writer", "member"].includes(role ?? ""),
+		canWrite: ["owner", "admin", "moderator", "writer"].includes(role ?? ""),
+		canModerate: ["owner", "admin", "moderator"].includes(role ?? ""),
 		canBan: ["owner", "admin"].includes(role ?? ""),
 		canKick: ["owner", "admin"].includes(role ?? ""),
-		canRename: ["owner", "admin"].includes(role ?? ""),
-		canChangeRoles: ["owner", "admin"].includes(role ?? "")
+		canChangeRoles: ["owner", "admin"].includes(role ?? ""),
+		canRename: ["owner"].includes(role ?? "")
 	}
 
 	const joinChat = async(chatId: string) => {

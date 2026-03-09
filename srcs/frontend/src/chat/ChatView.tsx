@@ -30,7 +30,7 @@ const ChatView = ({ chatId: propChatId, onClose }: {
 	const chatId = propChatId ?? params.chatId;
 	const { data: chat } = useChatInfo(chatId);
 
-	const { /*chat,*/ role, joinChat } = useChat();
+	const { permissions, role, joinChat } = useChat();
 
 	const { isLoading, isError } = useChatMessages(chatId);
 	const { quitChatMutation, disbandMutation, gameInviteMutation } = useGroupChatMutations(chatId);
@@ -73,12 +73,14 @@ const ChatView = ({ chatId: propChatId, onClose }: {
 			<ChatMembers chatId={chatId} />
 
 			{/* GAME INVITE */}
-			<button
-				className="button is-info is-small mb-3"
-				onClick={() => gameInviteMutation.mutate()}
-			>
-			Invite to play game 🎮
-			</button>
+			{permissions.canWrite && (
+				<button
+					className="button is-info is-small mb-3"
+					onClick={() => gameInviteMutation.mutate()}
+				>
+				Invite to play game 🎮
+				</button>
+			)}
 
 			{/* QUIT CHAT */}
 			{chat.chatType === "group" && role !== "owner" && (

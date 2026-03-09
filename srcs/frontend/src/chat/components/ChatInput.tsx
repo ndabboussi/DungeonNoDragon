@@ -21,11 +21,14 @@ export function ChatInput({ onSend, chatId }: ChatInputProps) {
 	const send = () => {
 		const text = content.trim();
 
-		if (!text)
+		if (!text){
+			toast({ title: "Error", message: "Your message can't be empty.", type: "is-warning"})
+			setContent("");
 			return;
+		}
 
 		if (text.length > MAX_MESSAGE_LENGTH) {
-			toast({ title: "Error", message: "Your message can't contain more than 2000 characters.", type: "is-danger"})
+			toast({ title: "Error", message: "Your message can't contain more than 2000 characters.", type: "is-warning"})
 			return;
 		}
 

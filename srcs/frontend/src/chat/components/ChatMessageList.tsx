@@ -2,7 +2,7 @@ import { Box } from "@allxsmith/bestax-bulma";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../../auth/AuthContext";
 
-type Message = {
+export type Message = {
 	messageId: string;
 	chatId: string;
 	userId: string;
@@ -92,8 +92,10 @@ export function MessageList({
 	const { user } = useAuth();
 	const navigate = useNavigate();
 
-	if (!messages || messages.length === 0)
+	if (!messages || messages.length === 0) {
+
 		return null;
+	}
 
 	const readersByMessage = buildReadersByMessage(messages, readState);
 

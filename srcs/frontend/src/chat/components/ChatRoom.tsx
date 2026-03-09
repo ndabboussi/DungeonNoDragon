@@ -74,10 +74,24 @@ export function ChatRoom({ chatId }: {chatId: string}) {
 			{/* <TypingIndicator typingUsers={typingUsers} /> */}
 			<TypingIndicator isTyping={isTyping} />
 
-			<ChatInput
-				chatId={chatId}
-				onSend={mutations.sendMessageMutation.mutate}
-			/>
+			{/* {permissions.canWrite && (
+				<ChatInput
+					chatId={chatId}
+					onSend={mutations.sendMessageMutation.mutate}
+				/>
+			)} */}
+			{permissions.canWrite ? (
+				<ChatInput
+					chatId={chatId}
+					onSend={mutations.sendMessageMutation.mutate}
+					/>
+				) : (
+				<p style={{ opacity: 0.6 }}>
+					You don't have permission to write in this chat.
+				</p>
+			)}
 		</>
 	);
 }
+
+
