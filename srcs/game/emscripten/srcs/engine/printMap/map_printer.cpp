@@ -1,5 +1,42 @@
 #include "Game.hpp"
 
+
+void	printPortal(int x, int y, Player &player)
+{
+	std::vector<std::string> map = player.getRoom().getRoomPlan();
+	int	tile_s = gSdl.getMapTileSize() * 2;
+
+	if (map[y - 1][x - 1] == 'F' && map[y - 1][x] == 'F' && map[y - 1][x + 1] == 'F'
+		&& map[y][x - 1] == 'F' && map[y][x + 1] == 'F'
+		&& map[y + 1][x - 1] == 'F' && map[y + 1][x] && map[y + 1][x + 1] == 'F')
+	{
+		Assets::rendMap((x - 1) * tile_s, (y - 1) * tile_s, 541, 1, 1);
+		Assets::rendMap(x * tile_s, (y - 1) * tile_s, 541, 1, 1);
+		Assets::rendMap((x + 1) * tile_s, (y - 1) * tile_s, 541, 1, 1);
+
+		Assets::rendMap((x - 1) * tile_s, y * tile_s, 541, 1, 1);
+		Assets::rendMap(x * tile_s, y * tile_s, 541, 1, 1);
+		Assets::rendMap((x + 1) * tile_s, y * tile_s, 541, 1, 1);
+
+		Assets::rendMap((x - 1) * tile_s, (y + 1) * tile_s, 541, 1, 1);
+		Assets::rendMap(x * tile_s, (y + 1) * tile_s, 541, 1, 1);
+		Assets::rendMap((x + 1) * tile_s, (y + 1) * tile_s, 541, 1, 1);
+
+
+		Assets::rendMap((x - 1) * tile_s, (y - 1) * tile_s, 0, 1, 3);
+		Assets::rendMap(x * tile_s, (y - 1) * tile_s, 1, 1, 3);
+		Assets::rendMap((x + 1) * tile_s, (y - 1) * tile_s, 2, 1, 3);
+
+		Assets::rendMap((x - 1) * tile_s, y * tile_s, 3, 1, 3);
+		Assets::rendMap(x * tile_s, y * tile_s, 4, 1, 3);
+		Assets::rendMap((x + 1) * tile_s, y * tile_s, 5, 1, 3);
+
+		Assets::rendMap((x - 1) * tile_s, (y + 1) * tile_s, 6, 1, 3);
+		Assets::rendMap(x * tile_s, (y + 1) * tile_s, 7, 1, 3);
+		Assets::rendMap((x + 1) * tile_s, (y + 1) * tile_s, 8, 1, 3);
+	}
+}
+
 void	manageFloorPrint(int x, int y, char c, Player &player, int iteration)
 {
 	int	tile_s = gSdl.getMapTileSize() * 2;
@@ -11,6 +48,8 @@ void	manageFloorPrint(int x, int y, char c, Player &player, int iteration)
 			Assets::rendMap(x * tile_s, y * tile_s, 865, 1, 1);
 		else if (c == '0' || c == 'P' || c == 'E')
 			manageSoil(x, y, player);
+		if (c == 'F')
+			printPortal(x, y, player);
 	}
 	else if (player.getFloor() == 0)
 	{
