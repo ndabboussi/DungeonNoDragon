@@ -1,13 +1,21 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../serverApi";
 import { Box } from "@allxsmith/bestax-bulma";
 import { useAuth } from "../../auth/AuthContext";
 import toast from "../../Notifications";
+import { useInvitationSocket } from "../hooks/useInvitationSocket";
 
 // Fetch all chat invitations (pending and not pending at now)
-export default function GroupChatInvitations() {
+//export default function GroupChatInvitations() {
+export default function GroupChatInvitations({
+	onClose
+}: {
+	onClose?: () => void;
+}) {
 
+	useInvitationSocket();
 	const { user } = useAuth();
+	const queryClient = useQueryClient();
 
 	//get all invitations
 	const { data: invitations } = useQuery({
@@ -25,7 +33,9 @@ export default function GroupChatInvitations() {
 		},
 		onSuccess: () => {
 			toast({ title: "Chat invitation succesfully updated", type: "is-success" });
-			window.location.reload();
+			//window.location.reload();//(nina) not goood causes refresh
+			queryClient.invalidateQueries({ queryKey: ["group-invitations"] }); 
+			queryClient.invalidateQueries({ queryKey: ["chat-list"] });
 		},
 		onError: (error: Error) => {
 			toast ({ title: "Error", message: error.message ?? "Unknown error", type: "is-danger" });
@@ -37,6 +47,12 @@ export default function GroupChatInvitations() {
 
 	return (
 		<Box m="4" p="6" bgColor="white">
+			{onClose && (
+				<button className="button is-light is-small mb-3" onClick={onClose}>
+				Back
+				</button>
+			)}
+
 			<h1 className="title">Group Invitations</h1>
 
 			{invitations.length === 0 && <p>No invitations.</p>}

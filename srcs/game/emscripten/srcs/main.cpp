@@ -21,6 +21,18 @@ Engine gSdl;
 			msgJson.pop();
 	}
 
+
+	void enableInput(bool enable)
+	{
+		if (!enable)
+			reset_key();
+		Uint8 state = enable ? SDL_ENABLE : SDL_DISABLE;
+		SDL_EventState(SDL_KEYDOWN, state);
+		SDL_EventState(SDL_KEYUP, state);
+		SDL_EventState(SDL_TEXTINPUT, state);
+		SDL_EventState(SDL_TEXTEDITING, state);
+	}
+
 #endif
 
 #ifdef __EMSCRIPTEN__
@@ -28,6 +40,7 @@ Engine gSdl;
 	{
 		emscripten::function("getMessage", &getMessage);
 		emscripten::function("finishGame", &finishGame);
+		emscripten::function("enableInput", &enableInput);
 	}
 #endif
 
@@ -90,6 +103,7 @@ static void	importAssetsAndRoom(void)
 {
 	Assets::importAssets("../assets/sprite/assets.bmp", 16);
 	Assets::importAssets("../assets/sprite/forest/tiles-all.bmp", 32);
+	Assets::importAssets("../assets/sprite/water.bmp", 16);
 	PlayerAssets::importPlayersAssets(100);
 	Mob::importMobsAssets(100);
 
@@ -100,7 +114,7 @@ int main(int ac, char **av)
 {
 	srand(time(0));
 	std::string name, id;
-	(void)ac, (void)av;
+	(void)ac;
 	if (!init_sdl(gSdl))
 	{
 		std::cerr << "Error in sdl init" << std::endl;
