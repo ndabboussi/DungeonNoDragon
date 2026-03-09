@@ -36,7 +36,7 @@ const FriendRequest = () => {
 			<ul className="user_list">
 				{userData.map(friend => {
 					const friendUser = friend.sender.appUserId !== user?.id ? friend.sender : friend.receiver;
-					const avatarUrl = friendUser.avatarUrl
+					const avatarUrl = friendUser.avatarUrl 
 						? `https://${window.location.host}/uploads/${friendUser.avatarUrl}`
 						: skull;
 
@@ -67,8 +67,8 @@ const FriendRequest = () => {
 										Cancel request
 									</Button>
 								}
-
-								<NavLink to={"/profile/" + friendUser.username} className="view_profile_btn">
+								
+								<NavLink to={"/profile/" + friendUser.username} className="button view_profile_btn">
 									View Profile
 								</NavLink>
 							</div>
@@ -77,8 +77,8 @@ const FriendRequest = () => {
 				})}
 			</ul>
 			<div className="bottom-button">
-				<NavLink to="/friends/list" className="button is-medium friendlist-button">Back to friends list</NavLink>
-				<NavLink to="/profile" className="button is-medium myprofile-button">Back to profile</NavLink>
+				<NavLink to="/friends/list" className="button is-large friendlist-button">Back to friends list</NavLink>
+				<NavLink to="/profile" className="button is-large myprofile-button">Back to profile</NavLink>
 			</div>
 			</div>
 		</div>

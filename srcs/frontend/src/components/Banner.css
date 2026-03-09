@@ -11,7 +11,6 @@
   box-sizing: border-box;          /* Include padding/border in width */
   padding: 0 1rem;                 /* Horizontal padding */
   overflow: visible !important;    /* Allow dropdowns to overflow outside navbar */
-  position: relative;              /* Parent for absolute positioning dropdown */
   z-index: 1000;                   /* Ensure navbar is above other content */
 }
 
@@ -29,6 +28,15 @@
 .navbar-brand {
   justify-self: start; /* align to left */
   flex: 0 0 auto;      /* Don’t shrink or grow */
+}
+
+.banner-home-button {
+  color: var(--color-text) !important;
+  background-color: var(--color-primary) !important;
+  border: none !important;
+  font-family: var(--font-body);
+  font-size: var(--fs-md2) !important;
+  padding: 8px 12px !important;
 }
 
 /* ============================= */
@@ -82,6 +90,7 @@
   white-space: nowrap;             /* Prevent text from wrapping */
   overflow: hidden;
   text-overflow: ellipsis;         /* Add "..." if text is too long */
+  font-family: var(--font-body);
 }
 
 .profile-dropdown {
@@ -90,18 +99,13 @@
   font-family: var(--font-body);
 }
 
+.profile-dropdown .button {
+	font-size: var(--fs-lg);
+}
+
 .navbar-end > .navbar-item.profile-dropdown {
   flex: 0 0 auto !important;   /* don’t grow or shrink */
   width: auto !important;       /* shrink-to-fit */
-}
-
-.profile-dropdown::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  right: 0;
-  width: 7%;
-  height: 16px; /* small invisible bridge */
 }
 
 .navbar-item.has-dropdown {
@@ -110,7 +114,6 @@
 
 .navbar-end .navbar-dropdown {
   display: none;                   /* Hidden until hover / active */
-  position: absolute !important;   /* Position absolutely relative to navbar-full */
   top: 100%;
   right: 0;                        /* Align to right edge */
   left: auto;                      /* Don’t use left */
@@ -122,11 +125,9 @@
   word-break: break-word;          /* Wrap long words */
 }
 
-.profile-dropdown:hover .navbar-dropdown {
-  display: flex !important;
+.profile-dropdown:hover:not(.is-active) .navbar-dropdown {
+  display: flex;
   flex-direction: column;
-  justify-content: center !important;
-
 }
 
 .dropdown-full {
@@ -135,7 +136,9 @@
 
 .dropdown-content {
   color: var(--color-primary) !important;
-   background-color: black !important;
+  background-color: black !important;
+  font-weight: 600;
+  font-size: var(--fs-md);
 }
 
 .dropdown-divider {
@@ -150,17 +153,14 @@
     display: flex;                  /* Switch grid to column layout */
     flex-direction: column;         /* Stack items vertically */
     align-items: stretch;           /* Stretch full width */
-    padding: 0.5rem 1rem;           /* Adjust padding */
   }
 
   .navbar-brand {
     justify-self: start;            /* Keep logo left-aligned */
-    margin-bottom: 0.5rem;          /* Space below */
   }
 
   .navbar-start {
     justify-self: stretch;          /* Stretch search bar container */
-    margin-bottom: 0.5rem;
   }
 
   .navbar-start .navbar-item > * {
@@ -172,22 +172,32 @@
   .navbar-end {
     justify-self: stretch;          /* Stretch right zone */
     flex-direction: column;         /* Stack buttons vertically */
+    justify-content: center;
     align-items: center;            /* Center items horizontally */
     gap: 8px;                       /* Smaller gap */
-    margin-bottom: 0.5rem;
   }
 
   .navbar-end .button {
-    max-width: 90%;                 /* Limit button width */
+    font-size: var(--fs-md1);                 /* Limit button width */
     text-align: center;             /* Center text */
   }
 
   .navbar-end .navbar-dropdown {
-    position: absolute !important; /* Make sure it's not stacked incorrectly */
+    position: relative !important;
+    display: none;
     width: 100%;                    /* Full width */
     max-width: 100%;                /* Prevent overflow */
     margin-top: 0;                  /* Remove top margin */
 	z-index: 2000 !important;       /* Above all navbar content */
+  }
+
+  .profile-dropdown.is-active .navbar-dropdown {
+    display: flex;
+    flex-direction: column;
+  }
+  .profile-dropdown .navbar-dropdown {
+    position: absolute;
+    right: 0;
   }
 }
 
