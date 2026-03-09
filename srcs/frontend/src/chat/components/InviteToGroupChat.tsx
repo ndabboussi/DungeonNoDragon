@@ -98,7 +98,11 @@ export function InviteToGroupChat({
 
 				<button
 				className="button is-small is-primary ml-2"
-				onClick={() => inviteMutation.mutate(f.appUserId)}
+				onClick={() => {
+					if (inviteMutation.isPending)
+						return <div>Sending invite...</div>;
+					inviteMutation.mutate(f.appUserId);
+				}}
 				>
 				Invite
 				</button>
