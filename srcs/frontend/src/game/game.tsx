@@ -169,14 +169,16 @@ const Game = () => {
 	}, [Module]);
 
 	useEffect(() =>
-	{
-		const canvas = canvasRef.current;
-		if (!canvas)
-			return;
+{
+    const canvas = canvasRef.current;
+    if (!canvas)
+        return;
 
 		const handleContextLost = (e: Event) =>
 		{
 			e.preventDefault();
+			cleanupWasm();
+			setTimeout(() => location.reload(), 500);
 		};
 
 		canvas.addEventListener("webglcontextlost", handleContextLost, false);

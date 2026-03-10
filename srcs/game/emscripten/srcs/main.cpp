@@ -55,6 +55,15 @@ bool	pause = false;
 		emscripten::function("resumeGame", &resumeGame);
 		emscripten::function("pauseGame", &pauseGame);
 	}
+	EM_JS(void, check_context_lost, (), {
+		const canvas = document.getElementById('canvas') 
+			|| Module.canvas;  // fallback sur le canvas Emscripten
+		if (!canvas) return;  // sortir proprement si pas de canvas
+		const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+		if (gl && gl.isContextLost()) {
+			setTimeout(() => location.reload(), 500);
+		}
+	});
 #endif
 
 void mainloopE(void *arg)
@@ -72,38 +81,17 @@ void mainloopE(void *arg)
 
 		int	ticksPerFrame = 1000 / MAX_FPS;
 		gSdl.cap.startTimer();
+		SDL_RenderClear(gSdl.renderer);
 		while (SDL_PollEvent(&gSdl.event))
 		{
-			// if (gSdl.event.type == SDL_KEYDOWN && gSdl.event.key.keysym.sym == SDLK_ESCAPE)
-			// {
-			// 	emscripten_cancel_main_loop();
-			// 	return ;
-			// }
-			// if (gSdl.event.type == SDL_WINDOWEVENT)
-			// {
-			// 	if (gSdl.event.window.event == SDL_WINDOWEVENT_ENTER)
-			// 	{
-			// 		gSdl.setMouseInWindow(true);
-			// 		printf("Souris entrée dans le canvas\n");
-			// 	}
-
-			// 	if (gSdl.event.window.event == SDL_WINDOWEVENT_LEAVE)
-			// 	{
-			// 		gSdl.setMouseInWindow(false);
-			// 		printf("Souris sortie du canvas\n");
-			// 	}
-			// }
 			if (gSdl.event.type == SDL_KEYDOWN)
 				key_down();
 			else if (gSdl.event.type == SDL_KEYUP)
 				key_up();
 		}
-		// if (!gSdl.getMouseInWindow())
-		// 	reset_key();
 		game_loop(*game, gSdl.getActualTime() - frameTime);
 		frameTime = gSdl.getActualTime();
 		SDL_RenderPresent(gSdl.renderer);
-		SDL_RenderClear(gSdl.renderer);
 		int frameTicks = gSdl.cap.getTicks();
 		if (frameTicks < ticksPerFrame)
 			SDL_Delay(ticksPerFrame - frameTicks);
