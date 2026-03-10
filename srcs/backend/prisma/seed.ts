@@ -52,7 +52,7 @@ async function seedBlocks(users) {
 
   for (const [blocker, blocked] of blocks) {
     const existing = await prisma.blockedList.findFirst({
-      where: { blocker: blocker.appUserId, blocked: blocked.appUserId },
+      where: { blocker: blocker.appUserId, blocked: blocked.appUserId, deletedAt: null },
     });
     if (!existing) {
       await prisma.blockedList.create({
@@ -80,7 +80,7 @@ async function seedFriendships(users) {
 
   for (const [sender, receiver, status] of pairs) {
     const existing = await prisma.friendship.findFirst({
-      where: { senderId: sender.appUserId, receiverId: receiver.appUserId },
+      where: { senderId: sender.appUserId, receiverId: receiver.appUserId, deletedAt: null },
     });
     if (!existing) {
       await prisma.friendship.create({
@@ -105,7 +105,7 @@ async function seedPrivateChats(users) {
 
     // Skip if private chat already exists
     const existing = await prisma.privateChat.findUnique({
-      where: { user1Id_user2Id: { user1Id, user2Id } },
+      where: { user1Id_user2Id: { user1Id, user2Id }, deletedAt: null },
     });
     if (existing) continue;
 
@@ -144,7 +144,7 @@ async function seedPrivateChats(users) {
 async function seedGroupChat(users) {
   // Skip if group chat already exists
   const existing = await prisma.chat.findFirst({
-    where: { chatType: "group", chatName: "Gamers United" },
+    where: { chatType: "group", chatName: "Gamers United", deletedAt: null }
   });
   if (existing) return;
 
@@ -164,15 +164,21 @@ async function seedGroupChat(users) {
       },
       roles: {
         create: [
-          { userId: owner.appUserId, role: chat_role_type.owner, attributedBy: owner.appUserId },
-          { userId: admin.appUserId, role: chat_role_type.admin, attributedBy: owner.appUserId },
+          { userId: owner.appUserId,     role: chat_role_type.owner,     attributedBy: owner.appUserId },
+          { userId: admin.appUserId,     role: chat_role_type.admin,     attributedBy: owner.appUserId },
           { userId: moderator.appUserId, role: chat_role_type.moderator, attributedBy: owner.appUserId },
-          { userId: writer.appUserId, role: chat_role_type.writer, attributedBy: owner.appUserId },
-          { userId: member.appUserId, role: chat_role_type.member, attributedBy: owner.appUserId },
+          { userId: writer.appUserId,    role: chat_role_type.writer,    attributedBy: owner.appUserId },
+          { userId: member.appUserId,    role: chat_role_type.member,    attributedBy: owner.appUserId },
+          // Les 5 users restants reçoivent le rôle member par défaut
+          { userId: users[5].appUserId,  role: chat_role_type.member,    attributedBy: owner.appUserId },
+          { userId: users[6].appUserId,  role: chat_role_type.member,    attributedBy: owner.appUserId },
+          { userId: users[7].appUserId,  role: chat_role_type.member,    attributedBy: owner.appUserId },
+          { userId: users[8].appUserId,  role: chat_role_type.member,    attributedBy: owner.appUserId },
+          { userId: users[9].appUserId,  role: chat_role_type.member,    attributedBy: owner.appUserId },
         ],
       },
     },
-  });
+});
 
   const messageAuthors = [owner, admin, moderator, writer, member];
   const messages = Array.from({ length: 100 }).map((_, i) => ({
@@ -239,20 +245,29 @@ async function seedGameProfiles(users) {
 
 // GAME SESSIONS + RESULTS
 async function seedGameSessions(users) {
-  const maps = ["Forest", "Desert", "Ruins"];
+  const maps = [
+    { sessionGameId: "seed-session-forest", label: "Forest" },
+    { sessionGameId: "seed-session-desert", label: "Desert" },
+    { sessionGameId: "seed-session-ruins",  label: "Ruins"  },
+  ];
 
   for (const map of maps) {
-    // Skip if session for this map already exists
-    const existing = await prisma.gameSession.findFirst({
-      where: { mapName: map },
-    });
-    if (existing) continue;
-
-    const session = await prisma.gameSession.create({
-      data: { mapName: map, status: "finished" },
+    const session = await prisma.gameSession.upsert({
+      where: { sessionGameId: map.sessionGameId },
+      update: {},
+      create: {
+        sessionGameId: map.sessionGameId,
+        status: "finished",
+        startedAt: new Date(),
+      },
     });
 
     for (const u of users) {
+      const existing = await prisma.gameResult.findFirst({
+        where: { gameId: session.sessionId, playerId: u.appUserId },
+      });
+      if (existing) continue;
+
       await prisma.gameResult.create({
         data: {
           gameId: session.sessionId,
