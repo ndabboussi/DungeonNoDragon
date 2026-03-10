@@ -2,27 +2,39 @@
 
 Engine gSdl;
 
+bool	pause = false;
+static bool gameRunning = true;
+
 #ifdef __EMSCRIPTEN__
 
 	std::queue<val> msgJson;
 
 
-	void finishGame()
+	void	finishGame()
 	{
 		SDL_EventState(SDL_KEYDOWN, SDL_DISABLE);
 		SDL_EventState(SDL_KEYUP, SDL_DISABLE);
-		emscripten_cancel_main_loop();
+		gameRunning = false;
 	}
 
-	void getMessage(val obj)
+	void	getMessage(val obj)
 	{
 		msgJson.push(obj);
 		if (msgJson.size() > 7)
 			msgJson.pop();
 	}
 
+	void	resumeGame()
+	{
+		pause = false;
+	}
 
-	void enableInput(bool enable)
+	void	pauseGame()
+	{
+		pause = true;
+	}
+
+	void	enableInput(bool enable)
 	{
 		if (!enable)
 			reset_key();
@@ -41,6 +53,8 @@ Engine gSdl;
 		emscripten::function("getMessage", &getMessage);
 		emscripten::function("finishGame", &finishGame);
 		emscripten::function("enableInput", &enableInput);
+		emscripten::function("resumeGame", &resumeGame);
+		emscripten::function("pauseGame", &pauseGame);
 	}
 #endif
 
@@ -49,6 +63,15 @@ void mainloopE(void *arg)
 	static bool init = false;
 	static double frameTime = gSdl.getActualTime();
 	Game *game = static_cast<Game *>(arg);
+	if (!gameRunning)
+    {
+        emscripten_cancel_main_loop();
+		init = false;
+        frameTime = 0;
+        return;
+    }
+	if (pause)
+		return ;
 	try
 	{
 		parseJson(init, *game);
@@ -57,38 +80,17 @@ void mainloopE(void *arg)
 
 		int	ticksPerFrame = 1000 / MAX_FPS;
 		gSdl.cap.startTimer();
+		SDL_RenderClear(gSdl.renderer);
 		while (SDL_PollEvent(&gSdl.event))
 		{
-			// if (gSdl.event.type == SDL_KEYDOWN && gSdl.event.key.keysym.sym == SDLK_ESCAPE)
-			// {
-			// 	emscripten_cancel_main_loop();
-			// 	return ;
-			// }
-			// if (gSdl.event.type == SDL_WINDOWEVENT)
-			// {
-			// 	if (gSdl.event.window.event == SDL_WINDOWEVENT_ENTER)
-			// 	{
-			// 		gSdl.setMouseInWindow(true);
-			// 		printf("Souris entrée dans le canvas\n");
-			// 	}
-
-			// 	if (gSdl.event.window.event == SDL_WINDOWEVENT_LEAVE)
-			// 	{
-			// 		gSdl.setMouseInWindow(false);
-			// 		printf("Souris sortie du canvas\n");
-			// 	}
-			// }
 			if (gSdl.event.type == SDL_KEYDOWN)
 				key_down();
 			else if (gSdl.event.type == SDL_KEYUP)
 				key_up();
 		}
-		// if (!gSdl.getMouseInWindow())
-		// 	reset_key();
 		game_loop(*game, gSdl.getActualTime() - frameTime);
 		frameTime = gSdl.getActualTime();
 		SDL_RenderPresent(gSdl.renderer);
-		SDL_RenderClear(gSdl.renderer);
 		int frameTicks = gSdl.cap.getTicks();
 		if (frameTicks < ticksPerFrame)
 			SDL_Delay(ticksPerFrame - frameTicks);
@@ -104,6 +106,7 @@ static void	importAssetsAndRoom(void)
 	Assets::importAssets("../assets/sprite/assets.bmp", 16);
 	Assets::importAssets("../assets/sprite/forest/tiles-all.bmp", 32);
 	Assets::importAssets("../assets/sprite/water.bmp", 16);
+	Assets::importAssets("../assets/sprite/forest/Portal.bmp", 32);
 	PlayerAssets::importPlayersAssets(100);
 	Mob::importMobsAssets(100);
 
@@ -113,8 +116,10 @@ static void	importAssetsAndRoom(void)
 int main(int ac, char **av)
 {
 	srand(time(0));
+	gameRunning = true;
 	std::string name, id;
 	(void)ac;
+	gSdl.cleanup();
 	if (!init_sdl(gSdl))
 	{
 		std::cerr << "Error in sdl init" << std::endl;

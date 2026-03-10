@@ -155,6 +155,20 @@ void	Hud::printNbMobs(Player const &player)
 			SDL_FreeSurface(surf);
 		}
 	}
+	else if (nb > 0)
+	{
+		nb = 0;
+		SDL_Color color = (nb) ? (SDL_Color){255, 0, 0, 255} : (SDL_Color){0, 255, 0, 255};
+		SDL_Surface *surf = TTF_RenderText_Blended(gSdl.font, std::to_string(nb).c_str(), color);
+		if (!surf)
+		{
+			SDL_Log("RenderText error: %s", TTF_GetError());
+			return ;
+		}
+		SDL_DestroyTexture(this->_nbMobs);
+		this->_nbMobs = SDL_CreateTextureFromSurface(gSdl.renderer, surf);
+		SDL_FreeSurface(surf);
+	}
 
 	int w, h, w2;
 	SDL_QueryTexture(this->_nbMobsLine, nullptr, nullptr, &w, &h);

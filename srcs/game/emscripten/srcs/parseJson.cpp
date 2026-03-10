@@ -194,7 +194,10 @@ void	parseJson(bool &init, Game &game)
 			loopRoomState(game, loop["room_update"]);
 	}
 	else if (action == "finished")
+	{
+		init = false;
 		endGame(msg, game);
+	}
 	else if (action == "room_change")
 		changeRoom(game, msg["player_leave"]);
 }
