@@ -226,11 +226,11 @@
 /* ============================= */
 
 .launch-game {
-  background: rgba(45, 212, 191, 0.15);
+  background: #03151e !important;
   color: var(--color-primary) !important;
   font-family: var(--font-button-large) !important;
   font-weight: 700 !important;
-  border: 1px solid rgba(45, 212, 191, 0.3);
+  border: 1px solid rgba(6, 33, 29, 0.3) !important;
   letter-spacing: 0.5px;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -238,15 +238,15 @@
   position: relative;
   overflow: hidden;
 
-  transition: all 0.2s ease-in-out;
+  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 
   animation: arcanePulse 3s infinite ease-in-out;
   box-shadow: 0 0 12px rgba(45, 212, 191, 0.15);
 }
 
 .launch-game:hover {
-  background: rgba(45, 212, 191, 0.25);
-  border-color: rgba(45, 212, 191, 0.5);
+  background: var(--color-primary-dark1) !important;
+  border-color: rgba(45, 212, 191, 0.4) !important;
   color: #fff !important;
   box-shadow: 0 0 20px rgba(45, 212, 191, 0.3);
 }

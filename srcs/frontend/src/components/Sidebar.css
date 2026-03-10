@@ -44,6 +44,8 @@
 
 .chat-sidebar-desktop.collapsed {
   width: 0px; /* collapsed width */
+  min-width: 0 !important;
+  border-left: none;
 }
 
 .chat-sidebar-desktop .sidebar-box {
