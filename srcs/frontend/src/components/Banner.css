@@ -118,6 +118,7 @@
   right: 0;                        /* Align to right edge */
   left: auto;                      /* Don’t use left */
   margin-top: 0;
+  margin-right: 15px;
   z-index: 2000 !important;        /* Above all navbar content */
   min-width: 200px;                /* Minimum dropdown width */
   max-width: 300px;                /* Maximum dropdown width */
