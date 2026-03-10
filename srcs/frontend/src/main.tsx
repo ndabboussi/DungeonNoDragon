@@ -1,7 +1,7 @@
 import "./main.css"
 
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import 'bulma/css/bulma.min.css'; // bulma style css
@@ -51,8 +51,11 @@ const queryClient = new QueryClient({
 });
 
 const AppEntryPoint = () => {
+	const location = useLocation();
+	const isGame = location.pathname === '/game';
+
 	return (
-		<div className="page-container">
+		<div className={`page-container${isGame ? ' no-fog' : ''}`}>
 		<Banner />
 		<div className="main-layout">
 			<div className="content">

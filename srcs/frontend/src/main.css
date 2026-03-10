@@ -122,6 +122,10 @@ input:-webkit-autofill {
 	100% { opacity: 0.7; }
 }
 
+.page-container.no-fog::before,
+.page-container.no-fog::after {
+	display: none !important;
+}
 
 .main-layout {
 	display: flex;
