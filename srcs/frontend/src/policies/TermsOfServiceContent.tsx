@@ -5,7 +5,7 @@ export const tos_sections = [
 		content: (
 			<div className="section-content">
 				<p>
-					{'Welcome to <strong>Dungeon No Dragon</strong> (“the Service”). These Terms of Service (“Terms”) govern your access to and use of our online gaming and chat platform.'}
+					{'Welcome to Dungeon No Dragon (“the Service”). These Terms of Service (“Terms”) govern your access to and use of our online gaming and chat platform.'}
 				</p>
 
 				<p>
@@ -196,7 +196,7 @@ export const tos_sections = [
 					<li>Game assets</li>
 				</ul>
 				<p>
-					is owned by <strong>Dungeon No Dragon</strong> or its licensors. You may not copy, modify,
+					is owned by <span>Dungeon No Dragon</span> or its licensors. You may not copy, modify,
 					distribute, or reverse-engineer any part of the Service.
 				</p>
 			</div>
@@ -275,7 +275,7 @@ export const tos_sections = [
 	},
 	{
 		id: "Contact",
-		title: "",
+		title: "Contact",
 		content: (
 			<div className="section-content">
 				<p>If you have questions about these Terms, you can contact us at:</p>
