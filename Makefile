@@ -7,7 +7,15 @@ CERT_PATH = ./docker/certs
 DOMAIN = localhost
 
 SECRET_PATH = docker/secrets
-SECRET_NAMES = db_password.txt google_secret.txt jwt_secret.txt cookie_secret.txt secret_42.txt pgadmin_password.txt
+SECRET_NAMES =	db_password.txt			\
+				google_secret.txt		\
+				jwt_secret.txt			\
+				cookie_secret.txt		\
+				secret_42.txt			\
+				pgadmin_password.txt	\
+				game_secret.txt			\
+				smtp_secret.txt
+
 SECRETS = $(patsubst %, $(SECRET_PATH)/%, $(SECRET_NAMES))
 
 INFO = @printf '\033[1;35m⮑ %s\033[0m\n'
@@ -29,6 +37,12 @@ cert:
 
 doc:
 	@docker exec -it node-c npx --prefix /front openapi-typescript http://node:3000/documentation/json --output /front/src/types/api.ts
+
+deps:
+	@docker run --rm -v ./srcs/backend:/backend -v ./srcs/frontend:/frontend -w /backend node:25.2.1 sh -c "npm install prisma@5.22.0 --legacy-peer-deps && npm install --legacy-peer-deps && npx prisma generate && npm install --prefix /frontend"
+
+seed:
+	@docker exec -it node-c npx prisma db seed
 
 $(SECRET_PATH)/secret_42.txt:
 	@mkdir -p $(SECRET_PATH)
@@ -61,6 +75,7 @@ clean: down
 
 fclean:
 	$(INFO) "Removing containers, images and volumes..."
+	@if [ -d srcs/game/emscripten/objs_wasm ]; then $(DOCKER_COMPOSE) run --rm -ti emscripten make wfclean > /dev/null 2>&1; fi
 	@$(DOCKER_COMPOSE) down --rmi all -v
 	$(INFO) "Cleanup complete."
 

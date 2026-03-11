@@ -1,5 +1,5 @@
 #include "Server.hpp"
-Server::Server(void)
+Server::Server(std::string serverId, std::string serverSecret) : _serverId(serverId), _serverSecret(serverSecret)
 {}
 
 Server::~Server(void)
@@ -147,10 +147,13 @@ void	Server::reconnectPlayer(std::string &uid, uWS::WebSocket<false, true, PerSo
 					+ ", \"map_x\" : " + std::to_string(player->getNode()->getX())
 					+ ", \"map_y\" : " + std::to_string(player->getNode()->getY())
 					+ ", \"room_x\" : " + std::to_string(player->getX()) 
-					+ ", \"room_y\" : " + std::to_string(player->getY()) + '}';
+					+ ", \"room_y\" : " + std::to_string(player->getY())
+					+ ", \"nbr_death\" : " + std::to_string(player->getNbrDeath())
+					+ ", \"start_pos\" : " + std::to_string(player->getStartPos()) + '}';
 			}
 			ws->send("You have been reconnected to a session !", uWS::OpCode::TEXT);
 			ws->send(msg, uWS::OpCode::TEXT);
+			ws->subscribe(player->getRoom().getRoomId());
 			return ;
 		}
 	}
@@ -188,7 +191,10 @@ std::vector<Session>::iterator	Server::endSession(std::string sessionId, uWS::Ap
 				continue ;
 			std::shared_ptr<Player> player = p.lock();
 			if (!player->getFinished())
+			{
+				sendPlayerResultCurl(*this, *it, *player);
 				(*it).sendEndResults(app, player, 1);
+			}
 			this->removePlayer(p.lock()->getUid());
 		}
 		return this->_sessions.erase(it);
@@ -196,12 +202,32 @@ std::vector<Session>::iterator	Server::endSession(std::string sessionId, uWS::Ap
 	return this->_sessions.end();
 }
 
-Player	&Server::getPlayer(std::string &uid)
+std::shared_ptr<Player>	Server::getPlayer(std::string &uid)
 {
 	for (auto &player : this->_players)
 		if (player->getUid() == uid)
-			return *player;
-	return *this->_players[0];
+			return player;
+	return (NULL);
+}
+
+std::string	Server::getServerToken(void) const
+{
+	return (this->_serverToken);
+}
+
+std::string Server::getServerId(void) const
+{
+	return (this->_serverId);
+}
+
+std::string Server::getServerSecret(void) const
+{
+	return (this->_serverSecret);
+}
+
+void		Server::setServerToken(std::string token)
+{
+	this->_serverToken = token;
 }
 
 std::weak_ptr<Player> findClosestPlayer(std::vector<std::weak_ptr<Player>> &allPlayer, Mob &mob)
@@ -225,9 +251,12 @@ std::weak_ptr<Player> findClosestPlayer(std::vector<std::weak_ptr<Player>> &allP
 
 void	roomLoopUpdate(Room &room, std::vector<std::weak_ptr<Player>> &allPlayer, uWS::App *app, Session &session, int const &isRunning)
 {
+	(void)app;
 	std::string msg = "{\"action\": \"loop_action\"";
 
 	msg += ",\"session_timer\":" + std::to_string(session.getActualTime());
+	if (session.getCountDown() != 6 && session.getCountDown() >= -10)
+		msg += ",\"countdown\":" + std::to_string(session.getCountDown());
 	msg += ",\"running\":" + std::to_string(isRunning) + ",\"loop\": {";
 
 	const int player_size = allPlayer.size();
@@ -239,23 +268,24 @@ void	roomLoopUpdate(Room &room, std::vector<std::weak_ptr<Player>> &allPlayer, u
 			if (p.expired())
 				continue ;
 			std::shared_ptr<Player> player = p.lock();
-			bool	died = player->getDied();
+			std::string hurt = (player->updateHurt() == true) ? "true" : "false";
 			player_update += "{\"player_uid\":\"" + player->getUid() + '\"';
 			player_update += ",\"player_name\":\"" + player->getName() + '\"';
+			player_update += ",\"player_mapx\":" + std::to_string(player->getNode()->getX());
+			player_update += ",\"player_mapy\":" + std::to_string(player->getNode()->getY());
 			player_update += ",\"player_x\":" + std::to_string(player->getX());
 			player_update += ",\"player_y\":" + std::to_string(player->getY());
 			player_update += ",\"player_health\":" + std::to_string(player->getHp());
 			player_update += ",\"player_anim\":" + std::to_string(player->getAnim());
 			player_update += ",\"player_dir\":" + std::to_string(player->getLastDir());
 			player_update += ",\"player_kills\":" + std::to_string(player->getKills());
-			player_update += ",\"player_died\":" + std::to_string(died);
+			player_update += ",\"player_is_dead\":" + std::to_string(player->isDead());
+			player_update += ",\"player_death_amount\":" + std::to_string(player->getNbrDeath());
+			player_update += ",\"player_hurt\":\"" + hurt + '\"';
 			player_update += ",\"player_start\":" + std::to_string(player->getStartPos());
 			player_update += ",\"player_exit\":\"";
 			player_update.push_back(player->getExit());
 			player_update += "\"},";
-
-			if (died == true)
-				player->setDied(false);
 		}
 		player_update.pop_back();
 		player_update.push_back(']');
@@ -311,8 +341,6 @@ void	roomLoopUpdate(Room &room, std::vector<std::weak_ptr<Player>> &allPlayer, u
 						std::weak_ptr<Player> player = findClosestPlayer(allPlayer, *mob);
 						if (player_size && !player.expired())
 							mob->MobAction(*player.lock(), map);
-						// else
-						// 	mob->MobAction(-1, -1, map);
 					}
 					int mobAnim = 0;
 					if (mob->getRoutine() == MOB_CHASING)
@@ -359,104 +387,53 @@ void	roomLoopUpdate(Room &room, std::vector<std::weak_ptr<Player>> &allPlayer, u
 	app->publish(room.getRoomId(), msg, uWS::OpCode::TEXT);
 }
 
-// void sendToBack(std::string url, std::string &msg, std::string method)
-// {
-//     CURL *curl = curl_easy_init();
-//     if(curl)
-// 	{
-// 		std::cout << "curl_easy_init() worked properly" << std::endl;
-// 		if (method == "POST")
-// 		{
-// 			if (curl_easy_setopt(curl, CURLOPT_URL, url.c_str()) != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_URL FAIL" << std::endl;
-// 			}
-
-// 			if (curl_easy_setopt(curl, CURLOPT_POST, 1L) != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_POST" << std::endl;
-// 			}
-
-// 			if (curl_easy_setopt(curl, CURLOPT_POSTFIELDS, msg.c_str()) != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_POSTFIELDS" << std::endl;
-// 			}
-
-// 			std::cout << url << " POST: " << msg << std::endl;
-// 		}
-// 		else if (method == "PATCH")
-// 		{
-// 			if (curl_easy_setopt(curl, CURLOPT_URL, url.c_str()) != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_URL" << std::endl;
-// 			}
-
-// 			if (curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH") != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_CUSTOMREQUEST" << std::endl;
-// 			}
-
-// 			if (curl_easy_setopt(curl, CURLOPT_POSTFIELDS, msg.c_str()) != CURLE_OK)
-// 			{
-// 				std::cout << "CURLOPT_POSTFIELDS" << std::endl;
-// 			}
-// 			std::cout << url << " PATCH: " << msg << std::endl;
-// 		}
-
-// 		if (curl_easy_perform(curl) != CURLE_OK)
-// 		{
-// 			std::cout << "CURL_EASY_PERFORM" << std::endl;
-// 		}
-// 		curl_easy_cleanup(curl);
-// 		{
-// 			std::cout << "CURL_EASY_CLEANUP" << std::endl;
-// 		}
-//     }
-// 	else
-// 		std::cout << "fail" << std::endl;
-// }
-
 void	Server::run(void)
 {
 	uWS::App app;
+	bool	flag = false;
 
 	struct TimerData
 	{
 		Server		*server;
 		uWS::App	*app;
+		bool		*flag;
 	};
 	auto loop = uWS::Loop::get();
 	struct us_timer_t *delayTimer = us_create_timer((struct us_loop_t *) loop, 0, sizeof(TimerData));
 	auto *data = (TimerData *) us_timer_ext(delayTimer);
 	data->server = this;
 	data->app = &app;
+	data->flag = &flag;
 	us_timer_set(delayTimer, [](struct us_timer_t *t)
 	{
 		auto *data = (TimerData *) us_timer_ext(t);
 
 		for(auto &session : data->server->_sessions)
 		{
+			if (!session.getPlaceLeft() && session.doesAllPlayersConnected() && !session.isReadyToRun())
+                session.startLaunching();
 			if (!session.isRunning() && session.isReadyToRun())
 			{
 				if (session.isEnoughtReadyTime())
 				{
-					// std::string msg = "{\"sessionGameId\":\"" + session.getSessionId() + "\""
-					// 				+ ",\"status\":\"running\""
-					// 				+ ",\"playerIds\":[";
-					// for (auto &player : session.getPlayers())
-					// {
-					// 	msg += "\"" + player.lock()->getUid() + "\",";
-					// }
-					// if (*msg.rbegin() == ',')
-					// 	msg.pop_back();
-					// msg += "]}";
+					std::string msg = "{\"sessionGameId\":\"" + session.getSessionId() + "\""
+									+ ",\"status\":\"running\""
+									+ ",\"playerIds\":[";
+					for (auto &player : session.getPlayers())
+					{
+						msg += "\"" + player.lock()->getUid() + "\",";
+					}
+					if (*msg.rbegin() == ',')
+						msg.pop_back();
+					msg += "]}";
 
-					// sendToBack("http://localhost:3000/game/create/", msg, "POST");
+					sendViaCurl(*data->server, "http://node-c:3000/game/create", "POST", msg, 0);
 					session.launch();
+					std::cout << "session launched" << std::endl;
 				}
 				continue;
 			}
-			session.checkFinishedPlayers(*data->app);
+			session.checkFinishedPlayers(*data->app, *data->server);
 			if (session.hasEnded())
 			{
 				std::cout << "ended" << std::endl;
@@ -469,6 +446,7 @@ void	Server::run(void)
 					continue ;
 				if (p.lock()->getFinished())
 					continue ;
+				p.lock()->dieAction();
 				Room &room = p.lock()->getRoomRef();
 				auto i = PlayerPerRoom.find(&room);
 				if (i == PlayerPerRoom.end())
@@ -492,8 +470,12 @@ void	Server::run(void)
 				{
 					if (session.isPlayerInSession((*it)->getUid()))
 					{
-						session.removePlayer((*it)->getUid());
-						break;
+						if (!(*it)->getResultCurl())
+						{
+							sendPlayerResultCurl(*data->server, session, *(*it));
+							session.removePlayer((*it)->getUid());
+							break;
+						}
 					}
 				}
 				it = data->server->_players.erase(it);
@@ -505,7 +487,12 @@ void	Server::run(void)
 		for (auto it = data->server->_sessions.begin(); it != data->server->_sessions.end();) // loop to end sessions which has no (active) players in it
 		{
 			if (it->hasEnded())
+			{
+				std::string msg = R"({"sessionGameId":")" + it->getSessionId() + R"(", "status":"finished"})";
+				sendViaCurl(*data->server, "http://node-c:3000/game/end", "PATCH", msg, 0);
+				std::cout << "session ended" << std::endl;
 				it = data->server->endSession(it->getSessionId(), *data->app);
+			}
 			if (it != data->server->_sessions.end())
 				it++;
 		}
@@ -537,10 +524,13 @@ void	Server::run(void)
 			{
 				(void)ws, (void)code, (void)msg, (void)app;
 				auto *data = (PerSocketData *)ws->getUserData();
-				Player &player = this->getPlayer(data->playerId);
-				player.setReconnexion(0);
-				if (player.getFinished())
-					this->removePlayer(data->playerId);
+				std::shared_ptr<Player> player = this->getPlayer(data->playerId);
+				if (player)
+				{
+					player->setReconnexion(0);
+					if (player->getFinished())
+						this->removePlayer(data->playerId);
+				}
 				std::cout << "Client déconnecté" << std::endl;
 			}
 		})

@@ -23,7 +23,9 @@ export async function postLogoutController(
 		});
 	}
 
-	await UserService.setAvailabality(request.user.id, false);
+	if (request.user) {
+		await UserService.setAvailabality(request.user.id, false);
+	}
 
 	try {
 		const userSocket = request.getSocket();
@@ -31,12 +33,7 @@ export async function postLogoutController(
 			await RoomService.leave(request.user.id, userSocket, "Disconnect");
 	} catch {}
 
-	reply.clearCookie('refreshToken', {
-		path: '/',
-		httpOnly: true,
-		secure: true,
-		sameSite: 'strict'
-	});
+	reply.clearAuthCookie();
 
 	return reply.status(200).send({ success: true });
 }

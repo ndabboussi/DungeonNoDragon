@@ -3,16 +3,31 @@
 int	init_sdl(Engine &gSdl)
 {
 	//init SDL
-	
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-		std::cerr << "SDL_Init error: " << SDL_GetError() << std::endl;
+
+	if (SDL_Init(SDL_INIT_VIDEO) != 0)
+	{
+		std::cout << "SDL_Init : " << SDL_GetError() << std::endl;
 		return (0);
+	}
+	int n = SDL_GetNumRenderDrivers();
+	for (int i = 0; i < n; i++)
+	{
+		SDL_RendererInfo	openInfo;
+		SDL_GetRenderDriverInfo(i, &openInfo);
+		std::string name(openInfo.name);
+		if (name == "opengles2")
+		{	
+			n = i;
+			break;
+		}
 	}
 
 	//need a pointer on the window we'll create
-	gSdl.window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-	if (!gSdl.window) {
-		std::cerr << "Window error: " << SDL_GetError() << std::endl;
+	if (!gSdl.window)
+		gSdl.window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	if (!gSdl.window)
+	{
+		std::cout << "Window : " << SDL_GetError() << std::endl;
 		SDL_Quit();
 		return (0);
 	}
@@ -25,25 +40,24 @@ int	init_sdl(Engine &gSdl)
 	gSdl.font = TTF_OpenFont("assets/fonts/Pixeloid_Font/PixeloidMono.ttf", 32);
 	if (!gSdl.font)
 	{
-		SDL_Log("TTF_OpenFont error: %s", TTF_GetError());
+		SDL_DestroyWindow(gSdl.window);
+		SDL_Quit();
+		SDL_Log("TTF_OpenFont : %s", TTF_GetError());
 		return false;
 	}
 
 	//need a renderer for the texture in general
-	gSdl.renderer = SDL_CreateRenderer(gSdl.window, -1, SDL_RENDERER_ACCELERATED);
+	if (!gSdl.renderer)
+		gSdl.renderer = SDL_CreateRenderer(gSdl.window, n, SDL_RENDERER_ACCELERATED);
 	if (!gSdl.renderer) {
-		std::cerr << "render/20 : " << SDL_GetError() << std::endl;
+		std::cout << "Render could not be created because of WebGl, please restart your web browser." << std::endl;
 		SDL_DestroyWindow(gSdl.window);
 		SDL_Quit();
 		return (0);
 	}
 
-	SDL_RendererInfo    info;
-
+	SDL_RendererInfo info;
     SDL_GetRendererInfo(gSdl.renderer, &info);
-
-	std::cout << info.max_texture_width << " " << info.max_texture_height << std::endl;
-
 	if (info.max_texture_width > 16384)
 	{
 		gSdl.maxTexWidth = info.max_texture_width / 2;
@@ -54,8 +68,6 @@ int	init_sdl(Engine &gSdl)
 		gSdl.maxTexWidth = info.max_texture_width;
 		gSdl.maxTexHeight = info.max_texture_height;
 	}
-
-	std::cout << gSdl.maxTexHeight << " " << gSdl.maxTexWidth << std::endl;
 
 	if (!gSdl.timer.getStarted())
 		gSdl.timer.startTimer();

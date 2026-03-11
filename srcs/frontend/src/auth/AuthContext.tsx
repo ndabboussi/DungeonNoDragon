@@ -12,6 +12,7 @@ export type AuthContextValue = {
 	token: string | null;
 	login: (userData: User, userToken: string) => void;
 	logout: () => void;
+	updateUser: (user: Partial<User>) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -22,23 +23,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const [user, setUser] = useState< User | null>(null);
 	const [token, setToken] = useState<string | null>(null);
-	const [isInitializing, setIsInitializing] = useState(true);
+	const [isInitializing, setIsInitializing] = useState<boolean>(true);
+	const [redirectURL, setRedirectURL] = useState<string>("");
 
 	const login = useCallback((userData: User, userToken: string) => {
 		setUser(userData);
 		setToken(userToken);
 		setAccessToken(userToken);
 		toast({ title: `Welcome ${userData.username}` });
-		navigate("/home");
+		if (redirectURL)
+			navigate(redirectURL);
+		else
+			navigate("/home");
 	}, [navigate]);
 
 	const logout = useCallback(async () => {
-		await api.post('/auth/logout');
+		if (token)
+			await api.post('/auth/logout');
 		setUser(null);
 		setToken(null);
 		setAccessToken(null);
 		navigate("/");
 	}, [navigate]);
+
+	const updateUser = useCallback((newData: Partial<User>) => {
+		setUser(prev => prev ? { ...prev, ...newData } : prev);
+	}, []);
 
 	const { data, isLoading, isError } = useQuery({
 		queryKey: ['session'],
@@ -57,7 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		};
 	}, [logout]);
 
-	const publicRoutes = ['/login', '/register', '/callback42', '/callbackGoogle'];
+	const publicRoutes = ['/login', '/register', '/callback42', '/callbackGoogle', '/reset-password'];
 
 	useEffect(() => {
 		if (data?.data?.user && data.data.token) {
@@ -74,8 +84,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 			setUser(null);
 			setToken(null);
 			setAccessToken(null);
-			if (!publicRoutes.includes(window.location.pathname))
+			if (!publicRoutes.includes(window.location.pathname)) {
+				setRedirectURL(window.location.pathname);
 				navigate('/');
+			}
 		}
 
 		return () => {
@@ -89,7 +101,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		return <div>Loading session...</div>;
 
 	return (
-		<AuthContext.Provider value={{ user, token, login, logout }}>
+		<AuthContext.Provider value={{ user, token, login, logout, updateUser }}>
 			{children}
 		</AuthContext.Provider>
 	);

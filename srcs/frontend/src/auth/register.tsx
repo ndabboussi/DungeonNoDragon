@@ -1,9 +1,4 @@
-import 'bulma/css/bulma.min.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import './register.css'
-import './login.css'
-
-import { Button, Box } from '@allxsmith/bestax-bulma';
+import { Button } from '@allxsmith/bestax-bulma';
 import type { GetBody, GetResponse } from '../types/GetType.ts';
 import api from '../serverApi.ts';
 import { useMutation } from '@tanstack/react-query';
@@ -17,6 +12,7 @@ import SelectRegion from '../components/SelectRegion.tsx';
 import toast from '../Notifications.tsx';
 import { handleGoogleLogin } from './callbackGoogle.tsx';
 import { handle42Login } from './callback42.tsx';
+import { NavLink } from 'react-router';
 
 type RegisterBodyType = GetBody<"/auth/register", "post">;
 type RegisterResponseType = GetResponse<"/auth/register", "post">;
@@ -24,26 +20,32 @@ export type Region = RegisterBodyType["region"];
 
 // Region
 type RegionType = RegisterBodyType['region']
-const regions: RegionType[] = ["EU", "NA", "SAM", "MENA", "OCE", "APAC", "SSA", "Deleted"];
+const regions: RegionType[] = ["EU", "NA", "SAM", "MENA", "OCE", "APAC", "SSA"];
 
 // Regex
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-const usernameRegex = /^[a-zA-Z0-9_]{2,20}$/;
-const realnameRegex = /^[a-zA-Z]{2,20}$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+const usernameRegex = /^[a-zA-Z0-9_]+$/;
+const realnameRegex = /^[a-zA-Z'-]+$/;
 
 // Yup validation schema
 const schema = yup.object().shape({
 	firstname: yup
 		.string()
-		.matches(realnameRegex, "2-20 characters: letters")
+		.min(2, "Minimum 2 characters required")
+		.max(15, "Maximum 15 characters allowed")
+		.matches(realnameRegex, "Only letters are allowed")
 		.required("First name is required"),
 	lastname: yup
 		.string()
-		.matches(realnameRegex, "2-20 characters: letters")
+		.min(2, "Minimum 2 characters required")
+		.max(15, "Maximum 15 characters allowed")
+		.matches(realnameRegex, "Only letters are allowed")
 		.required("First name is required"),
 	username: yup
 		.string()
-		.matches(usernameRegex, "3-20 characters: letters, numbers, underscores")
+		.min(2, "Minimum 2 characters required")
+		.max(10, "Maximum 10 characters allowed")
+		.matches(usernameRegex, "Allowed characters are: letters, numbers, underscores")
 		.required("User name is required"),
 	email: yup
 		.string()
@@ -51,7 +53,8 @@ const schema = yup.object().shape({
 		.required("Email is required"),
 	password: yup
 		.string()
-		.matches(passwordRegex, "Minimum 8 characters, uppercase, lowercase, number & special")
+		.min(8, "Minimum 8 characters required")
+		.matches(passwordRegex)
 		.required("Password is required"),
 	confirmPassword: yup
 		.string()
@@ -109,30 +112,29 @@ function Register() {
 	};
 
 	return (
-		<Box  m="4" p="6" bgColor="grey-light" textColor="black" justifyContent='center' textSize='3' textWeight='bold'>
-			<div className="register-box">
-				<div className='social-buttons'>
-					<Button color='primary' isOutlined className='login-button' onClick={handleGoogleLogin}>Login with Google</Button>
-					<Button color='primary' isOutlined className='login-button' onClick={handle42Login}>Login with 42</Button>
-				</div>
-				<br />
-				<form onSubmit={handleSubmit(onSubmit)}>
-					<div className="form-fields">
-						<InputText placeholder="First name" register={register("firstname")} error={errors.firstname} icon='fas fa-user' />
-						<InputText placeholder="Last name" register={register("lastname")} error={errors.lastname} icon='fas fa-user' />
-						<InputText placeholder="Username" register={register("username")} error={errors.username} icon='fas fa-user' />
-						<InputText placeholder="Email" type="email" register={register("email")} error={errors.email} icon='fas fa-envelope' />
-
-						<InputPassword placeholder="Password" register={register("password")} error={errors.password} watchValue={password} />
-						<InputPassword placeholder="Confirm password" register={register("confirmPassword")} error={errors.confirmPassword} watchValue={confirmPassword} />
-					</div>
-					<div className='bottom'>
-						<SelectRegion placeholder="Select Region" options={regions} register={register("region")} error={errors.region} />
-						<Button type="submit" color="primary" isOutlined className="submit-wrapper">{mutation.isPending ? 'Registering...' : 'Sign up'}</Button>
-					</div>
-				</form>
+		<div className="register-box">
+			<div className='social-buttons'>
+				<Button color='primary' className='login-button' onClick={handleGoogleLogin} size='large'>Login with Google</Button>
+				<Button color='primary' className='login-button' onClick={handle42Login} size='large'>Login with 42</Button>
 			</div>
-		</Box>
+			<br />
+			<form onSubmit={handleSubmit(onSubmit)}>
+				<div className="form-fields">
+					<InputText placeholder="First name" register={register("firstname")} error={errors.firstname} icon='fas fa-user' />
+					<InputText placeholder="Last name" register={register("lastname")} error={errors.lastname} icon='fas fa-user' />
+					<InputText placeholder="Username" register={register("username")} error={errors.username} icon='fas fa-user' />
+					<InputText placeholder="Email" type="email" register={register("email")} error={errors.email} icon='fas fa-envelope' />
+
+					<InputPassword placeholder="Password" register={register("password")} error={errors.password} watchValue={password} />
+					<InputPassword placeholder="Confirm password" register={register("confirmPassword")} error={errors.confirmPassword} watchValue={confirmPassword} />
+				</div>
+				<div className='bottom'>
+					<SelectRegion placeholder="Select Region" options={regions} register={register("region")} error={errors.region} />
+					<Button type="submit" color="primary" size='large'>{mutation.isPending ? 'Registering...' : 'Sign up'}</Button>
+				</div>
+			</form>
+			<NavLink to="/" className="button is-primary is-medium">Back to home</NavLink>
+		</div>
 	)
 }
 

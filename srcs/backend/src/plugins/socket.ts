@@ -47,7 +47,7 @@ export default fp(async (fastify) => {
 
 	const disconnectionTimers = new Map<string, NodeJS.Timeout>();
 
-	fastify.io.on("connection", async (socket) => {
+	fastify.io.on("connection", async (socket: Socket) => {
 		const clientId = socket.id;
 		try {
 			const userPayload: RequestUser | null = fastify.jwt.decode(socket.handshake.auth.token);
@@ -60,6 +60,27 @@ export default fp(async (fastify) => {
 
 			console.log(`Client \`${clientId}\` is connected`);
 
+			await UserService.setAvailabality(userPayload.id, true);
+
+			//Fetch all chats user is a member of
+			const chats = await prisma.chatMember.findMany({
+				where: {
+					userId: userPayload.id,
+					deletedAt: null
+				},
+				select: {
+					chatId: true
+				}
+			});
+
+			//add user to each chat socket
+			for (const c of chats) {
+				if (!c.chatId)
+					continue;
+				await socket.join(c.chatId);
+			}
+			console.log(`\`${clientId}\` auto-joined chats:`, chats.length);
+
 			if (disconnectionTimers.has(userPayload.id)) {
 				clearTimeout(disconnectionTimers.get(userPayload.id));
 				disconnectionTimers.delete(userPayload.id);
@@ -69,21 +90,37 @@ export default fp(async (fastify) => {
 			socket.on("disconnect", async (reason) => {
 				console.log(`Client \`${clientId}\` is gone. Reason: ${reason}`);
 
+				const remainingNow = await fastify.io
+					.in(`user:${userPayload.id}`)
+					.fetchSockets();
+
+				if (remainingNow.length === 0) {
+					await UserService.setAvailabality(userPayload.id, false);
+				}
+
 				const timer = setTimeout(async () => {
+					const remainingAfter = await fastify.io
+						.in(`user:${userPayload.id}`)
+						.fetchSockets();
+
+					if (remainingAfter.length > 0) {
+						console.log(`User ${userPayload.id} still connected elsewhere. Skipping room leave`);
+						disconnectionTimers.delete(userPayload.id);
+						return;
+					}
+
 					await RoomService.leave(userPayload.id, socket);
 					disconnectionTimers.delete(userPayload.id);
 					console.log(`User ${userPayload.id} has been removed from his room (disconnection timeout)`);
 				}, 5000);
 
 				disconnectionTimers.set(userPayload.id, timer);
-
-				await UserService.setAvailabality(userPayload.id, false);
 			});
 
 			// broadcast typing into chat effect in the chat room
 			socket.on("chat_typing", async ({ chatId }) => {
 
-				const isMember = await prisma.chatMember.findFirst({
+				const isMember = await prisma.chatMember.findFirst({//obsolete now that I add user to all chat automaticaly ?
 					where: {
 						chatId,
 						userId: userPayload.id

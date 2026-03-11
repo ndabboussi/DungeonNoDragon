@@ -5,11 +5,12 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import fastifyCors from "@fastify/cors";
 import cookies from "@fastify/cookie";
 import type { RequestUser } from "../schema/userSchema.js";
+import { createRefreshToken } from "../services/auth/token.js";
 
 export default fp(async (fastify) => {
 	// CORS
 	await fastify.register(fastifyCors, {
-		origin: ["https://localhost:8443", "http://localhost:5173"],
+		origin: [process.env.SERVER_URL!, "http://localhost:5173"],
 		methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 		credentials: true
 	});
@@ -37,13 +38,23 @@ export default fp(async (fastify) => {
 	});
 
 	fastify.addHook("onRequest", async (request: FastifyRequest, reply: FastifyReply) => {
-		// Skip auth for static files
 		if (request.url.startsWith('/uploads')) {
-			return; // do nothing, allow access
+			return;
 		}
 		const currentRoute = request.routeOptions.url;
 
-		const publicRoutes = ['/auth/register', '/auth/login', '/auth/refresh', '/auth/42', '/auth/google', '/documentation/json', '/'];
+		const publicRoutes = [
+			'/auth/register',
+			'/auth/login',
+			'/auth/refresh',
+			'/auth/42',
+			'/auth/google',
+			'/auth/forgot-password',
+			'/auth/reset-password',
+			'/documentation/json',
+			'/auth/server',
+			'/'
+		];
 
 		if (currentRoute && publicRoutes.includes(currentRoute)) return;
 
@@ -57,6 +68,49 @@ export default fp(async (fastify) => {
 		if (!user || user.role !== 'admin')
 			return reply.code(403).send({ error: "Forbidden", message: "Not Admin" });
 	});
+
+	fastify.decorate("verifyServer", async (request: FastifyRequest, reply: FastifyReply) => {
+		const user = request.user;
+
+		if (!user || user.role !== 'game-server')
+			return reply.code(403).send({ error: "Forbidden", message: "Not Game Server" });
+	});
+
+	fastify.decorateReply('setAuthCookie', async function (this: FastifyReply, userId: string) {
+		const refresh = await createRefreshToken(userId);
+
+		this.setCookie('hasSession', 'true', {
+			path: '/',
+			httpOnly: false,
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 7 * 24 * 60 * 60 * 1000
+		});
+
+		this.setCookie('refreshToken', refresh, {
+			path: '/',
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in ms
+		});
+	});
+
+	fastify.decorateReply('clearAuthCookie', function (this: FastifyReply) {
+		this.clearCookie('hasSession', {
+			path: '/',
+			httpOnly: false,
+			secure: true,
+			sameSite: 'strict'
+		});
+
+		this.clearCookie('refreshToken', {
+			path: '/',
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict'
+		});
+	});
 });
 
 declare module "@fastify/jwt" {
@@ -69,5 +123,10 @@ declare module "fastify" {
 	interface FastifyInstance {
 		authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
 		verifyAdmin: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+		verifyServer: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+	}
+	interface FastifyReply {
+		setAuthCookie: (this: FastifyReply, userId: string) => Promise<void>;
+		clearAuthCookie: (this: FastifyReply) => void;
 	}
 }

@@ -10,8 +10,8 @@ export async function createSessionService(session: sessionBody): Promise<GameSe
 	return prisma.gameSession.create({
 		data: {
 			sessionGameId: session.sessionGameId,
-			startedAt: session.startedAt,
-			status: 'running',
+			startedAt: new Date(),
+			status: session.status,
 			results: {
 				create: uniquePlayer.map((playerId) => ({
 				player: {
@@ -44,6 +44,7 @@ export async function sessionEndService(session: sessionEndBody): Promise<GameSe
 		where: { sessionGameId },
 		data: {
 			endedAt: new Date(),
+			updatedAt: new Date(),
 			status: session.status
 		}
 	});
@@ -79,6 +80,7 @@ export async function sessionPlayerResultService(playerResult: sessionPlayerResu
 			completionTime: true,
 			enemiesKilled: true,
 			gainedXp: true,
+			updatedAt: true,
 			isWinner: true
 		}
 	});
@@ -98,6 +100,7 @@ export async function sessionPlayerResultService(playerResult: sessionPlayerResu
 			completionTime: playerResult.completionTime,
 			enemiesKilled: playerResult.ennemiesKilled,
 			gainedXp: playerResult.gainedXp,
+			updatedAt: new Date(),
 			isWinner: playerResult.isWinner
 		}
 	});
@@ -110,7 +113,8 @@ export async function sessionPlayerResultService(playerResult: sessionPlayerResu
 			totalLoses: true,
 			totalEnemiesKilled: true,
 			totalXp: true,
-			bestTime: true
+			bestTime: true,
+			level: true
 		}
 	});
 
@@ -122,6 +126,7 @@ export async function sessionPlayerResultService(playerResult: sessionPlayerResu
 
 	let totalWins = gameProfile.totalWins;
 	let totalLoses = gameProfile.totalLoses;
+	let level = gameProfile.level;
 
 	if (playerResult.isWinner === true) {
 		totalWins++;
@@ -132,9 +137,12 @@ export async function sessionPlayerResultService(playerResult: sessionPlayerResu
 
 	const totalEnemiesKilled = gameProfile.totalEnemiesKilled + playerResult.ennemiesKilled;
 	const totalXp = gameProfile.totalXp + playerResult.gainedXp;
+
+	level = totalXp / 20;
+
 	let bestTime = gameProfile.bestTime;
 
-	if (bestTime > playerResult.completionTime) {
+	if (bestTime > playerResult.completionTime || bestTime === 0) {
 		bestTime = playerResult.completionTime;
 	}
 
@@ -146,7 +154,8 @@ export async function sessionPlayerResultService(playerResult: sessionPlayerResu
 			totalLoses: totalLoses,
 			totalEnemiesKilled: totalEnemiesKilled,
 			totalXp: totalXp,
-			bestTime: bestTime
+			bestTime: bestTime,
+			level: level
 		}
 	});
 

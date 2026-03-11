@@ -1,30 +1,66 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink } from 'react-router';
 import { Navbar, Icon } from '@allxsmith/bestax-bulma';
-import './Banner.css'
 import SearchBar from '../search/SearchBar.tsx';
 import { useAuth } from '../auth/AuthContext.tsx';
 
 const Banner = () => {
 	const { user, logout } = useAuth()
 	const [active, setActive] = useState(false)
-	const username = user?.username || 'Username'
+	const [dropdownVisible, setDropdownVisible] = useState(false)
+	const dropdownRef = useRef(null); // Reference to the dropdown menu
 	let logo_path = user ? '/home' : '/';
 	let button_path = user ? '/profile' : '/';
 
-	const handleClick = () => {
+	const handleClick = (event: React.MouseEvent) => {
+		event.stopPropagation(); // Prevent any other click events from being triggered
 		logout()
 	}
+
+	const toggleDropdown = (event: React.MouseEvent) => {
+		if (window.innerWidth <= 1024) {
+			event.stopPropagation()
+			setDropdownVisible(prev => !prev)
+		}
+	}
+
+	// Close the dropdown if the user clicks outside of it
+	useEffect(() => {
+		const handleOutsideClick = (event: MouseEvent) => {
+		if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+			setDropdownVisible(false); // Close dropdown if clicked outside
+		}
+		};
+
+		// Add event listener for clicks outside of the dropdown
+		document.addEventListener('click', handleOutsideClick);
+
+		// Cleanup event listener on component unmount
+		return () => {
+		document.removeEventListener('click', handleOutsideClick);
+		};
+	}, []);
+
+	useEffect(() => {
+		const handleResize = () => {
+			if (window.innerWidth > 1024) {
+				setDropdownVisible(false)
+			}
+		}
+
+		window.addEventListener('resize', handleResize)
+		return () => window.removeEventListener('resize', handleResize)
+	}, [])
 
 	return (
 		<Navbar color='dark' role='navigation' aria-label='main navigation' className="navbar-full">
 				<Navbar.Brand>
-					<NavLink to={logo_path} aria-label='home button' className='button is-primary is-outlined is-centered'>
+					<NavLink to={logo_path} aria-label='home button' className='button is-centered banner-home-button'>
 						<Icon
-						name="dragon"
-						ariaLabel="dragon logo"
+							name="dragon"
+							ariaLabel="dragon logo"
 						/>
-						<span>TransDungeon</span>
+						<span>DungeonNoDragon</span>
 					</NavLink>
 					<Navbar.Burger
 						active={active}
@@ -32,6 +68,7 @@ const Banner = () => {
 						aria-label="menu"
 						aria-expanded={active}
 						data-target="navbarMenu"
+						color='primary'
 					/>
 				</Navbar.Brand>
 				<Navbar.Menu id="navbarMenu" active={active}>
@@ -39,22 +76,28 @@ const Banner = () => {
 						{user && (<Navbar.Item><SearchBar /></Navbar.Item>)}
 					</Navbar.Start>
 					<Navbar.End>
+						{user &&
 							<NavLink to={button_path} aria-label='profile button' className='button is-primary is-medium is-centered'>
 								<Icon name='user' ariaLabel='user icon' />
-								<span>{username}</span>
+								<span>{user?.username}</span>
 							</NavLink>
-							<Navbar.Dropdown hoverable right>
-								<Navbar.Item as="a" textColor='primary'>
-									<Icon name="bars" ariaLabel="Menu" />
-									<span>Menu</span>
-								</Navbar.Item>
-								<Navbar.DropdownMenu>
-									<Navbar.Item onClick={handleClick}>Logout</Navbar.Item>
-									<Navbar.Divider />
-									<Navbar.Item href="#">About the game</Navbar.Item>
-									<Navbar.Item href="#">Credentials</Navbar.Item>
-								</Navbar.DropdownMenu>
-							</Navbar.Dropdown>
+						}
+						<Navbar.Dropdown right className={`profile-dropdown ${dropdownVisible ? 'is-active' : ''}`}>
+							<Navbar.Item
+								as="button"
+								className="button is-primary is-medium is-centered"
+								textColor="black"
+								onClick={toggleDropdown}
+							>
+								<Icon name="bars" ariaLabel="Menu" />
+								<span>Menu</span>
+							</Navbar.Item>
+							<Navbar.DropdownMenu className='dropdown-full'>
+								<NavLink to="/about" className="navbar-item dropdown-content">About the game</NavLink>
+								{user && <Navbar.Divider className='dropdown-divider'/>}
+								{user && <Navbar.Item onClick={handleClick} className="dropdown-content">Logout</Navbar.Item>}
+							</Navbar.DropdownMenu>
+						</Navbar.Dropdown>
 					</Navbar.End>
 				</Navbar.Menu>
 		</Navbar>

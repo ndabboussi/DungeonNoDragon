@@ -1,7 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import '../App.css'
-import './profile.css'
-import { Box, Button } from '@allxsmith/bestax-bulma';
+import { Button } from '@allxsmith/bestax-bulma';
 import { useParams } from 'react-router';
 import type { GetResponse } from '../types/GetType';
 import api from '../serverApi';
@@ -60,41 +58,37 @@ const ProfilePublic = () => {
 	const blockStatus = userData.blocked;
 
 	return (
-		<Box m="4" p="6" bgColor="grey-light" textColor="black" justifyContent='space-between' alignItems='center'>
-			<h1>Welcome to {username} profile page</h1>
-			<br/>
-			<Box className='box-head' bgColor="white" justifyContent='center' textSize='4'>
-				<Box bgColor='white' className='image-box'>
-					<figure className='image is-128x128'>
+		<div className='profile-box'>
+			<div className='box-head'>
+				<div className='image-box'>
 						<img aria-label='avatar of the user' src={avatar} />
-					</figure>
-				</Box>
-				<Box className='head-text'>
-					<p className="username">
+				</div>
+				<div className='head-text'>
+					<div className='profile_username'>
 						<i className={`fa-solid fa-circle status-circle ${isPlaying ? 'playing' : isConnected ? 'online' : 'offline'}`}  aria-label="status" />
 						{username}
-					</p>
-
-					<p className="level">Lvl {level}</p>
-					<p className="xp">{xp} XP</p>
-				</Box>
-			</Box>
-			<Box className='info' bgColor="white" textSize='5'>
-				<p>Best time: {bestTime}</p>
-				<p>Total ennemies killed: {totalKills}</p>
-				<p>Total games: {totalGames}</p>
-				<p>Total wins: {totalWins}</p>
-				<p>Total loses: {totalLoses}</p>
-			</Box>
+					</div>
+					<p>Lvl {level}</p>
+					<p>{xp} XP</p>
+				</div>
+			</div>
+			<div className='public-info'>
+				<p><span className='category-name'>Best time:</span>{bestTime}</p>
+				<p><span className='category-name'>Total kills:</span>{totalKills}</p>
+				<p><span className='category-name'>Total games:</span>{totalGames}</p>
+				<p><span className='category-name'>Total wins:</span>{totalWins}</p>
+				<p><span className='category-name'>Total loses:</span>{totalLoses}</p>
+			</div>
 			{friendshipStatus !== 'self' &&
 				<>
 					<div className="button-group">
 						{(friendshipStatus === 'sent') &&
 							<div className="button-row">
-								<Button color="dark" disabled size='large'>Request pending</Button>
+								<Button disabled size='large' className='profile-button'>Request pending</Button>
 								<Button
 									size='large'
 									onClick={() => {handleModification('cancel', friendshipData.friendshipId)}}
+									className='profile-button'
 								>
 									Cancel request
 								</Button>
@@ -105,13 +99,10 @@ const ProfilePublic = () => {
 									<Button
 										size='large'
 										onClick={() => {handleModification('remove', userId)}}
+										className='profile-button'
 									>
 										Remove friend
 									</Button>
-								</div>
-								<div className="button-row">
-									<Button aria-label='join button' size='large'>Join</Button>
-									<Button aria-label='spectate button' size='large'>Spectate</Button>
 								</div>
 							</div>}
 						{friendshipStatus === 'received' &&
@@ -119,12 +110,14 @@ const ProfilePublic = () => {
 								<Button
 									size='large'
 									onClick={() => {handleModification('accept', friendshipData.friendshipId)}}
+									className='profile-button'
 								>
 									Accept request
 								</Button>
 								<Button
 									size='large'
 									onClick={() => {handleModification('reject', friendshipData.friendshipId)}}
+									className='profile-button'
 								>
 									Reject request
 								</Button>
@@ -132,25 +125,28 @@ const ProfilePublic = () => {
 						{friendshipStatus === 'none' && <Button
 								size='large'
 								onClick={() => {handleModification('add', userId)}}
+								className='profile-button'
 							>
 								Send friendship request
 							</Button>}
 						{!blockStatus && <Button
 							size='large'
 							onClick={() => {handleModification('block', userId)}}
+							className='profile-button'
 						>
 							Block user
 						</Button>}
 						{blockStatus && <Button
 							size='large'
 							onClick={() => {handleModification('unblock', userId)}}
+							className='profile-button'
 						>
 							Unblock user
 						</Button>}
 					</div>
 				</>
 			}
-		</Box>
+		</div>
 	)
 }
 

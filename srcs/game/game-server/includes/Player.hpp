@@ -15,11 +15,19 @@ typedef struct PerSocketData
     std::map<std::string, std::string>	jsonMsg;
 } PerSocketData;
 
+enum statePlayer
+{
+	PLAYER_IDLE,
+	PLAYER_WALKING,
+	PLAYER_ATTACKING,
+	PLAYER_HURT,
+	PLAYER_DEATH
+};
+
 class Player
 {
 	private:
 		std::string									_uid;
-		int											_numPlayer;
 		int											_sessionSize; // size of the session requested
 		int											_partySize; //size of the group
 		std::string									_partyId; //party is for the group with you launch the game with (before matchmaking)
@@ -31,7 +39,9 @@ class Player
 		bool										_reConnected;
 		bool										_finished;
 		bool										_hasWin;
-		bool										_died;
+		int											_nbrDeath;
+		bool										_isDead;
+		std::chrono::_V2::steady_clock::time_point	_timeDeath;
 		int											_finalRanking;
 		char										_exit;
 		std::chrono::_V2::steady_clock::time_point	_timeDeconnection;
@@ -58,7 +68,7 @@ class Player
 		int			_atk;
 		bool		_isInvinsible;
 		std::chrono::_V2::steady_clock::time_point	_timeInvincible;
-		int			_def;
+		// int			_def;
 	//wall hitbox
 		FRect		_wallHitBox;
 		HitBox		_box;
@@ -70,6 +80,11 @@ class Player
 
 	//nbr kill
 		int			_kills;
+
+	//result curl sended
+		bool		_resultCurl;
+	
+	
 	public:
 		Player(std::string uid, int partySize, std::string partyId, std::string name,
 				int sessionSize, uWS::WebSocket<false, true, PerSocketData> *ws);
@@ -85,7 +100,6 @@ class Player
 		bool		getFinished(void) const;
 		int			getSessionSize(void) const;
 		bool		HasWin(void) const;
-		bool		getDied(void) const;
 		bool		isConnected(void) const;
 		bool		isReConnected(void) const;
 		int			getFinalRanking(void) const;
@@ -107,9 +121,12 @@ class Player
 		int			getHp(void) const;
 		int			getAtk(void) const;
 		bool		checkInvinsibleFrame(void) const;
+		bool		isDead(void) const;
+		double		getTimeDeath(void) const;
 		int			getAtkFrame(void) const;
-		int			getDef(void) const;
+		// int			getDef(void) const;
 		int			getLastDir(void) const;
+		bool		getResultCurl(void) const;
 		FRect		&getWallHitBox(void);
 		Room		&getRoomRef(void);
 		HitBox		&getHitBox(void);
@@ -117,6 +134,7 @@ class Player
 		double		getTimeDeconnection(void) const;
 		double		getTimeInvincible(void) const;
 		double		getTimeAttack(void) const;
+		int			getNbrDeath(void) const;
 
 	//setter
 		void		setWs(uWS::WebSocket<false, true, PerSocketData> *ws);
@@ -125,7 +143,7 @@ class Player
 		void		setLaunched(bool flag);
 		void		setFinished(bool flag);
 		void		setHasWin(bool flag);
-		void		setDied(bool flag);
+		void		setNbrDeath(int value);
 		void		setFinalRanking(int place);
 		void		setExit(char c);
 		void		setNode(const quadList &node);
@@ -139,10 +157,12 @@ class Player
 		void		setHp(int hp);
 		void		setAtk(int atk);
 		void		setAtkFrame(int frame);
-		void		setDef(int def);
+		// void		setDef(int def);
+		void		setIsDead(bool value);
 		void		setWallHitBox(void);
 		void		setInQueue(bool flag);
 		void		setInSession(bool flag);
+		void		setResultCurl(bool flag);
 		void		setAnim(int anim);
 		void		setLastDir(int dir);
 
@@ -159,9 +179,8 @@ class Player
 		void		endAttacking(void);
 
 		void		updateAnim(std::string const &req);
+		bool		updateHurt(void);
 		void		move(std::map<std::string, std::string> &req);
-		void		takeDamage(int amount);
-		void		heal(int amount);
 
 		void		dieAction(void);
 };

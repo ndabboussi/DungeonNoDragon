@@ -1,16 +1,36 @@
-import 'bulma/css/bulma.min.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import '../App.css'
-import '../index.css'
+import { NavLink } from "react-router";
+import { tos_sections } from "./TermsOfServiceContent";
 
-import { Box } from '@allxsmith/bestax-bulma';
-
-const TermsService = () => {
+const TermsOfService = () => {
 	return (
-		<Box  m="4" p="6" bgColor="grey-light" textColor="black" justifyContent='space-between'>
-			<h2>Terms of Service</h2>
-		</Box>
-	)
-}
+		<div className="tos-box">
+			<div className='tos-title'>
+				<h2>Terms of Service (TOS)</h2>
+				<p><span>Last updated:</span> March 2026</p>
+			</div>
+			<div className="tos-container">
+				<nav className="tos-toc">
+				<h3>Contents</h3>
+				<ul>
+					{tos_sections.map(section => (
+					<li key={section.id}>
+						<a href={`#${section.id}`}>{section.title}</a>
+					</li>
+					))}
+				</ul>
+				</nav>
+				<main className="tos-content">
+					{tos_sections.map(section => (
+					<section key={section.id} id={section.id}>
+						<h3>{section.title}</h3>
+						{section.content}
+					</section>
+					))}
+				</main>
+			</div>
+			<NavLink to="/" className="button is-large home-button">Back to home</NavLink>
+		</div>
+	);
+};
 
-export default TermsService
+export default TermsOfService;

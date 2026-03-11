@@ -3,7 +3,6 @@ import "@fastify/cookie";
 import type { FortyTwoType } from "../../routes/auth/fortyTwoRoute.js";
 import { AppError } from "../../schema/errorSchema.js";
 import { UserService } from "../../services/db/userService.js";
-import { createRefreshToken } from "../../services/auth/token.js";
 import type { LoginResponseType } from "../../routes/auth/loginRoute.js";
 
 interface FortyTwoTokensResult {
@@ -45,7 +44,7 @@ export async function fortyTwoCallbackController(
 			code,
 			client_id: process.env.VITE_42_CLIENT_ID,
 			client_secret: process.env.SECRET_42,
-			redirect_uri: 'https://localhost:8443/callback42',
+			redirect_uri: `${process.env.SERVER_URL}/callback42`,
 			grant_type: 'authorization_code',
 		}),
 	});
@@ -108,15 +107,9 @@ export async function fortyTwoCallbackController(
 	}
 
 	const jwt = await reply.jwtSign({ id: loginResponse.user.id, username: loginResponse.user.username, email: loginResponse.user.email, role: loginResponse.user.role });
-	const refresh = await createRefreshToken(loginResponse.user.id);
-
 	loginResponse.token = jwt;
 
-	return reply.setCookie('refreshToken', refresh, {
-			path: '/',
-			httpOnly: true,
-			secure: true,
-			sameSite: 'strict',
-			maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in ms
-		}).status(200).send(loginResponse);
+	await reply.setAuthCookie(loginResponse.user.id);
+
+	return reply.status(200).send(loginResponse);
 }

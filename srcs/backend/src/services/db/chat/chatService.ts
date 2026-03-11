@@ -19,9 +19,7 @@ export const chatSelect = {
 	},
 
 	members: {
-		where: {
-			deletedAt: null
-		},
+		where: { deletedAt: null },
 		select: {
 			chatMemberId: true,
 			joinedAt: true,
@@ -39,6 +37,7 @@ export const chatSelect = {
 	},
 
 	roles: {
+		where: { deletedAt: null },
 		select: {
 			userId: true,
 			role: true
@@ -82,6 +81,7 @@ export async function getChatByIdForUser(chatId: string, userId: string) {
 		if (otherUserId) {
 			const isBlocked = await prisma.blockedList.findFirst({
 				where: {
+					deletedAt: null,
 					OR: [
 						{ blocker: userId, blocked: otherUserId },
 						{ blocker: otherUserId, blocked: userId }
@@ -104,6 +104,7 @@ export async function listUserChats(userId: string) {
 
 	const blocked = await prisma.blockedList.findMany({
 		where: {
+			deletedAt: null,
 			OR: [
 				{ blocker: userId },
 				{ blocked: userId }

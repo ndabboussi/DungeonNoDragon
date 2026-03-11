@@ -1,13 +1,21 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../serverApi";
-import { Box } from "@allxsmith/bestax-bulma";
+import { Button } from "@allxsmith/bestax-bulma";
 import { useAuth } from "../../auth/AuthContext";
 import toast from "../../Notifications";
+import { useInvitationSocket } from "../hooks/useInvitationSocket";
 
 // Fetch all chat invitations (pending and not pending at now)
-export default function GroupChatInvitations() {
+//export default function GroupChatInvitations() {
+export default function GroupChatInvitations({
+	onClose
+}: {
+	onClose?: () => void;
+}) {
 
+	useInvitationSocket();
 	const { user } = useAuth();
+	const queryClient = useQueryClient();
 
 	//get all invitations
 	const { data: invitations } = useQuery({
@@ -25,7 +33,9 @@ export default function GroupChatInvitations() {
 		},
 		onSuccess: () => {
 			toast({ title: "Chat invitation succesfully updated", type: "is-success" });
-			window.location.reload();
+			//window.location.reload();//(nina) not goood causes refresh
+			queryClient.invalidateQueries({ queryKey: ["group-invitations"] });
+			queryClient.invalidateQueries({ queryKey: ["chat-list"] });
 		},
 		onError: (error: Error) => {
 			toast ({ title: "Error", message: error.message ?? "Unknown error", type: "is-danger" });
@@ -36,13 +46,19 @@ export default function GroupChatInvitations() {
 		return <div>Loading...</div>;
 
 	return (
-		<Box m="4" p="6" bgColor="white">
-			<h1 className="title">Group Invitations</h1>
+		<div className="chat-invitation">
+			{onClose && (
+				<Button className="back-button" onClick={onClose}>
+					Back
+				</Button>
+			)}
+
+			<h1 aria-label="section title">Group Invitations</h1>
 
 			{invitations.length === 0 && <p>No invitations.</p>}
 
 			{invitations.map((inv: any) => (
-			<Box key={inv.chatInvitationId} className="box" m="2" p="4">
+			<div key={inv.chatInvitationId} className="invitation-box">
 				<p><strong>Group:</strong> {inv.chat.chatName}</p>
 				<p><strong>From:</strong> {inv.sender.username}</p>
 				<p><strong>To:</strong> {inv.receiver.username}</p>
@@ -52,8 +68,8 @@ export default function GroupChatInvitations() {
 				{/* RECEIVED INVITATION */}
 				{inv.receiver.appUserId === user?.id && inv.status === "waiting" && (
 					<>
-					<button
-						className="button is-success is-small mt-2 mr-2"
+					<Button
+						className="chat-accept-button"
 						onClick={() =>
 							updateMutation.mutate({
 								invId: inv.chatInvitationId,
@@ -62,10 +78,10 @@ export default function GroupChatInvitations() {
 						}
 					>
 						Accept
-					</button>
+					</Button>
 
-					<button
-						className="button is-danger is-small mt-2"
+					<Button
+						className="chat-reject-button"
 						onClick={() =>
 						updateMutation.mutate({
 							invId: inv.chatInvitationId,
@@ -74,19 +90,19 @@ export default function GroupChatInvitations() {
 						}
 					>
 						Reject
-					</button>
+					</Button>
 					</>
 				)}
 
 				{/* SENT INVITATION */}
 				{inv.sender.appUserId === user?.id && inv.status === "waiting" && (
 					<>
-					<button className="button is-light is-small mt-2 mr-2" disabled>
+					<Button className="chat-pending-button" disabled>
 						Pending
-					</button>
+					</Button>
 
-					<button
-						className="button is-warning is-small mt-2"
+					<Button
+						className="chat-cancel-button"
 						onClick={() =>
 						updateMutation.mutate({
 							invId: inv.chatInvitationId,
@@ -95,11 +111,11 @@ export default function GroupChatInvitations() {
 						}
 					>
 						Cancel
-					</button>
+					</Button>
 					</>
 				)}
-			</Box>
+			</div>
 			))}
-		</Box>
+		</div>
 	);
 }

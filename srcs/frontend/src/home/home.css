@@ -1,0 +1,283 @@
+/* ============================= */
+/* Center whole page + Atmosphere */
+/* Blues replaced by teal colors  */
+/* ============================= */
+
+.body-box {
+	min-height: 80vh;
+	height: 100% !important;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: clamp(0rem, 3vw, 2rem) !important;
+	box-sizing: border-box;
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+	background-color: transparent;
+}
+/* ============================= */
+/* Main container (stone panel)  */
+/* ============================= */
+
+.game-room {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.5rem, 3vw, 2.5rem) !important;
+  width: 100%;
+  max-width: 900px;
+
+  /* Glass panel */
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  /* Softer shadow */
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4);
+
+  border-radius: 18px;
+  padding: clamp(0rem, 4vw, 3rem) !important;
+
+	/* Subtle teal border */
+	border: 1px solid rgba(45, 212, 191, 0.12) !important;
+}
+
+.game-room h2 {
+	font-family: var(--font-section-title);
+	font-size:clamp(1.2rem, 4vw, 4rem) !important;
+	color: white !important;
+}
+
+.game-room .game-rules-link {
+	font-family: var(--font-section-title);
+	font-size:clamp(1rem, 2vw, 2rem) !important;
+	color: white !important;
+}
+
+/* ============================= */
+/* Players layout                */
+/* ============================= */
+
+.room-players {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: clamp(0.5rem, 2vw, 1.5rem);
+	width: 100%;
+}
+
+.player-card {
+	display: flex;
+	flex-direction: column;
+	justify-content: center !important;
+	align-items: center !important;
+}
+
+/* Arcane player cards */
+.room-players > * {
+	background: rgba(255, 255, 255, 0.06) !important;
+	padding: 15px 25px;
+	border-radius: 10px;
+
+	border: 1px solid rgba(45, 212, 191, 0.15) !important;
+
+	color: var(--color-primary-light);
+	font-family: var(--font-body) !important;
+	font-size: var(--fs-md2) !important;
+	font-weight: 600;
+	transition: all 0.2s ease-in-out;
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+/* Magical hover glow */
+.room-players > *:hover {
+	box-shadow:
+	0 0 10px rgba(45, 212, 191, 0.2),
+	0 6px 16px rgba(0, 0, 0, 0.3) !important;
+
+	background: rgba(255, 255, 255, 0.10) !important;
+}
+
+.player-buttons {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: clamp(0.5rem, 1vw, 0.75rem) !important;
+}
+
+.player-button {
+	color: var(--color-primary) !important;
+	background-color: rgba(45, 212, 191, 0.1) !important;
+	border: 1px solid rgba(45, 212, 191, 0.25) !important;
+	align-self: center !important;
+	justify-self: center !important;
+	transition: all 0.2s ease;
+}
+
+.player-button:hover {
+	color: #fff !important;
+	background-color: rgba(45, 212, 191, 0.25) !important;
+	border-color: rgba(45, 212, 191, 0.4) !important;
+	box-shadow: 0 0 12px rgba(45, 212, 191, 0.2) !important;
+}
+
+.player-button, .kick-button, .host-button {
+	font-size: var(--fs-sm) !important;
+	font-weight: 600 !important;
+	transition: all 0.2s ease-in-out !important;
+	border-radius: 6px !important;
+	padding: 4px 10px !important;
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+.kick-button {
+	color: #fda4af !important;
+	background-color: rgba(225, 29, 72, 0.15) !important;
+	border: 1px solid rgba(225, 29, 72, 0.3) !important;
+}
+
+.kick-button:hover {
+	color: #fff !important;
+	background-color: rgba(225, 29, 72, 0.3) !important;
+	border: 1px solid rgba(225, 29, 72, 0.5) !important;
+	box-shadow: 0 0 12px rgba(225, 29, 72, 0.2) !important;
+}
+
+.host-button {
+	color: #fcd34d !important;
+	background-color: rgba(245, 158, 11, 0.12) !important;
+	border: 1px solid rgba(245, 158, 11, 0.25) !important;
+}
+
+.host-button:hover {
+	color: #fff !important;
+	background-color: rgba(245, 158, 11, 0.25) !important;
+	border: 1px solid rgba(245, 158, 11, 0.45) !important;
+	box-shadow: 0 0 12px rgba(245, 158, 11, 0.2) !important;
+}
+
+/* ============================= */
+/* Buttons container             */
+/* ============================= */
+
+.buttons-row {
+	display: flex;
+	justify-content: space-between;
+	gap: clamp(0.5rem, 2vw, 1.5rem);
+	width: 100%;
+	max-width: 600px;
+}
+
+.buttons-row > * {
+	flex: 1;
+}
+
+/* ============================= */
+/* 🎮 Colored Non-Launch Buttons */
+/* ============================= */
+
+.invite-button {
+	background: rgba(59, 130, 246, 0.15) !important;
+	border: 1px solid rgba(59, 130, 246, 0.3) !important;
+	color: #93c5fd !important;
+	font-family: var(--font-body) !important;
+	transition: all 0.2s ease-in-out;
+	font-weight: 700 !important;
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+/* Hover glow */
+.invite-button:hover {
+	background: rgba(59, 130, 246, 0.25) !important;
+	border-color: rgba(59, 130, 246, 0.5) !important;
+	color: #dbeafe !important;
+	box-shadow: 0 0 12px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Optional: Differentiate Quit button (kept original crimson tone) */
+.quit-button {
+	background: rgba(225, 29, 72, 0.15) !important;
+	border: 1px solid rgba(225, 29, 72, 0.3) !important;
+	font-family: var(--font-body) !important;
+	color: #fda4af !important;
+	font-weight: 700 !important;
+	transition: all 0.2s ease-in-out;
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+.quit-button:hover {
+	background: rgba(225, 29, 72, 0.25) !important;
+	border-color: rgba(225, 29, 72, 0.5) !important;
+	color: #ffe4e6 !important;
+	box-shadow: 0 0 12px rgba(225, 29, 72, 0.2) !important;
+}
+
+/* ============================= */
+/* 🔥 Arcane Launch Button       */
+/* ============================= */
+
+.launch-game {
+  background: #03151e !important;
+  color: var(--color-primary) !important;
+  font-family: var(--font-button-large) !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(6, 33, 29, 0.3) !important;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  position: relative;
+  overflow: hidden;
+
+  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+
+  animation: arcanePulse 3s infinite ease-in-out;
+  box-shadow: 0 0 12px rgba(45, 212, 191, 0.15);
+}
+
+.launch-game:hover {
+  background: var(--color-primary-dark1) !important;
+  border-color: rgba(45, 212, 191, 0.4) !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(45, 212, 191, 0.3);
+}
+
+/* Arcane pulse animation */
+@keyframes arcanePulse {
+  0% {
+    box-shadow: 0 0 8px rgba(45, 212, 191, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(45, 212, 191, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 8px rgba(45, 212, 191, 0.1);
+  }
+}
+
+/* ============================= */
+/* Responsive adjustments        */
+/* ============================= */
+
+@media (max-width: 768px) {
+
+	.buttons-row {
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.buttons-row .button,
+	.buttons-row .launch-game {
+		width: 100%;
+		max-width: 300px;
+	}
+}

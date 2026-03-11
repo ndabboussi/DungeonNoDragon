@@ -19,9 +19,8 @@ services:
     build: ../srcs/backend
     image: node
     container_name: node-c
+    init: true
     restart: on-failure
-    ports:
-      - 5173:5173
     env_file:
       - .env
     secrets:
@@ -30,6 +29,8 @@ services:
       - cookie_secret
       - google_secret
       - secret_42
+      - smtp_secret
+      - game_secret
     volumes:
       - ../srcs/frontend:/front
       - ../srcs/backend/uploads:/app/uploads
@@ -39,31 +40,10 @@ services:
       postgres:
         condition: service_started
 
-  # node-dev:
-  #   image: node:25.2.1
-  #   container_name: node-dev-c
-  #   restart: on-failure
-  #   env_file:
-  #     - .env
-  #   secrets:
-  #     - db_password
-  #     - jwt_secret
-  #     - cookie_secret
-  #     - google_secret
-  #     - secret_42
-  #   volumes:
-  #     - ../srcs/backend:/app
-  #   working_dir: /app
-  #   entrypoint: ["/app/prisma_entrypoint.sh"]
-  #   command: ["sh", "-c", "npm install --legacy-peer-deps && npx prisma generate && npx prisma db seed && sleep infinity"]
-  #   networks:
-  #     - transcendence
-  #   depends_on:
-  #     - postgres
-
   pgadmin:
     image: dpage/pgadmin4:9.11.0
     container_name: pgadmin-c
+    init: true
     restart: on-failure
     ports:
       - 5050:80
@@ -92,13 +72,19 @@ services:
       - ../srcs/frontend/src/game/build:/emscripten/build
     networks:
       - transcendence
-    entrypoint: ["make", "wasm"]
+    command: ["make", "-j", "wasm"]
 
   game-server:
     build: ../srcs/game/game-server
     image: game-server
     container_name: game-server-c
+    init: true
+    stop_signal: SIGKILL
     restart: on-failure
+    env_file:
+      - .env
+    secrets:
+      - game_secret
     volumes:
       - ../srcs/game/assets:/src/assets
     networks:
@@ -108,6 +94,7 @@ services:
     build: ../srcs/frontend
     image: nginx
     container_name: nginx-c
+    stop_grace_period: 0s
     restart: on-failure
     ports:
       - 8443:443
@@ -141,6 +128,10 @@ secrets:
     file: ./secrets/secret_42.txt
   pgadmin_password:
     file: ./secrets/pgadmin_password.txt
+  game_secret:
+    file: ./secrets/game_secret.txt
+  smtp_secret:
+    file: ./secrets/smtp_secret.txt
 
 volumes:
   postgres-v:

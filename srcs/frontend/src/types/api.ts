@@ -657,6 +657,273 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/forgot-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        email: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Default Response */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            code?: number;
+                            message?: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            code?: number;
+                            message?: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            code?: number;
+                            message?: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            code?: number;
+                            message?: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/reset-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        token: string;
+                        newPassword: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Default Response */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            code?: number;
+                            message?: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            code?: number;
+                            message?: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            code?: number;
+                            message?: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            code?: number;
+                            message?: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/server": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        clientId: string;
+                        clientSecret: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            token: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            code?: number;
+                            message?: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            code?: number;
+                            message?: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            code?: number;
+                            message?: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/room/{id}": {
         parameters: {
             query?: never;
@@ -684,6 +951,7 @@ export interface paths {
                         "application/json": {
                             roomId: string;
                             hostId: string;
+                            chatId?: string;
                             players: {
                                 id: string;
                                 username: string;
@@ -767,6 +1035,7 @@ export interface paths {
                         "application/json": {
                             roomId: string;
                             hostId: string;
+                            chatId?: string;
                             players: {
                                 id: string;
                                 username: string;
@@ -839,6 +1108,7 @@ export interface paths {
                         "application/json": {
                             roomId: string;
                             hostId: string;
+                            chatId?: string;
                             players: {
                                 id: string;
                                 username: string;
@@ -924,6 +1194,7 @@ export interface paths {
                         "application/json": {
                             roomId: string;
                             hostId: string;
+                            chatId?: string;
                             players: {
                                 id: string;
                                 username: string;
@@ -1089,6 +1360,7 @@ export interface paths {
                         "application/json": {
                             roomId: string;
                             hostId: string;
+                            chatId?: string;
                             players: {
                                 id: string;
                                 username: string;
@@ -1193,6 +1465,7 @@ export interface paths {
                         "application/json": {
                             roomId: string;
                             hostId: string;
+                            chatId?: string;
                             players: {
                                 id: string;
                                 username: string;
@@ -1281,6 +1554,7 @@ export interface paths {
                     "application/json": {
                         roomId: string;
                         hostId: string;
+                        chatId?: string;
                         players: {
                             id: string;
                             username: string;
@@ -1298,6 +1572,7 @@ export interface paths {
                         "application/json": {
                             roomId: string;
                             hostId: string;
+                            chatId?: string;
                             players: {
                                 id: string;
                                 username: string;
@@ -1399,6 +1674,7 @@ export interface paths {
                     "application/json": {
                         roomId: string;
                         hostId: string;
+                        chatId?: string;
                         players: {
                             id: string;
                             username: string;
@@ -1416,6 +1692,7 @@ export interface paths {
                         "application/json": {
                             roomId: string;
                             hostId: string;
+                            chatId?: string;
                             players: {
                                 id: string;
                                 username: string;
@@ -1485,6 +1762,57 @@ export interface paths {
                             error: string;
                             code?: number;
                             message?: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/room/{id}/attach-chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        chatId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            roomId: string;
+                            hostId: string;
+                            chatId?: string;
+                            players: {
+                                id: string;
+                                username: string;
+                            }[];
                         };
                     };
                 };
@@ -1620,6 +1948,8 @@ export interface paths {
                         firstName?: string;
                         lastName?: string;
                         username?: string;
+                        mail?: string;
+                        password?: string;
                         avatarUrl?: string;
                         region?: string;
                         availability?: boolean;
@@ -1782,6 +2112,46 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/profile/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        oldPassword: string;
+                        newPassword: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         trace?: never;
     };
     "/profile/{id}/block": {
@@ -2423,6 +2793,7 @@ export interface paths {
                 content: {
                     "application/json": {
                         content: string;
+                        type?: "text" | "game_invite" | "game_started";
                     };
                 };
             };
@@ -2439,6 +2810,7 @@ export interface paths {
                             userId: string;
                             content: string;
                             status: string;
+                            type: string;
                             postedAt: string;
                         };
                     };
@@ -2481,6 +2853,7 @@ export interface paths {
                             userId: string;
                             content: string;
                             status: string;
+                            type: string;
                             postedAt: string;
                             editedAt: string | null;
                             deletedAt: string | null;
@@ -2546,6 +2919,7 @@ export interface paths {
                             userId: string;
                             content: string;
                             status: string;
+                            type: string;
                             editedAt: string;
                         };
                     };
@@ -3236,7 +3610,6 @@ export interface paths {
                 content: {
                     "application/json": {
                         sessionGameId: string;
-                        startedAt: string;
                         status: string;
                         playerIds: string[];
                     };
@@ -3413,6 +3786,9 @@ export interface paths {
                                 availability: boolean;
                                 playing: boolean;
                                 avatarUrl?: string;
+                                friendshipStatus: "none" | "sent" | "received" | "friends";
+                                friendshipId: string;
+                                createdAt: string;
                                 gameProfile?: {
                                     gameProfileId: string;
                                     level: number;

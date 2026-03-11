@@ -1,10 +1,10 @@
 # include "Session.hpp"
 
-Session::Session(void): _maxNumPlayer(2), _running(0), _ended(0), _startTime(std::chrono::steady_clock::time_point{}),
+Session::Session(void): _maxNumPlayer(2), _running(0), _ended(0), _startTime(std::chrono::steady_clock::time_point{}), _countDown(std::chrono::steady_clock::time_point{}),
 						_numPlayersFinished(0), _readyToRun(0), _timerBeforeRun(std::chrono::_V2::steady_clock::now()), _readyToRunStartTimer(0.0f)
 {
 	static std::string set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-	int size = static_cast<int>(2 * sqrt(8 + 6 * (_maxNumPlayer - 1)));
+	int size = static_cast<int>(2 * sqrt(8 + 5 * (_maxNumPlayer - 1)));
 
 	for (int i = 0; i < 25; i++)
 	{
@@ -23,11 +23,11 @@ Session::Session(void): _maxNumPlayer(2), _running(0), _ended(0), _startTime(std
 	this->linkMaps(_maps[1], _maps[2]);
 }
 
-Session::Session(int numPLayer):	_maxNumPlayer(numPLayer), _running(0), _ended(0), _startTime(std::chrono::steady_clock::time_point{}),
+Session::Session(int numPLayer):	_maxNumPlayer(numPLayer), _running(0), _ended(0), _startTime(std::chrono::steady_clock::time_point{}), _countDown(std::chrono::steady_clock::time_point{}),
 									_numPlayersFinished(0), _readyToRun(0), _timerBeforeRun(std::chrono::_V2::steady_clock::now()), _readyToRunStartTimer(0.0f)
 {
 	static std::string set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-	int size = static_cast<int>(2 * sqrt(8 + 6 * (_maxNumPlayer - 1)));
+	int size = static_cast<int>(2 * sqrt(8 + 5 * (_maxNumPlayer - 1)));
 
 	for (int i = 0; i < 25; i++)
 	{
@@ -78,12 +78,11 @@ void	Session::launch()
 
 		player->setStartPos(pos);
 
-		player->getWs()->unsubscribe(roomId);
-		player->getWs()->subscribe(node->getRoom()->getRoomId());
-		// if (this->_players[pos]->getWs()->unsubscribe(roomId))
-		// 	std::cout << "unsubscribe from waiting room" << std::endl;
-		// if (this->_players[pos]->getWs()->subscribe(node->getRoom()->getRoomId()))
-		// 	std::cout << "subscribed to " << node->getRoom()->getRoomId() << std::endl;
+		if (player->isReConnected())
+		{
+			player->getWs()->unsubscribe(roomId);
+			player->getWs()->subscribe(node->getRoom()->getRoomId());
+		}
 		pos++;
 	}
 }
@@ -236,6 +235,18 @@ std::weak_ptr<Player> &Session::getPlayer(std::string &uid)
 	return _players[0];
 }
 
+void	Session::startCountDown(void)
+{
+	this->_countDown = std::chrono::steady_clock::now();
+}
+
+int	Session::getCountDown(void) const
+{
+	if (_countDown == std::chrono::steady_clock::time_point{})
+		return 6;
+	return std::ceil(5 - std::chrono::duration<double>(std::chrono::steady_clock::now() - this->_countDown).count());
+}
+
 double	Session::getActualTime(void) const
 {
 	if (_startTime == std::chrono::steady_clock::time_point{})
@@ -324,13 +335,13 @@ void	Session::sendEndResults(uWS::App &app, std::shared_ptr<Player> &player, boo
 	player->getWs()->send(msg, uWS::OpCode::TEXT);
 	std::string	oldTopic = player->getRoomRef().getRoomId();
 	sendLeaveUpdate(*player, app, oldTopic);
-	player->getWs()->unsubscribe(oldTopic);
-
-	std::cout << player->getName() << ": " << std::endl
-		<< "Kills: " << player->getKills() << "Place :" << player->getFinalRanking() << std::endl;
+	if (player->isReConnected())
+	{
+		player->getWs()->unsubscribe(oldTopic);
+	}
 }
 
-void	Session::checkFinishedPlayers(uWS::App &app)
+void	Session::checkFinishedPlayers(uWS::App &app, Server &server)
 {
 	int count = 0;
 
@@ -339,18 +350,10 @@ void	Session::checkFinishedPlayers(uWS::App &app)
 		if (p.expired() || !p.lock()->isReConnected())
 			continue ;
 		std::shared_ptr<Player> player = p.lock();
-		if (player->getFinished())
+		if (player->getFinished() && !player->getResultCurl())
 		{
 			this->sendEndResults(app, player, 0);
-
-			// std::string msg = "{\"sessionGameId\":\"" + this->_sessionId + "\""
-			// 				+ ",\"playerId\":\"" + player->getUid() + "\""
-			// 				+ ",\"completionTime\":" + std::to_string(this->getActualTime())
-			// 				+ ",\"ennemiesKilled\":" + std::to_string(player->getKills())
-			// 				+ ",\"isWinner\":" + std::to_string(player->HasWin())
-			// 				+ ",\"gainedXp\":" + std::to_string(10)
-			// 				+ "}";
-			// sendToBack("http://localhost:3000/game/result/" + player->getUid(), msg, "PATCH");
+			sendPlayerResultCurl(server, *this, *player.get());
 		}
 		if (player->checkInvinsibleFrame() && player->getTimeInvincible() > 1.0f)
 			player->endInvinsibleFrame();
@@ -376,6 +379,12 @@ void	Session::startLaunching(void)
 {
 	if (this->_running || this->_readyToRun)
 		return ;
+	if (this->getCountDown() >= 0)
+	{
+		if (this->getCountDown() == 6)
+			this->startCountDown();
+		return ;
+	}
 	this->_readyToRun = true;
 	this->_readyToRunStartTimer = getActualTimeBeforeRun();
 	return ;

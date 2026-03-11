@@ -44,7 +44,6 @@ model AppUser {
   refreshTokens                                         RefreshToken[]   @relation("UserToken")
   rolesGiven                                            UserRole[]       @relation("UserRoleAttributedBy")
   rolesReceived                                         UserRole[]       @relation("UserRoleAttributedTo")
-  //chatReceipt                                           ChatReceipt[]
   ChatState                                             ChatReadState[]
 
   @@map("app_user")
@@ -155,7 +154,6 @@ model Chat {
   messages    ChatMessage[]
   roles       ChatRole[]
   privateChat PrivateChat[]
-  //reads       ChatReceipt[]
   ChatState   ChatReadState[]
 
 
@@ -217,6 +215,7 @@ model ChatMessage {
   userId      String         @map("user_id") @db.Uuid
   content     String
   status      message_status @default(posted)
+  type        message_type   @default(text)
   postedAt    DateTime?      @default(now()) @map("posted_at") @db.Timestamptz(6)
   editedAt    DateTime?      @map("edited_at") @db.Timestamptz(6)
   deletedAt   DateTime?      @map("deleted_at") @db.Timestamptz(6)
@@ -224,7 +223,6 @@ model ChatMessage {
   chat        Chat           @relation(fields: [chatId], references: [chatId], onDelete: NoAction, onUpdate: NoAction)
   moderator   AppUser?       @relation("chat_message_moderated_byToapp_user", fields: [moderatedBy], references: [appUserId], onDelete: NoAction, onUpdate: NoAction)
   author      AppUser        @relation("chat_message_user_idToapp_user", fields: [userId], references: [appUserId], onDelete: NoAction, onUpdate: NoAction)
-  //reads       ChatReceipt[]
   ChatState   ChatReadState[]
 
 
@@ -312,6 +310,12 @@ enum message_status {
   edited
   deleted
   moderated
+}
+
+enum message_type {
+  text
+  game_invite
+  game_started
 }
 
 enum invite_status {

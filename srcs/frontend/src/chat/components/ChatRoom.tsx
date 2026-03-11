@@ -6,10 +6,12 @@ import { ChatInput } from "./ChatInput";
 import { MessageList } from "./ChatMessageList";
 import { TypingIndicator } from "./ChatTypingIndicator";
 import { useSocket } from "../../socket/SocketContext";
+import { useChatSocket } from "../hooks/useChatSocket";
 
 export function ChatRoom({ chatId }: {chatId: string}) {
 
-	const {permissions, role, isTyping} = useChat();
+	useChatSocket(chatId);
+	const {chat, permissions, role, isTyping} = useChat();
 	const {messages} = useChatMessages(chatId);
 	const mutations = useMessagesMutations(chatId);
 	const bottomRef = useRef<HTMLDivElement>(null);
@@ -30,6 +32,7 @@ export function ChatRoom({ chatId }: {chatId: string}) {
 
 	}, [messages]);
 
+	// read receipt
 	useEffect(() => {
 		if (!messages.length || !socket)
 			return;
@@ -43,19 +46,6 @@ export function ChatRoom({ chatId }: {chatId: string}) {
 
 	}, [messages , socket, chatId ]);
 
-	// // Emit read receipt
-	// useEffect(() => {
-	// 	if (!messages.length)
-	// 		return;
-		
-	// 	const lastMessage = messages[messages.length - 1];
-		
-	// 	socket?.emit("chat_receipt", {
-	// 		chatId,
-	// 		messageId: lastMessage.messageId
-	// 	});
-	// }, [messages, chatId, socket]); 
-
 	return (
 		<>
 			<div style={{
@@ -68,6 +58,8 @@ export function ChatRoom({ chatId }: {chatId: string}) {
 				<MessageList
 					messages={messages}
 					readState={readState}
+					chatType={chat?.chatType}
+					memberCount={chat?.members?.length ?? 0}
 					role={role}
 					permissions={permissions}
 					onEdit={mutations.editMessageMutation.mutate}
@@ -82,10 +74,22 @@ export function ChatRoom({ chatId }: {chatId: string}) {
 			{/* <TypingIndicator typingUsers={typingUsers} /> */}
 			<TypingIndicator isTyping={isTyping} />
 
-			<ChatInput
-				chatId={chatId}
-				onSend={mutations.sendMessageMutation.mutate}
-			/>
+			{/* {permissions.canWrite && (
+				<ChatInput
+					chatId={chatId}
+					onSend={mutations.sendMessageMutation.mutate}
+				/>
+			)} */}
+			{permissions.canWrite ? (
+				<ChatInput
+					chatId={chatId}
+					onSend={mutations.sendMessageMutation.mutate}
+					/>
+				) : (
+				<p style={{ opacity: 0.6 }}>
+					You don't have permission to write in this chat.
+				</p>
+			)}
 		</>
 	);
 }

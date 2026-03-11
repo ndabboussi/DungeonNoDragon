@@ -16,7 +16,7 @@ const InputEmail = ({ label, name, value, onChange, placeholder }) => {
 					value={value}
 				/>
 				<span className="icon is-small is-left">
-					<i className="fas fa-envelope"></i>
+					<i className="input-icon fas fa-envelope"></i>
 				</span>
 			</p>
 		</div>

@@ -7,6 +7,7 @@ import {
 
 import { findOrCreatePrivateChat } from '../../services/db/chat/privateChatService.js';
 import { AppError } from '../../schema/errorSchema.js';
+import { SocketService } from '../../services/socket/SocketService.js';
 
 function normalize<T extends Record<string, any>>(obj: T): T {
   return {
@@ -59,6 +60,7 @@ export async function sendRequest(
   reply: FastifyReply
 ) {
   const senderId = req.user.id;
+  const senderUsername = req.user.username;
   const receiverId = req.params.id;
 
   if (senderId === receiverId)
@@ -70,6 +72,13 @@ export async function sendRequest(
     throw new AppError('A friendship or pending request already exists', 409);
 
   await Service.sendRequest(senderId, receiverId);
+
+  // send notification to receiver
+  SocketService.send(`user:${receiverId}`, "friendship_notification", {
+    action: "add",
+    fromUserId: senderId,
+    fromUsername: senderUsername,
+  });
   return reply.status(201).send({ success: true });
 }
 
@@ -111,7 +120,6 @@ export async function updateFriendshipRequest(
     await findOrCreatePrivateChat(senderId, receiverId);
   }
 
-
   //Apply the update
   const newStatus =
     action === 'accept'
@@ -122,6 +130,19 @@ export async function updateFriendshipRequest(
 
   await Service.updateFriendshipRequestStatus(friendshipId, newStatus);
 
+  // Determine who should receive the notification
+  const targetUserId =
+  action === "accept" || action === "reject"
+    ? senderId
+    : receiverId;
+
+  // Emit notification
+  SocketService.send(`user:${targetUserId}`, "friendship_notification", {
+    action,
+    fromUserId: userId,
+    fromUsername: req.user.username,
+  });
+
   return reply.send({ success: true });
 }
 
@@ -131,12 +152,20 @@ export async function removeFriend(
   reply: FastifyReply
 ) {
   const userId = req.user.id;
+  const username = req.user.username;
   const otherId = req.params.id;
 
   const result = await Service.removeFriend(userId, otherId);
 
   if (result.count === 0)
     throw new AppError('Friendship not found', 404);
+
+  // notify the receiver
+  SocketService.send(`user:${otherId}`, "friendship_notification", {
+    action: "remove",
+    fromUserId: userId,
+    fromUsername: username,
+  });
 
   return reply.status(204).send();
 }

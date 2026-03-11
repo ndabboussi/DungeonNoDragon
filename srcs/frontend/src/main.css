@@ -1,0 +1,76 @@
+@import "bulma/css/bulma.min.css";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import "./styles/tokens.css";
+@import './index.css';
+@import "./App.css";
+@import "./about/game-rules.css";
+@import "./auth/login.css";
+@import "./auth/register.css";
+@import "./components/Banner.css";
+@import "./components/Footer.css";
+@import "./components/Sidebar.css";
+@import "./components/ui/parchment.css";
+@import "./friendship/friendList.css";
+@import "./game/game.css";
+@import "./home/home.css";
+@import "./profile/profile.css";
+@import "./profile/update.css";
+@import "./policies/privacy_policy.css";
+@import "./search/SearchBar.css";
+@import "./search/SearchPage.css";
+
+.page-container {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100% !important;
+
+	/* Darker underground gradient with teal */
+	background: radial-gradient(
+		circle at 50% 20%,
+		#2e2e2e 0% ,      /* slightly lighter center */
+		#242424 30%,     /* requested base */
+		#004c49 60%,     /* teal instead of dark blue */
+		#003532 85%,     /* deep teal shadow */
+		#00221f 100%     /* strong teal vignette */
+	) !important;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-primary-dark0) inset !important;
+  -webkit-text-fill-color: var(--color-primary-light) !important;
+}
+
+/* ============================= */
+/*  Animated Fog (Teal)          */
+/* ============================= */
+
+/* Fog animation removed globally */
+.page-container::before,
+.page-container::after {
+	display: none !important;
+}
+
+.main-layout {
+	display: flex;
+	position: relative;
+	flex: 1;
+	align-items: stretch;
+}
+
+.content {
+	flex: 1; /* takes remaining space */
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 0 !important;
+	position: relative;
+	z-index: 1;
+}
+
+@media (max-width: 480px) {
+	.main-layout {
+		flex-direction: column-reverse;
+		justify-content: flex-end !important;
+	}
+}

@@ -89,13 +89,17 @@ void updateRoom(Player &player, uWS::App &app)
 			exitsLoc = player.getRoom().getExitsLoc();
 			player.setPos(exitsLoc[1][0] - 0.1, exitsLoc[1][1] + 0.5);
 		}
+
+		//NERFED, TOO HARD
+		player.setHp(5);
+		//----------------
+
 		sendLeaveUpdate(player, app, oldTopic);
-		player.getWs()->unsubscribe(oldTopic);
-		player.getWs()->subscribe(player.getRoom().getRoomId());
-		// if (player.getWs()->unsubscribe(oldTopic))
-		// 	std::cout << "Unsubscribe from " << oldTopic << std::endl;
-		// if (player.getWs()->subscribe(player.getRoom().getRoomId()))
-		// 	std::cout << "Subscribe to " << player.getRoom().getRoomId() << std::endl;
+		if (player.isReConnected())
+		{
+			player.getWs()->unsubscribe(oldTopic);
+			player.getWs()->subscribe(player.getRoom().getRoomId());
+		}
 	}
 	else if (plan[y][x] == 'S')
 	{
@@ -109,12 +113,11 @@ void updateRoom(Player &player, uWS::App &app)
 		player.setStartNode(player.getNode());
 		player.findP();
 		sendLeaveUpdate(player, app, oldTopic);
-		player.getWs()->unsubscribe(oldTopic);
-		player.getWs()->subscribe(player.getRoom().getRoomId());
-		// if (player.getWs()->unsubscribe(oldTopic))
-		// 	std::cout << "Unsubscribe from " << oldTopic << std::endl;
-		// if (player.getWs()->subscribe(player.getRoom().getRoomId()))
-		// 	std::cout << "Subscribed to " << player.getRoom().getRoomId() << std::endl;
+		if (player.isReConnected())
+		{
+			player.getWs()->unsubscribe(oldTopic);
+			player.getWs()->subscribe(player.getRoom().getRoomId());
+		}
 	}
 	else if (plan[y][x] == 'F')
 		player.setFinished(true);
@@ -142,17 +145,22 @@ static void	mobInteraction(MobRush &rush, int id, Mob &mob, Player &player)
 		else
 			mob.setInvFrame(invFrame + 1);
 	}
+
+	// NERFED, TOO HARD
+
 	else if (!mob.isDead() && player.getIsAttacking() && player.getAtkFrame() != 1 && mob.getState() != MOB_DODGE)
 	{
 		if (abs_dist(player, mob) > 2)
 			return ;
-		int dodge = rand() % 10;
+		int dodge = rand() % 150;
 		if (!dodge)
 		{
 			mob.setState(MOB_DODGE);
 			return ;
 		}
 	}
+
+	//----------------
 	else if (player.getIsAttacking() == true && player.getAtkFrame() == 1)
 	{
 		if (abs_dist(player, mob) <= 2)

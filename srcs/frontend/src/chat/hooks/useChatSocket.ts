@@ -1,15 +1,19 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSocket } from "../../socket/SocketContext";
+//import toast from "../../Notifications";
 
 //When a socket event arrives, it directly updates the React Query cache
-export function useChatSocket(chatId?: string) {
+export function useChatSocket(
+	chatId?: string,
+	onChatClosed?: () => void
+) {
 
 	const socket = useSocket();
 	const queryClient = useQueryClient();
 
 	useEffect(() => {
-	
+
 		if (!socket || !chatId)
 			return;
 
@@ -31,14 +35,7 @@ export function useChatSocket(chatId?: string) {
 
 		//SEND
 		const onMessageCreated = () => {
-	
-			//let the backend decide what you’re allowed to see
 			queryClient.invalidateQueries({ queryKey: ["chat-messages", chatId] });
-			// queryClient.setQueryData(["chat-messages", chatId], (cache: any[] | undefined) => {
-			// 	if (!cache)
-			// 		return [message];
-			// 	return [...cache, message];
-			// });
 		};
 
 		//EDIT
@@ -51,7 +48,7 @@ export function useChatSocket(chatId?: string) {
 		//DELETE
 		const onMessageDeleted = (message: any) => {
 			queryClient.setQueryData(["chat-messages", chatId], (cache: any[] = []) => {
-				return cache.map(msg => msg.messageId === message.messageId 
+				return cache.map(msg => msg.messageId === message.messageId
 					? {...msg, status: "deleted", deletedAt: message.deletedAt }
 					: msg
 				);
@@ -59,11 +56,10 @@ export function useChatSocket(chatId?: string) {
 			});
 		};
 
-
 		//MODERATED
 		const onMessageModerated = (message: any) => {
 			queryClient.setQueryData(["chat-messages", chatId], (cache: any[] = []) => {
-				return cache.map(msg => msg.messageId === message.messageId 
+				return cache.map(msg => msg.messageId === message.messageId
 					? {...msg, status: "moderated", deletedAt: message.deletedAt }
 					: msg
 				);
@@ -73,12 +69,25 @@ export function useChatSocket(chatId?: string) {
 		//RESTORE
 		const onMessageRestored = (message: any) => {
 			queryClient.setQueryData(["chat-messages", chatId], (cache: any[] = []) => {
-				return cache.map(msg => msg.messageId === message.messageId 
+				return cache.map(msg => msg.messageId === message.messageId
 					? {...msg, status: "posted"}
 					: msg
 				);
 			});
 		};
+
+		const handleChatClosed = ({ chatId: closedChatId }: { chatId: string }) => {
+			if (closedChatId !== chatId)
+				return;
+
+			queryClient.removeQueries({ queryKey: ["chat-info", chatId] });
+			queryClient.removeQueries({ queryKey: ["chat-messages", chatId] });
+			queryClient.removeQueries({ queryKey: ["chat-read-state", chatId] });
+			queryClient.invalidateQueries({ queryKey: ["chat-list"] });
+
+			onChatClosed?.();
+		};
+
 
 		socket.on("chat_message_created", onMessageCreated);
 		socket.on("chat_message_edited", onMessageEdited);
@@ -87,14 +96,15 @@ export function useChatSocket(chatId?: string) {
 		socket.on("chat_message_restored", onMessageRestored);
 
 		socket.on("chat_member_joined", invalidateChatInfo);
-		socket.on("chat_member_left", invalidateChatInfo);
+		socket.on("chat_member_left", invalidateChatInfo);//send to all chat when a user has left chat
 		socket.on("chat_member_kicked", invalidateChatInfo);
 		socket.on("chat_member_role_changed", invalidateChatInfo);
 		socket.on("chat_disbanded", invalidateChatInfo);
+		socket.on("chat_member_quit", handleChatClosed);//send to a user who quit/is kicked/member of disbanded chat/disband
+		socket.on("blocked", handleChatClosed);
 
 
 		return () => {
-			//socket.off("chat_receipt_update");
 			socket.off("chat_read_updated");
 
 			socket.off("chat_message_created", onMessageCreated);
@@ -108,6 +118,8 @@ export function useChatSocket(chatId?: string) {
 			socket.off("chat_member_kicked", invalidateChatInfo);
 			socket.off("chat_member_role_changed", invalidateChatInfo);
 			socket.off("chat_disbanded", invalidateChatInfo);
+			socket.off("chat_member_quit", handleChatClosed);
+			socket.off("blocked");
 		}
 
 	}, [socket, chatId, queryClient]);

@@ -17,7 +17,6 @@ import Type, { type Static } from 'typebox';
 
 export const sessionBodySchema = Type.Object({
 	sessionGameId: Type.String(),
-	startedAt: Type.String(),
 	status: Type.String(),
 	playerIds: Type.Array(
 		Type.String({ format: 'uuid' })

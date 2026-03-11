@@ -6,6 +6,11 @@ import { serializePrisma } from '../../utils/serializePrisma.js';
 import { UserService } from '../../services/db/userService.js';
 import fs from 'fs';
 import path from 'path';
+import type { UpdatePasswordBody } from '../../schema/profileSchema.js';
+import { prisma } from '../../services/db/prisma.js';
+import { hashPassword, verifyPassword } from '../../services/auth/password.js';
+import { SocketService } from '../../services/socket/SocketService.js';
+import { findOrCreatePrivateChat } from '../../services/db/chat/privateChatService.js';
 
 // GET /profile
 export async function getProfile( req: FastifyRequest, reply: FastifyReply ) {
@@ -39,7 +44,7 @@ export async function updateProfile( req: FastifyRequest<{ Body: UpdateProfileBo
 
   //Specify which fields can be updated
   const allowedFields = new Set([
-    'firstName', 'lastName', 'username', 'avatarUrl', 'region', 'availability'
+    'firstName', 'lastName', 'username', 'avatarUrl', 'region', 'availability', 'mail', 'oldPassword', 'newPassword'
   ]);
 
   const bodyFields = Object.keys(req.body);
@@ -53,6 +58,45 @@ export async function updateProfile( req: FastifyRequest<{ Body: UpdateProfileBo
   const updated = await profileService.updateProfile(userId, req.body);
 
   return reply.status(200).send(serializePrisma(mapProfileToResponse(updated)));
+}
+
+export async function updatePassword(
+	req: FastifyRequest<{ Body: UpdatePasswordBody }>,
+	reply: FastifyReply
+	) {
+	const userId = req.user.id;
+	const { oldPassword, newPassword } = req.body;
+
+	// 1️⃣ Get user including passwordHash
+	const user = await prisma.appUser.findUnique({
+		where: { appUserId: userId },
+		select: { passwordHash: true }
+	});
+
+	if (!user || !user.passwordHash) {
+		return reply.status(404).send({ error: "User not found" });
+	}
+
+	// 2️⃣ Verify old password
+	const isValid = await verifyPassword(user.passwordHash, oldPassword);
+
+	if (!isValid) {
+		return reply.status(400).send({ error: "Current password is incorrect" });
+	}
+
+	// 3️⃣ Hash new password
+	const hashed = await hashPassword(newPassword);
+
+	// 4️⃣ Update DB
+	await prisma.appUser.update({
+		where: { appUserId: userId },
+		data: {
+		passwordHash: hashed,
+		updatedAt: new Date()
+		}
+	});
+
+	return reply.status(204).send();
 }
 
 // DELETE /profile
@@ -81,6 +125,10 @@ export async function blockProfile(req: FastifyRequest<{ Params: ProfileIdParams
 
   await profileService.blockProfile(userId, targetId);
 
+  const chat = await findOrCreatePrivateChat(req.params.id, req.user.id);
+
+  SocketService.send(chat.chatId!, 'blocked', { chatId: chat.chatId });
+
   return reply.status(204).send();
 }
 
@@ -101,6 +149,10 @@ export async function unblockProfile(req: FastifyRequest<{ Params: ProfileIdPara
     return reply.code(400).send({ error: 'Not blocked' });
 
   await profileService.unblockProfile(lastBlockId);
+
+  const chat = await findOrCreatePrivateChat(req.params.id, req.user.id);
+
+  SocketService.send(chat.chatId!, 'unblocked', { chatId: chat.privateChatId });
 
   return reply.status(204).send();
 }
