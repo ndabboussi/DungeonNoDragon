@@ -13,7 +13,7 @@ const Game = () => {
 	const navigate = useNavigate();
 	const { user } = useAuth();
 	const { room, start, cancelStart } = useRoom()!;
-	const [showButton, setShowButton] = useState(true);
+	const [showButton, setShowButton] = useState(false);
 	const [compact, setCompact] = useState(false);;
 	const [JsonEnd, setJsonEnd] = useState(Object);
 
@@ -279,12 +279,6 @@ const Game = () => {
 		cleanupWasm();
 		navigate("/home");
 	}
-
-	JsonEnd.is_winner = true;
-	JsonEnd.completion_time_min = 42;
-	JsonEnd.completion_time_sec = 42;
-	JsonEnd.completion_time_mil = 0.42;
-	JsonEnd.mob_killed = 42;
 
 	return (
 		<div className={`game-box ${compact ? "game-box--results" : ""}`}>
