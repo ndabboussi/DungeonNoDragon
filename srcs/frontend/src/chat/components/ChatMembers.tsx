@@ -6,6 +6,7 @@ import { useGroupChatMutations } from "../hooks/useGroupChatMutations";
 import { useChatInfo } from "../hooks/useChatInfo";
 import { Button } from "@allxsmith/bestax-bulma";
 import toast from "../../Notifications";
+import { Link } from "react-router";
 
 export function ChatMembers({chatId}) {
 
@@ -36,7 +37,14 @@ export function ChatMembers({chatId}) {
 			{open && (<ul className="members-list">
 				{chat.members.map((m: any) => (
 				<li key={m.chatMemberId} className="mb-1">
-					{m.user.username} - <em>{m.role}</em>
+					<Link
+					to={`/profile/${encodeURIComponent(m.user.username)}`}
+					className="member-profile-link"
+					>
+					{m.user.username}
+					</Link>
+					{" - "}
+					<em>{m.role}</em>
 
 					{permissions.canChangeRoles && m.user.appUserId !== user?.id && (m.role != "owner" || (role == "admin" && m.role != "admin")) && (
 					<select

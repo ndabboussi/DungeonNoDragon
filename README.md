@@ -415,7 +415,7 @@ The database has been designed to maximize unique information sources, with mini
 
 * Solutions:
 	* Use of CSS variables for the coherent design
-	* Ask many questions to other members to understand the organization of their work and how that would influence the front and eventually made changes in the back-end is necessary
+	* Ask many questions to other members to understand the organization of their work and how that would influence the front and eventually made changes in the back-end if necessary
 	* Read a lot of documentation on React
 
 ---
