@@ -31,19 +31,19 @@ const realnameRegex = /^[a-zA-Z'-]+$/;
 const schema = yup.object().shape({
 	firstname: yup
 		.string()
-		.min(3, "Minimum 3 characters required")
+		.min(2, "Minimum 2 characters required")
 		.max(15, "Maximum 15 characters allowed")
 		.matches(realnameRegex, "Only letters are allowed")
 		.required("First name is required"),
 	lastname: yup
 		.string()
-		.min(3, "Minimum 3 characters required")
+		.min(2, "Minimum 2 characters required")
 		.max(15, "Maximum 15 characters allowed")
 		.matches(realnameRegex, "Only letters are allowed")
 		.required("First name is required"),
 	username: yup
 		.string()
-		.min(3, "Minimum 3 characters required")
+		.min(2, "Minimum 2 characters required")
 		.max(10, "Maximum 10 characters allowed")
 		.matches(usernameRegex, "Allowed characters are: letters, numbers, underscores")
 		.required("User name is required"),
