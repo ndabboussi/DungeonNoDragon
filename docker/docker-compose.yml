@@ -21,8 +21,6 @@ services:
     container_name: node-c
     init: true
     restart: on-failure
-    ports:
-      - 5173:5173
     env_file:
       - .env
     secrets:
