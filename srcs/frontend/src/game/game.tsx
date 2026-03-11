@@ -280,14 +280,13 @@ const Game = () => {
 		navigate("/home");
 	}
 
-
 	return (
 		<div className={`game-box ${compact ? "game-box--results" : ""}`}>
 			{showButton &&
 			(<div className='end-results'>
-				<h2>{JsonEnd.is_winner ? "🎉 Victoire !" : "💀 Défaite"}</h2>
-				<p>🗡️ <span>Monstres tués :</span> <span className='game-numbers'>{JsonEnd.mob_killed}</span></p>
-				<p>⏱️ <span>Temps :</span>
+				<h2>{JsonEnd.is_winner ? "🎉 Victory!" : "💀 Defeat"}</h2>
+				<p>🗡️ <span>Monsters killed:</span> <span className='game-numbers'>{JsonEnd.mob_killed}</span></p>
+				<p>⏱️ <span>Time:</span>
 					<span className='game-numbers'>{JsonEnd.completion_time_min}</span>min
 					<span className='game-numbers'>{JsonEnd.completion_time_sec}</span>s
 					<span className='game-numbers'>{Math.round(JsonEnd.completion_time_mil * 1000)}</span>ms
