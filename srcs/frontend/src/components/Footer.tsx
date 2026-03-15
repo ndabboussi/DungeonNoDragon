@@ -13,7 +13,10 @@ const MyFooter = () => (
 		<div className="site-footer__inner">
 	
 		<div className="site-footer__brand">
-			<span className="site-footer__title">DungeonNoDragon</span>
+			<span className="site-footer__title">
+			<span style={{ color: 'var(--stone-100)' }}>Dungeon</span>
+			<span style={{ color: 'var(--color-primary)' }}>NoDragon</span>
+			</span>
 			<span className="site-footer__meta">© 2026 · Piscine July 2024</span>
 		</div>
 	

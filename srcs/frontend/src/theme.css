@@ -1,98 +1,110 @@
 /* ============================================================
    1. GOOGLE FONTS
-   - Cinzel Decorative : headings / game title  (readable, no swash overload)
-   - Atkinson Hyperlegible Next : body / UI     (designed for low-vision users)
-   - JetBrains Mono : code / stats
+   - Press Start 2P  : headings / game title  (pixel-art, retro gaming)
+   - Atkinson Hyperlegible Next : body / UI   (designed for low-vision users)
+   - JetBrains Mono  : code / stats
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ============================================================
    2. DESIGN TOKENS
    ============================================================ */
 :root {
   /* --- Palette ------------------------------------------------ */
-  /* Stone (neutrals) */
-  --stone-950: #0d0c0a;
-  --stone-900: #181510;
-  --stone-850: #201c16;
-  --stone-800: #2a251e;
-  --stone-700: #3d3729;
-  --stone-600: #56503e;
-  --stone-500: #7a7264;
-  --stone-400: #a09880;
-  --stone-300: #c4bcaa;
-  --stone-200: #ddd8cd;
-  --stone-100: #f0ece4;
-  --stone-50:  #faf8f4;
+  /*
+   * Extracted from the pixel-art forest/dungeon game asset:
+   * greens from the grass/tree canopy, greys from the stone tiles,
+   * warm earth from the soil and pottery.
+   */
 
-  /* Moss / teal — primary accent (dungeon exit, interactive, success) */
-  --moss-900: #0a2b1e;
-  --moss-800: #103d2a;
-  --moss-700: #185239;
-  --moss-600: #1f6b4a;
-  --moss-500: #2a8f62;
-  --moss-400: #38b880;
-  --moss-300: #59d49c;
-  --moss-200: #8ee8bf;
-  --moss-100: #c3f5df;
-  --moss-50:  #eafbf2;
+  /* Stone grey — UI surfaces, borders, neutrals
+     Sampled from the stone tile floor and wall blocks             */
+  --stone-950: #0e0f0d;
+  --stone-900: #161814;
+  --stone-850: #1e2019;
+  --stone-800: #272920;
+  --stone-750: #313428;
+  --stone-700: #3e4132;
+  --stone-600: #565a47;
+  --stone-500: #727660;
+  --stone-400: #949880;
+  --stone-300: #b8bca6;
+  --stone-200: #d4d8c8;
+  --stone-100: #eceee6;
+  --stone-50:  #f6f7f2;
 
-  /* Amber / torch — secondary accent (warning, XP, fire, forest light) */
-  --amber-900: #281400;
-  --amber-800: #3d2000;
-  --amber-700: #5a3200;
-  --amber-600: #7a4600;
-  --amber-500: #a35f00;
-  --amber-400: #cf7c0e;
-  --amber-300: #e89e34;
-  --amber-200: #f5c46a;
-  --amber-100: #fbe3b0;
-  --amber-50:  #fdf4e0;
+  /* Pixel green — PRIMARY accent
+     Sampled from the bright grass and tree canopy (#7db344 range) */
+  --green-900: #141f08;
+  --green-800: #1e3010;
+  --green-700: #2d4a18;
+  --green-600: #3d6420;
+  --green-500: #527f28;
+  --green-400: #6fa032;
+  --green-350: #7db344;  /* exact canopy highlight */
+  --green-300: #8fc455;
+  --green-200: #aed87c;
+  --green-150: #c4e89e;  /* light grass */
+  --green-100: #d8f0bc;
+  --green-50:  #eef8d8;
 
-  /* Danger / blood — enemy, health low, critical */
-  --blood-900: #1e0505;
-  --blood-700: #5c1212;
-  --blood-500: #9e2222;
-  --blood-400: #c83434;
-  --blood-300: #e06060;
-  --blood-200: #f0a0a0;
-  --blood-100: #fbe0e0;
+  /* Earthy amber — XP, torch, warm accents
+     Sampled from the pottery and soil patches                     */
+  --amber-900: #1e1000;
+  --amber-800: #321a00;
+  --amber-700: #4e2a00;
+  --amber-600: #6e3c00;
+  --amber-500: #924f08;
+  --amber-400: #b86818;
+  --amber-300: #d4882e;
+  --amber-200: #e8ae60;
+  --amber-100: #f5d49a;
+  --amber-50:  #faecd0;
 
-  /* Forest green — level 2, nature, secondary positive */
-  --forest-800: #12290e;
-  --forest-600: #2a5c1e;
-  --forest-500: #3d8028;
-  --forest-400: #56a83a;
-  --forest-300: #78c859;
-  --forest-200: #a8e08a;
-  --forest-100: #d6f2c4;
+  /* Blood red — danger, enemy, low HP                            */
+  --blood-900: #1a0404;
+  --blood-700: #541010;
+  --blood-500: #8e1e1e;
+  --blood-400: #b83030;
+  --blood-300: #d45858;
+  --blood-200: #e89898;
+  --blood-100: #f8dede;
 
-  /* --- Semantic colours (light theme) ----------------------- */
+  /* Blue rune — info, magic, portal glow
+     Sampled from the glowing rune circles on the altar           */
+  --rune-700: #0c2040;
+  --rune-500: #1e4e8c;
+  --rune-400: #3878c8;
+  --rune-300: #60a0e0;
+  --rune-200: #98c8f0;
+  --rune-100: #cce4f8;
+
+  /* --- Semantic colours --------------------------------------- */
   --color-bg:          var(--stone-900);
   --color-surface:     var(--stone-850);
   --color-surface-2:   var(--stone-800);
-  --color-surface-3:   var(--stone-700);
+  --color-surface-3:   var(--stone-750);
   --color-border:      var(--stone-700);
-  --color-border-soft: rgba(255,255,255,.07);
+  --color-border-soft: rgba(255,255,255,.06);
 
   --color-text:        var(--stone-100);
   --color-text-muted:  var(--stone-400);
   --color-text-faint:  var(--stone-500);
 
-  --color-primary:     var(--moss-400);
-  --color-primary-dim: var(--moss-600);
-  --color-primary-glow:rgba(56, 184, 128, .15);
+  --color-primary:     var(--green-350);
+  --color-primary-dim: var(--green-600);
+  --color-primary-glow:rgba(125, 179, 68, .18);
 
   --color-accent:      var(--amber-300);
   --color-accent-dim:  var(--amber-600);
 
   --color-danger:      var(--blood-400);
-  --color-success:     var(--moss-400);
+  --color-success:     var(--green-400);
   --color-warning:     var(--amber-300);
-  --color-info:        #5b9bd5;
+  --color-info:        var(--rune-300);
 
   /* --- Typography -------------------------------------------- */
-  --font-title:  'Cinzel Decorative', 'Palatino Linotype', serif;
+  --font-title:  'Press Start 2P', 'Courier New', monospace;
   --font-body:   'Atkinson Hyperlegible Next', 'Verdana', sans-serif;
   --font-mono:   'JetBrains Mono', 'Courier New', monospace;
 
@@ -116,10 +128,11 @@
   --radius-xl: 18px;
 
   /* --- Shadows (stone carved depth) ------------------------- */
+  /* --- Shadows (stone carved depth) ------------------------- */
   --shadow-soft:  0 2px 12px rgba(0,0,0,.45);
   --shadow-inset: inset 0 1px 3px rgba(0,0,0,.5);
   --shadow-card:  0 4px 24px rgba(0,0,0,.55);
-  --shadow-glow:  0 0 18px rgba(56, 184, 128, .25);
+  --shadow-glow:  0 0 18px rgba(125,179,68,.25);
 
   /* --- Transitions ------------------------------------------ */
   --ease-out: cubic-bezier(.22,.68,0,1.2);
@@ -175,15 +188,16 @@ p, li, label, input, textarea, select {
 h1, h2, h3, h4, h5, h6,
 .title, .subtitle {
   font-family: var(--font-title);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: .03em;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: .02em;
 }
 
-h1, .title.is-1 { font-size: clamp(2rem, 5vw, 3.5rem); }
-h2, .title.is-2 { font-size: clamp(1.5rem, 3.5vw, 2.5rem); }
-h3, .title.is-3 { font-size: clamp(1.2rem, 2.5vw, 1.8rem); }
-h4, .title.is-4 { font-size: clamp(1rem, 2vw, 1.4rem); }
+/* Press Start 2P is naturally bold-weight, scale sizes down accordingly */
+h1, .title.is-1 { font-size: clamp(1.1rem, 2.5vw, 1.8rem); }
+h2, .title.is-2 { font-size: clamp(.9rem,  2vw,   1.4rem); }
+h3, .title.is-3 { font-size: clamp(.78rem, 1.6vw, 1.1rem); }
+h4, .title.is-4 { font-size: clamp(.7rem,  1.2vw,  .9rem); }
 
 .subtitle,
 .title.subtitle {
@@ -299,23 +313,23 @@ h4, .title.is-4 { font-size: clamp(1rem, 2vw, 1.4rem); }
   -webkit-animation: none !important;
 }
 
-/* --- Primary button (moss/teal) ----------------------------- */
+/* --- Primary button (pixel green) -------------------------- */
 .button.is-primary {
-  background-color: var(--moss-600) !important;
-  border-color:     var(--moss-500) !important;
-  color:            var(--moss-100) !important;
+  background-color: var(--green-600) !important;
+  border-color:     var(--green-500) !important;
+  color:            var(--green-100) !important;
   box-shadow: 0 1px 4px rgba(0,0,0,.4) !important;
 }
 
 .button.is-primary:hover,
 .button.is-primary:focus-visible {
-  background-color: var(--moss-500) !important;
-  border-color:     var(--moss-400) !important;
-  box-shadow: 0 2px 10px rgba(56,184,128,.3) !important;
+  background-color: var(--green-500) !important;
+  border-color:     var(--green-400) !important;
+  box-shadow: 0 2px 10px rgba(125,179,68,.3) !important;
 }
 
 .button.is-primary:active {
-  background-color: var(--moss-700) !important;
+  background-color: var(--green-700) !important;
   transform: translateY(1px);
 }
 
@@ -460,12 +474,14 @@ h4, .title.is-4 { font-size: clamp(1rem, 2vw, 1.4rem); }
 
 .panel-card__title {
   font-family: var(--font-title);
-  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-size: clamp(.8rem, 1.5vw, 1rem);
   color: var(--color-primary);
   text-align: center;
   margin-bottom: var(--space-lg);
-  letter-spacing: .05em;
+  letter-spacing: .04em;
+  line-height: 1.6;
 }
+
 
 /* ============================================================
    11. NOTIFICATION / TOAST
@@ -610,11 +626,11 @@ h4, .title.is-4 { font-size: clamp(1rem, 2vw, 1.4rem); }
   letter-spacing: .04em;
 }
 
-.tag.is-primary  { background-color: var(--moss-800)  !important; color: var(--moss-200)  !important; }
+.tag.is-primary  { background-color: var(--green-800)  !important; color: var(--green-200)  !important; }
 .tag.is-danger   { background-color: var(--blood-700) !important; color: var(--blood-200) !important; }
 .tag.is-warning  { background-color: var(--amber-800) !important; color: var(--amber-200) !important; }
-.tag.is-success  { background-color: var(--moss-800)  !important; color: var(--moss-200)  !important; }
-.tag.is-info     { background-color: #1a3050          !important; color: #8bb8e8          !important; }
+.tag.is-success  { background-color: var(--green-800)  !important; color: var(--green-200)  !important; }
+.tag.is-info     { background-color: var(--rune-700)   !important; color: var(--rune-200)   !important; }
 .tag.is-dark     { background-color: var(--stone-800) !important; color: var(--stone-300) !important; }
 
 /* ============================================================
@@ -659,7 +675,7 @@ a {
   transition: color var(--dur-std) ease;
 }
 
-a:hover { color: var(--moss-300); }
+a:hover { color: var(--green-300); }
 
 /* ============================================================
    21. GAME-SPECIFIC COMPONENTS
@@ -696,9 +712,10 @@ a:hover { color: var(--moss-300); }
 
 .auth-panel__title {
   font-family: var(--font-title);
-  font-size: 1.6rem;
+  font-size: 1rem;
   color: var(--color-primary);
-  letter-spacing: .06em;
+  letter-spacing: .04em;
+  line-height: 1.6;
   margin: 0;
 }
 
@@ -753,11 +770,10 @@ a:hover { color: var(--moss-300); }
 
 .landing-hero__title {
   font-family: var(--font-title);
-  font-size: clamp(2.4rem, 7vw, 5rem);
+  font-size: clamp(1rem, 2.5vw, 1.8rem);
   color: var(--color-text);
-  line-height: 1.1;
+  line-height: 1.7;
   margin-bottom: var(--space-lg);
-  /* Subtle primary tint on the last word via span.accent */
 }
 
 .landing-hero__title .accent {
@@ -798,9 +814,10 @@ a:hover { color: var(--moss-300); }
 
 .room-card__name {
   font-family: var(--font-title);
-  font-size: 1rem;
+  font-size: .75rem;
   color: var(--color-text);
   margin-bottom: var(--space-xs);
+  line-height: 1.6;
 }
 
 .room-card__meta {
@@ -823,9 +840,9 @@ a:hover { color: var(--moss-300); }
   color: var(--color-text-muted);
 }
 
-.stat-chip--hp     { border-color: rgba(200, 52, 52, .35); color: var(--blood-300); }
-.stat-chip--xp     { border-color: rgba(232,158, 52, .35); color: var(--amber-300); }
-.stat-chip--level  { border-color: rgba(56, 184,128, .35); color: var(--moss-300); }
+.stat-chip--hp     { border-color: rgba(184, 48, 48, .35);  color: var(--blood-300); }
+.stat-chip--xp     { border-color: rgba(212,136, 46, .35);  color: var(--amber-300); }
+.stat-chip--level  { border-color: rgba(111,160, 50, .35);  color: var(--green-300); }
 
 /* --- Chat bubble ------------------------------------------- */
 .chat-bubble {
@@ -851,9 +868,9 @@ a:hover { color: var(--moss-300); }
 }
 
 .chat-bubble--own .chat-bubble__body {
-  background-color: var(--moss-800);
-  border-color: var(--moss-600);
-  color: var(--moss-100);
+  background-color: var(--green-800);
+  border-color: var(--green-600);
+  color: var(--green-100);
 }
 
 /* --- Game rules box (replaces .rules-box) ------------------ */
@@ -871,17 +888,19 @@ a:hover { color: var(--moss-300); }
 
 .rules-box h2 {
   font-family: var(--font-title) !important;
-  font-size: clamp(1.4rem, 3vw, 2.2rem) !important;
+  font-size: clamp(.85rem, 1.8vw, 1.1rem) !important;
   color: var(--color-primary) !important;
   text-align: center;
   margin-bottom: var(--space-lg);
+  line-height: 1.7;
 }
 
 .rules-box h3 {
   font-family: var(--font-title) !important;
-  font-size: clamp(.9rem, 1.8vw, 1.2rem) !important;
+  font-size: clamp(.65rem, 1.2vw, .8rem) !important;
   color: var(--color-accent) !important;
   margin-bottom: var(--space-sm);
+  line-height: 1.6;
 }
 
 .rules-box p {

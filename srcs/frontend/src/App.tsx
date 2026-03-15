@@ -17,7 +17,7 @@ const App = () => {
 			Dungeon<span className="accent">NoDragon</span>
 		</h1>
 		<p className="landing-hero__subtitle">
-			Escape the maze. Defeat the goblins. Be the last one standing.
+			Enter the maze. Defeat the goblins. Be the first one escaping.
 		</p>
 		<div className="landing-hero__actions">
 			<NavLink to="/login" className="button is-ghost is-medium">Sign in</NavLink>

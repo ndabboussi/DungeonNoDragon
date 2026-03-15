@@ -1,9 +1,6 @@
-@import "bulma/css/bulma.min.css";
-@import "@fortawesome/fontawesome-free/css/all.min.css";
 @import "./about/game-rules.css";
 @import "./auth/login.css";
 @import "./auth/register.css";
-@import "./components/Banner.css";
 @import "./components/Footer.css";
 @import "./components/Sidebar.css";
 @import "./friendship/friendList.css";
@@ -15,6 +12,9 @@
 @import "./search/SearchBar.css";
 @import "./search/SearchPage.css";
 
+/* ============================================================
+   PAGE SHELL
+   ============================================================ */
 .page-container {
   min-height: 100vh;
   display: flex;
@@ -23,86 +23,60 @@
   height: 100% !important;
   background-color: #0e110a;
   background-image:
-    /* Moon glow */
-    radial-gradient(
-      ellipse 120px 120px at 50% 15%,
-      rgba(240,245,216,.18) 0%,
-      rgba(200,220,150,.06) 40%,
-      transparent 70%
-    ),
-    /* Canopy light spill */
     radial-gradient(
       ellipse 400px 260px at 50% 35%,
-      rgba(26,56,20,.22) 0%,
+      rgba(26, 56, 20, .22) 0%,
       transparent 70%
     ),
-    /* Left tree mass */
     radial-gradient(
       ellipse 300px 500px at -5% 60%,
       #0c1509 0%,
       transparent 70%
     ),
-    /* Right tree mass */
     radial-gradient(
       ellipse 300px 500px at 105% 60%,
       #0c1509 0%,
       transparent 70%
     ),
-    /* Ground shadow */
-    linear-gradient(
-      to top,
-      #060a05 0%,
-      #0a0e07 8%,
-      transparent 30%
-    ),
-    /* Top vignette */
-    linear-gradient(
-      to bottom,
-      #060a05 0%,
-      transparent 20%
-    );
+    linear-gradient(to top,  #060a05 0%, #0a0e07 8%, transparent 30%),
+    linear-gradient(to bottom, #060a05 0%, transparent 20%);
 }
 
-input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 1000px var(--color-primary-dark0) inset !important;
-  -webkit-text-fill-color: var(--color-primary-light) !important;
-}
-
-/* ============================= */
-/*  Animated Fog (Teal)          */
-/* ============================= */
-
-/* Fog animation removed globally */
 .page-container::before,
 .page-container::after {
-	display: none !important;
+  display: none !important;
 }
 
 .main-layout {
-	display: flex;
-	position: relative;
-	flex: 1;
-	align-items: stretch;
+  display: flex;
+  position: relative;
+  flex: 1;
+  align-items: stretch;
 }
 
 .content {
-	flex: 1; /* takes remaining space */
-	display: flex;
-	flex-direction: column;
-	margin-bottom: 0 !important;
-	position: relative;
-	z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0 !important;
+  position: relative;
+  z-index: 1;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--stone-800) inset !important;
+  -webkit-text-fill-color: var(--green-200) !important;
 }
 
 @media (max-width: 480px) {
-	.main-layout {
-		flex-direction: column-reverse;
-		justify-content: flex-end !important;
-	}
+  .main-layout {
+    flex-direction: column-reverse;
+    justify-content: flex-end !important;
+  }
 }
 
 /* ============================================================
-   Navbar
+   NAVBAR
    ============================================================ */
 .dnd-navbar {
   position: sticky;
@@ -114,7 +88,7 @@ input:-webkit-autofill {
   gap: 1rem;
   padding: 0 1.5rem;
   height: 56px;
-  background-color: rgba(13, 12, 10, .92);
+  background-color: rgba(14, 17, 10, .94);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--stone-700);
@@ -131,15 +105,16 @@ input:-webkit-autofill {
   display: flex;
   align-items: center;
   gap: .6rem;
-  font-family: var(--font-title);
-  font-size: .95rem;
+  font-family: var(--font-name-title);
+  font-size: .55rem;
   color: var(--color-primary) !important;
-  letter-spacing: .05em;
+  letter-spacing: .04em;
   text-decoration: none;
   white-space: nowrap;
+  line-height: 1.5;
 }
 
-.dnd-navbar__logo:hover { color: var(--moss-300) !important; }
+.dnd-navbar__logo:hover { color: var(--green-300) !important; }
 
 .dnd-navbar__icon {
   width: 1.4rem;
@@ -164,27 +139,29 @@ input:-webkit-autofill {
   margin-left: auto;
 }
 
+/* Profile button */
 .dnd-navbar__profile {
   display: flex;
   align-items: center;
   gap: .5rem;
   padding: .35rem .85rem;
   border-radius: var(--radius-md);
-  background-color: var(--moss-700);
-  border: 1px solid var(--moss-500);
-  color: var(--moss-100) !important;
-  font-size: .875rem;
+  background-color: var(--green-700);
+  border: 1px solid var(--green-500);
+  color: var(--green-100) !important;
+  font-size: .825rem;
   font-weight: 600;
   text-decoration: none;
   transition: background-color 200ms ease, border-color 200ms ease;
 }
 
 .dnd-navbar__profile:hover {
-  background-color: var(--moss-600);
-  border-color: var(--moss-400);
+  background-color: var(--green-600);
+  border-color: var(--green-400);
+  color: var(--green-50) !important;
 }
 
-/* Dropdown */
+/* Dropdown trigger */
 .dnd-navbar__dropdown { position: relative; }
 
 .dnd-navbar__dropdown-trigger {
@@ -196,7 +173,7 @@ input:-webkit-autofill {
   background-color: transparent;
   border: 1px solid var(--stone-600);
   color: var(--stone-300);
-  font-size: .875rem;
+  font-size: .825rem;
   font-weight: 600;
   font-family: var(--font-body);
   cursor: pointer;
@@ -208,6 +185,7 @@ input:-webkit-autofill {
   color: var(--color-text);
 }
 
+/* Dropdown menu */
 .dnd-navbar__dropdown-menu {
   position: absolute;
   top: calc(100% + .5rem);
@@ -229,7 +207,7 @@ input:-webkit-autofill {
   background: none;
   border: none;
   color: var(--stone-300);
-  font-size: .875rem;
+  font-size: .85rem;
   font-family: var(--font-body);
   text-align: left;
   text-decoration: none;
@@ -244,7 +222,7 @@ input:-webkit-autofill {
 
 .dnd-navbar__dropdown-item--danger { color: var(--blood-300); }
 .dnd-navbar__dropdown-item--danger:hover {
-  background-color: rgba(200, 52, 52, .15);
+  background-color: rgba(184, 48, 48, .15);
   color: var(--blood-200);
 }
 
@@ -303,10 +281,20 @@ input:-webkit-autofill {
 
   .dnd-navbar__search { max-width: 100%; }
 
-  .dnd-navbar__end { flex-direction: column; align-items: stretch; }
+  .dnd-navbar__end {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
   .dnd-navbar__profile,
-  .dnd-navbar__dropdown-trigger { width: 100%; justify-content: center; }
+  .dnd-navbar__dropdown-trigger {
+    width: 100%;
+    justify-content: center;
+  }
 
-  .dnd-navbar__dropdown-menu { position: static; box-shadow: none; border-radius: var(--radius-md); }
+  .dnd-navbar__dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border-radius: var(--radius-md);
+  }
 }
