@@ -13,11 +13,17 @@ const App = () => {
 	return (
 		<div className="landing-hero">
 		<p className="landing-hero__eyebrow">Welcome to</p>
-		<h1 className="landing-hero__title">
-			Dungeon<span className="accent">NoDragon</span>
-		</h1>
+		<div style={{
+			display: 'flex',
+			justifyContent: 'center',
+			maxWidth: '100vw',
+			overflow: 'hidden'
+			}}>
+				<span className="landing-hero__title">Dungeon</span>
+				<span className="landing-hero__title accent">NoDragon</span>
+		</div>
 		<p className="landing-hero__subtitle">
-			Enter the maze. Defeat the goblins. Be the first one escaping.
+			Enter the maze. Defeat the goblins. Be the first one to escape.
 		</p>
 		<div className="landing-hero__actions">
 			<NavLink to="/login" className="button is-ghost is-medium">Sign in</NavLink>

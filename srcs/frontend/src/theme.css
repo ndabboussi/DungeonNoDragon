@@ -765,7 +765,8 @@ a:hover { color: var(--green-300); }
   color: var(--stone-100);
   letter-spacing: .18em;
   text-transform: uppercase;
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-xs);
+  line-height: 0.5;
 }
 
 .landing-hero__title {
@@ -776,14 +777,14 @@ a:hover { color: var(--green-300); }
   margin-bottom: var(--space-lg);
 }
 
-.landing-hero__title .accent {
+.accent {
   color: var(--color-primary);
 }
 
 .landing-hero__subtitle {
   font-size: clamp(1rem, 2vw, 1.25rem);
   color: var(--color-text-muted);
-  max-width: 480px;
+  max-width: min(600px, 90%);
   margin: 0 auto var(--space-xl);
   line-height: 1.7;
 }
