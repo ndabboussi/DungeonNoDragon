@@ -1,27 +1,28 @@
-import { NavLink, useNavigate } from 'react-router';
-import { useAuth } from './auth/AuthContext';
-import { useEffect } from 'react';
+import { NavLink, useNavigate } from 'react-router'
+import { useAuth } from './auth/AuthContext'
+import { useEffect } from 'react'
 
 const App = () => {
-	const navigate = useNavigate();
-	const { user } = useAuth();
+	const navigate = useNavigate()
+	const { user } = useAuth()
 
 	useEffect(() => {
-		if (user)
-			navigate("/home");
-	}, [user, navigate]);
+		if (user) navigate('/home')
+	}, [user, navigate])
 
 	return (
-		<div className='slide-in-elliptic-bottom-bck'>
-			<div className='text-focus-in'>
-				<p>Welcome to</p>
-				<p>DungeonNoDragon</p>
-			</div>
-			<br/>
-			<div className='button-group'>
-				<NavLink to="/login" className="button is-medium heartbeat">Sign in</NavLink>
-				<NavLink to="/register" className="button is-primary is-medium heartbeat">Sign up</NavLink>
-			</div>
+		<div className="landing-hero">
+		<p className="landing-hero__eyebrow">Welcome to</p>
+		<h1 className="landing-hero__title">
+			Dungeon<span className="accent">NoDragon</span>
+		</h1>
+		<p className="landing-hero__subtitle">
+			Enter the maze. Defeat the goblins. Be the first one escaping.
+		</p>
+		<div className="landing-hero__actions">
+			<NavLink to="/login" className="button is-ghost is-medium">Sign in</NavLink>
+			<NavLink to="/register" className="button is-primary is-medium">Sign up</NavLink>
+		</div>
 		</div>
 	)
 }
