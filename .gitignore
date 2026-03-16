@@ -23,3 +23,4 @@ npm-debug.log*
 # Uploads
 srcs/backend/uploads
 srcs/frontend/test.txt
+test.txt
