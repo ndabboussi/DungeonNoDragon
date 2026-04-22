@@ -88,17 +88,17 @@ The game is fully integrated into a **social platform**, allowing users to:
 
 ## 📸 Game Snapshots
 
-### 🗺️ Dungeon exploration
+### 🗺️ Home page
 
-![Image]()
+![Image](.images/home.png)
 
 ### ⚔️ Combat & gameplay
-
-![Image]()
+![Image](./images/game_room.png)
+![Image](./images/game.png)
 
 ### 🌐 Web interface & social features
 
-![Image]()
+![Image](./images/profile.png)
 
 ---
 
