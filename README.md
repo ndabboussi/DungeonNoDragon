@@ -50,6 +50,17 @@ We wanted a combination of both **software engineering rigor** and **system-leve
 
 ---
 
+## 📊 What I learned (Nina Dabboussi - ndabboussi)
+
+* Javascript, Typescrit, Node.JS, Prisma, PostgreSQL, Socket.io, Typebox, Fastify, React
+* Designing a **scalable full-stack architecture**
+* Building a **real-time multiplayer system**
+* Working with **WebAssembly and low-level languages**
+* Managing **team collaboration on a complex project**
+* Delivering a **production-like application**
+
+---
+
 ## 🎮 Game Overview
 
 ### 🕹️ What is DungeonNoDragon?
@@ -226,16 +237,6 @@ Working on a large-scale project with tight deadlines
 
 ---
 
-## 📊 What I learned
-
-* Designing a **scalable full-stack architecture**
-* Building a **real-time multiplayer system**
-* Working with **WebAssembly and low-level languages**
-* Managing **team collaboration on a complex project**
-* Delivering a **production-like application**
-
----
-
 ## 👥 Team
 
 | Name     | Role                         |
@@ -285,9 +286,6 @@ Working on a large-scale project with tight deadlines
 	* Help explain and solve bugs
 
 ---
-
-## Team I
-
 
 ## Credits
 
