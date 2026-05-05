@@ -143,6 +143,12 @@ Game Client (C++ → WebAssembly)
 * Argon2 (hashing, security)
 * Socket.io (WebSocket)
 
+### Database Schema
+
+![Database schema image here](./images/database.png)
+
+**The database has been designed to maximize unique information sources, with minimal concessions for query optimization.**
+
 ### Game Engine
 
 **Client**
