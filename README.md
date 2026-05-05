@@ -86,22 +86,6 @@ The game is fully integrated into a **social platform**, allowing users to:
 
 ---
 
-## 📸 Game Snapshots
-
-### 🗺️ Home page
-
-![Image](.images/home.png)
-
-### ⚔️ Combat & gameplay
-![Image](./images/game_room.png)
-![Image](./images/game.png)
-
-### 🌐 Web interface & social features
-
-![Image](./images/profile.png)
-
----
-
 ## 🧠 Technical Highlights
 
 ### 🧩 Architecture
@@ -174,6 +158,22 @@ Game Client (C++ → WebAssembly)
 * 🔐 Authentication (including OAuth)
 * 📊 Player statistics tracking
 * ⚡ Real-time synchronization (WebSockets)
+
+---
+
+## 📸 Game Snapshots
+
+### 🗺️ Home page
+
+![Image](.images/home.png)
+
+### ⚔️ Combat & gameplay
+![Image](./images/game_room.png)
+![Image](./images/game.png)
+
+### 🌐 Web interface & social features
+
+![Image](./images/profile.png)
 
 ---
 
